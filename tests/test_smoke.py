@@ -106,6 +106,19 @@ def test_analyze_file_on_own_readme():
     assert rec["section_count"] > 0 and rec["bytes"] > 0
 
 
+def test_published_checksums_match():
+    """发布资产的 SHA256 必须与仓库里的一致——防止"改了数据忘了改清单"。"""
+    sums = ROOT / "data" / "processed" / "SHA256SUMS"
+    if not sums.exists():
+        pytest.skip("无校验文件")
+    import hashlib
+    for line in sums.read_text().splitlines():
+        digest, name = line.split()
+        f = ROOT / "data" / "processed" / name
+        got = hashlib.sha256(f.read_bytes()).hexdigest()
+        assert got == digest, f"{name} 校验和不符（重新生成后需更新 SHA256SUMS）"
+
+
 # --- 可重放性 -----------------------------------------------------------
 
 def test_corpus_is_reproducible_from_raw(corpus):
