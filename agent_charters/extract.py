@@ -91,7 +91,13 @@ def analyze_text(text: str, meta: dict | None = None, *,
         "content_mode": mode,
         "rule_signals": rule_signals,
         "categories": sorted(tag_counts),
-        "category_counts": dict(tag_counts),
+        # 定长稠密计数：九个类别全都出现，缺席写 0，顺序固定为 CATEGORIES。
+        # 两个理由，都踩过坑：
+        # 1) 稀疏 dict 经 parquet 会被展开成 struct，缺席项变 None/NaN——
+        #    下游拿到的是 {"gotchas": None} 而不是 0，极易算错。
+        # 2) 稀疏 dict 的键顺序来自 set 迭代顺序，而它依赖 PYTHONHASHSEED，
+        #    同一份数据两次生成字节不同，发布资产的校验和无法复现。
+        "category_counts": {c: tag_counts.get(c, 0) for c in CATEGORIES},
         "total_sections_tagged": sum(tag_counts.values()),
         "used_fulltext_fallback": used_fulltext,
         "strong_patterns": strong,

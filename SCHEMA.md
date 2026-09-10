@@ -45,8 +45,8 @@
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `categories` | list[str] | 命中的类别（多标签，按字母序） |
-| `category_counts` | dict | 每类命中的章节数 |
+| `categories` | list[str] | 命中的类别（多标签，按字母序）。空列表 = 该文件没有可识别的内容类别 |
+| `category_counts` | dict[9] | 每类命中的章节数。**定长稠密：九个类别全部在场，缺席为 `0`，顺序固定为 `CATEGORIES`**。`categories` 是它的稀疏视图 |
 | `total_sections_tagged` | int | 所有类别命中次数之和 |
 
 ## 内容模式
@@ -91,7 +91,9 @@
   "content_mode": "mixed",
   "rule_signals": 7,
   "categories": ["agent_meta", "boundaries"],
-  "category_counts": {"agent_meta": 1, "boundaries": 2},
+  "category_counts": {"overview": 0, "structure": 0, "build_test": 0, "style": 0,
+                      "workflow": 0, "environment": 0, "boundaries": 2,
+                      "gotchas": 0, "agent_meta": 1},
   "total_sections_tagged": 3,
   "used_fulltext_fallback": false,
   "strong_patterns": true,

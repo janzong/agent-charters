@@ -119,7 +119,48 @@ def test_published_checksums_match():
         assert got == digest, f"{name} 校验和不符（重新生成后需更新 SHA256SUMS）"
 
 
+def test_category_counts_are_dense(corpus):
+    """九个类别必须全部在场、缺席为 0、顺序固定——稀疏 dict 会在 parquet 里变成 NaN。"""
+    rec = analyze_text(ZH_CHARTER)
+    assert list(rec["category_counts"]) == list(CATEGORIES)
+    assert all(isinstance(v, int) for v in rec["category_counts"].values())
+    for d in corpus["category_counts"].tolist():
+        assert list(d) == list(CATEGORIES)
+        assert not any(v is None for v in d.values())
+
+
 # --- 可重放性 -----------------------------------------------------------
+
+@pytest.mark.skipif(not MANIFEST.exists(), reason="data/raw 不在仓库里")
+def test_jsonl_is_byte_identical_across_hash_seeds(tmp_path):
+    """不同 PYTHONHASHSEED 下重跑抽取，产物必须逐字节相同。
+
+    曾经不是：category_counts 的键顺序来自 set 迭代顺序，
+    而 set 顺序随字符串哈希随机化——同一份数据两次生成校验和不同，
+    发布资产的"可复现"就成了一句空话。
+    """
+    import os
+    import subprocess
+
+    outs = []
+    for seed in ("0", "1"):
+        outdir = tmp_path / f"seed{seed}"
+        env = dict(os.environ, PYTHONHASHSEED=seed,
+                   AGENT_CHARTERS_OUT=str(outdir))
+        subprocess.run([sys.executable, "work/extract_v1.py"],
+                       cwd=ROOT, env=env, check=True,
+                       stdout=subprocess.DEVNULL)
+        rows = [json.loads(l) for l in
+                (outdir / "agent_charters_v0.1.jsonl").read_text().splitlines()]
+        import pandas as pd
+        buf = outdir / "x.parquet"
+        pd.DataFrame(rows).to_parquet(buf, index=False, compression="zstd")
+        outs.append(((outdir / "agent_charters_v0.1.jsonl").read_bytes(),
+                     buf.read_bytes()))
+    assert outs[0][0] == outs[1][0], "jsonl 不确定：同数据不同哈希种子字节不同"
+    assert outs[0][1] == outs[1][1], "parquet 不确定：同数据不同哈希种子字节不同"
+
+
 
 def test_corpus_is_reproducible_from_raw(corpus):
     """数据集必须能由 work/extract_v1.py 从 data/raw 重放出来。

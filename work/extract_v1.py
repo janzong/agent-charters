@@ -10,6 +10,7 @@
 """
 
 import json
+import os
 import sys
 from collections import Counter
 from pathlib import Path
@@ -24,8 +25,11 @@ from agent_charters.taxonomy import CATEGORIES, VERSION  # noqa: E402
 RETRIEVED_AT = "2026-09-10"
 
 
+OUT_ENV = "AGENT_CHARTERS_OUT"      # 供测试把产物写到临时目录
+
+
 def main() -> None:
-    outdir = Path("data/processed")
+    outdir = Path(os.environ.get(OUT_ENV, "data/processed"))
     outdir.mkdir(parents=True, exist_ok=True)
     rows = [json.loads(l) for l in
             Path("data/raw/full_manifest.jsonl").read_text().splitlines()]
