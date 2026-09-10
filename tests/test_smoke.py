@@ -194,6 +194,33 @@ def test_brief_is_deterministic():
     assert render([], lang="zh") == render([], lang="zh")
 
 
+# --- 纵向基线 -----------------------------------------------------------
+
+def test_baseline_matches_corpus(corpus):
+    """基线快照必须与数据集一致，否则三个月后的纵向对比是在跟错误的对象比。"""
+    base = ROOT / "data" / "processed" / "baseline-2026-09-10.tsv"
+    if not base.exists():
+        pytest.skip("无基线文件")
+    rows = {}
+    with base.open(encoding="utf-8") as fh:
+        import csv
+        for r in csv.DictReader(fh, delimiter="\t"):
+            rows[r["repo_full_name"]] = r
+    assert len(rows) == len(corpus) == 558
+    for _, rec in corpus.iterrows():
+        assert rows[rec["repo_full_name"]]["file_sha"] == rec["file_sha"]
+
+
+def test_longitudinal_self_diff_is_zero():
+    """拿基线跟当前清单比，必须报 0 变化——这是脚本没写错的证据。"""
+    import subprocess
+    r = subprocess.run([sys.executable, "work/longitudinal.py"], cwd=ROOT,
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "**内容已改**      0" in r.stdout
+    assert "新增              0" in r.stdout
+
+
 # --- 可重放性 -----------------------------------------------------------
 
 @pytest.mark.skipif(not MANIFEST.exists(), reason="data/raw 不在仓库里")

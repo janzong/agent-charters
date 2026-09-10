@@ -115,6 +115,11 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/pytest -q                           # 冒烟测试（11 项）
 ```
 
+**纵向基线**：`data/processed/baseline-2026-09-10.tsv` 固化了本快照每个仓库的
+`file_sha`。三个月后重抓一次、跑 `work/longitudinal.py`，就能测出
+"有多少章程被换掉、新增里有多少是同 sha 的模板产物"——
+这是"机器正在批量写章程"唯一的测量方法。
+
 > `work/extract_v1.py` 不自己实现分类规则——它调用 `agent_charters.extract`，
 > 保证"生成数据集用的规则"与"随包分发的规则"是同一套。
 > 测试里有一项会在两者不一致时失败，这是刻意的刹车。
