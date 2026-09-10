@@ -83,6 +83,13 @@
 
 如需原文，请用 `repo_full_name` + `file_path` + `file_sha` 自行从 GitHub 取回。
 
+## 8.5 `gotchas` 覆盖率不等于"写了好坑"
+
+`gotchas` 覆盖率（14%）是**带标签的文件比例**，不是内容质量指标。
+对 347 条坑的人工标注（`work/gotcha_origin.md`）显示：
+**34% 的条目根本不是坑**——是通用建议、规则或操作步骤被塞进了 Gotchas 章节。
+引用这个数字时请说明它衡量的是"有没有这一节"，不是"这一节写得好不好"。
+
 ## 9. 分类规则变更会导致不可比
 
 `extractor_version` 与 `taxonomy_version` 记录在每一行里。
