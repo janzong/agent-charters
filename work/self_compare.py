@@ -10,9 +10,10 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).parent))
-from extract_v1 import (CATEGORIES, classify, classify_fulltext,  # noqa: E402
-                        doc_language, split_sections)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from agent_charters.extract import doc_language  # noqa: E402
+from agent_charters.taxonomy import (CATEGORIES, classify,  # noqa: E402
+                                     classify_fulltext, split_sections)
 
 
 def analyze(path: str) -> dict:
