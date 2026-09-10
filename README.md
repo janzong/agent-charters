@@ -60,6 +60,10 @@ print(len(sub))
 
 ## 文档
 
+**如果你是接手的智能体或协作者，请先读 [`STATE.md`](STATE.md)** —— 项目状态、决策记录、
+不可争议区、路线图都在那里。
+
+- [`STATE.md`](STATE.md) —— **接手入口**：状态 / 决策记录 / 路线图 / 不可争议区
 - [`TAXONOMY.md`](TAXONOMY.md) —— 9 类分类法的定义与判定规则
 - [`SCHEMA.md`](SCHEMA.md) —— 23 个字段的完整说明
 - [`FINDINGS.md`](FINDINGS.md) —— 初步发现
