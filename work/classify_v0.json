@@ -1,0 +1,1078 @@
+[
+ {
+  "repo": "1Password/SCAM",
+  "bytes": 12841,
+  "n_headings": 29,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Andersbakken/rtags",
+  "bytes": 8123,
+  "n_headings": 13,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "AndreaGriffiths11/annotation-overlay",
+  "bytes": 4974,
+  "n_headings": 12,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Arize-ai/arize-skills",
+  "bytes": 2504,
+  "n_headings": 3,
+  "tags": [
+   "agent_meta",
+   "environment",
+   "style"
+  ]
+ },
+ {
+  "repo": "DamianB-BitFlipper/proton-drive-sync",
+  "bytes": 6755,
+  "n_headings": 21,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Fannon/search-bookmarks-history-and-tabs",
+  "bytes": 3559,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview"
+  ]
+ },
+ {
+  "repo": "FastEndpoints/Documentation",
+  "bytes": 2867,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "GoogleContainerTools/config-sync",
+  "bytes": 3460,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "structure"
+  ]
+ },
+ {
+  "repo": "HorusGoul/eslint-plugin-react-render-types",
+  "bytes": 5239,
+  "n_headings": 16,
+  "tags": [
+   "build_test",
+   "overview",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Kevandrew/sophia",
+  "bytes": 2143,
+  "n_headings": 8,
+  "tags": [
+   "build_test",
+   "environment",
+   "overview",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "LeadMagic/gtm-skills",
+  "bytes": 2065,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment"
+  ]
+ },
+ {
+  "repo": "Muxi-X/ccnubox_rn",
+  "bytes": 324,
+  "n_headings": 4,
+  "tags": [
+   "agent_meta",
+   "environment"
+  ]
+ },
+ {
+  "repo": "NanoNative/nano",
+  "bytes": 2937,
+  "n_headings": 7,
+  "tags": [
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "NomaDamas/katok",
+  "bytes": 3818,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "Protelis/Protelis",
+  "bytes": 2102,
+  "n_headings": 5,
+  "tags": [
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "RobertoMachorro/Moped",
+  "bytes": 1289,
+  "n_headings": 4,
+  "tags": [
+   "agent_meta",
+   "overview",
+   "style"
+  ]
+ },
+ {
+  "repo": "Smith42/astroPT",
+  "bytes": 1277,
+  "n_headings": 3,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "style"
+  ]
+ },
+ {
+  "repo": "TryGhost/Deploy",
+  "bytes": 4661,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test"
+  ]
+ },
+ {
+  "repo": "TulipaEnergy/TulipaEnergyModel.jl",
+  "bytes": 16478,
+  "n_headings": 41,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Vantiq/vantiq-extension-sources",
+  "bytes": 2688,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "structure"
+  ]
+ },
+ {
+  "repo": "Weaverse/.agents",
+  "bytes": 6757,
+  "n_headings": 36,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "Weixi779/WICompress",
+  "bytes": 5827,
+  "n_headings": 8,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "Xceptance/neodymium",
+  "bytes": 3373,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "build_test"
+  ]
+ },
+ {
+  "repo": "Zambav/ComfyUI-Agent-Toolkit",
+  "bytes": 7393,
+  "n_headings": 10,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment"
+  ]
+ },
+ {
+  "repo": "aashaexo/soundshuman",
+  "bytes": 2228,
+  "n_headings": 4,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "allora-network/allora-chain",
+  "bytes": 5757,
+  "n_headings": 12,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "alookai/alook",
+  "bytes": 9326,
+  "n_headings": 17,
+  "tags": [
+   "build_test",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "antoniovazquezaraujo/LeTrain",
+  "bytes": 3936,
+  "n_headings": 12,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "style"
+  ]
+ },
+ {
+  "repo": "aotemiao/artemis",
+  "bytes": 5895,
+  "n_headings": 8,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "aptos-labs/aptos-ts-sdk",
+  "bytes": 9282,
+  "n_headings": 23,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "audacity/audacity.github.io",
+  "bytes": 425,
+  "n_headings": 1,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "baimard/gestion",
+  "bytes": 280,
+  "n_headings": 1,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "bbc/bug",
+  "bytes": 5724,
+  "n_headings": 10,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "bekker/qvopenapi-rs",
+  "bytes": 3596,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "botiverse/hands",
+  "bytes": 8358,
+  "n_headings": 17,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "buttondown/docs",
+  "bytes": 314,
+  "n_headings": 1,
+  "tags": []
+ },
+ {
+  "repo": "bwz96sco/or_llm_agent",
+  "bytes": 3309,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "structure"
+  ]
+ },
+ {
+  "repo": "byigitt/postmaker-x",
+  "bytes": 3040,
+  "n_headings": 16,
+  "tags": [
+   "build_test",
+   "environment",
+   "overview",
+   "structure"
+  ]
+ },
+ {
+  "repo": "caretive-ai/project-careti",
+  "bytes": 6549,
+  "n_headings": 26,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "chasinglogic/dfm",
+  "bytes": 3071,
+  "n_headings": 9,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview"
+  ]
+ },
+ {
+  "repo": "comonicon/Comonicon.jl",
+  "bytes": 3225,
+  "n_headings": 12,
+  "tags": [
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "cpuguy96/StepCOVNet",
+  "bytes": 5730,
+  "n_headings": 3,
+  "tags": [
+   "agent_meta",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "cvet/fonline-tla",
+  "bytes": 18702,
+  "n_headings": 14,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "datopian/autoclaw.sh",
+  "bytes": 3788,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "overview",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "diffblue/cbmc",
+  "bytes": 28085,
+  "n_headings": 146,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "decisions",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "dwebagents/AgentPipe",
+  "bytes": 274,
+  "n_headings": 1,
+  "tags": []
+ },
+ {
+  "repo": "dxe/adb",
+  "bytes": 3685,
+  "n_headings": 19,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "edwnh/dqmc",
+  "bytes": 7195,
+  "n_headings": 19,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "exoscale/cli",
+  "bytes": 6376,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "extsoft/elegant-git",
+  "bytes": 335,
+  "n_headings": 1,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "fancy1108/Clutch",
+  "bytes": 5452,
+  "n_headings": 2,
+  "tags": [
+   "agent_meta",
+   "build_test"
+  ]
+ },
+ {
+  "repo": "gogpu/gg",
+  "bytes": 2731,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview"
+  ]
+ },
+ {
+  "repo": "google/benchmark",
+  "bytes": 1716,
+  "n_headings": 1,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "graphframes/graphframes",
+  "bytes": 7952,
+  "n_headings": 26,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "hellooops/vscode-edi-support",
+  "bytes": 808,
+  "n_headings": 3,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "honishi/Hakumai",
+  "bytes": 7565,
+  "n_headings": 16,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test"
+  ]
+ },
+ {
+  "repo": "hotosm/ui",
+  "bytes": 5646,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "hughjonesd/huxtable",
+  "bytes": 3512,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "build_test"
+  ]
+ },
+ {
+  "repo": "ijry/uview-plus",
+  "bytes": 623,
+  "n_headings": 4,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "jantimon/web-performance-debugger",
+  "bytes": 4062,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "joske/yserver",
+  "bytes": 1712,
+  "n_headings": 3,
+  "tags": [
+   "agent_meta",
+   "environment"
+  ]
+ },
+ {
+  "repo": "kupzed/catatz",
+  "bytes": 12617,
+  "n_headings": 17,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "overview",
+   "structure",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "lajarre/pi-vim",
+  "bytes": 2018,
+  "n_headings": 1,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "ldclabs/anda",
+  "bytes": 8276,
+  "n_headings": 12,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "style"
+  ]
+ },
+ {
+  "repo": "leochiu-a/elden-ring-github",
+  "bytes": 398,
+  "n_headings": 4,
+  "tags": [
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "manusa/podman-mcp-server",
+  "bytes": 24221,
+  "n_headings": 54,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "mhernesniemi/hoikka",
+  "bytes": 3260,
+  "n_headings": 4,
+  "tags": [
+   "environment",
+   "style"
+  ]
+ },
+ {
+  "repo": "ministryofjustice/hmpps-contacts-ui",
+  "bytes": 5391,
+  "n_headings": 14,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "moKshagna-p/musico",
+  "bytes": 4566,
+  "n_headings": 11,
+  "tags": [
+   "boundaries",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "najaeda/naja-verilog",
+  "bytes": 1716,
+  "n_headings": 3,
+  "tags": [
+   "build_test",
+   "environment"
+  ]
+ },
+ {
+  "repo": "northword/zotero-format-metadata",
+  "bytes": 8288,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "nzh63/syc",
+  "bytes": 6881,
+  "n_headings": 10,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment"
+  ]
+ },
+ {
+  "repo": "oldantique/zotkit",
+  "bytes": 5003,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment"
+  ]
+ },
+ {
+  "repo": "openSUSE/mcp-bugzilla",
+  "bytes": 3284,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "openshift-examples/web",
+  "bytes": 5757,
+  "n_headings": 19,
+  "tags": [
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "openshift/cluster-kube-apiserver-operator",
+  "bytes": 5443,
+  "n_headings": 7,
+  "tags": [
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "owncloud/notes",
+  "bytes": 3109,
+  "n_headings": 12,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "pawcoding/astro-loader-pocketbase",
+  "bytes": 4179,
+  "n_headings": 15,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "peteromallet/Arnold",
+  "bytes": 32928,
+  "n_headings": 30,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "decisions",
+   "environment",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "prolific-oss/cli",
+  "bytes": 12952,
+  "n_headings": 25,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "purton-tech/rust-on-nails",
+  "bytes": 3074,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "environment"
+  ]
+ },
+ {
+  "repo": "raphaelmansuy/edgecrab",
+  "bytes": 37549,
+  "n_headings": 42,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure"
+  ]
+ },
+ {
+  "repo": "rufolangus/AAOSP",
+  "bytes": 23717,
+  "n_headings": 31,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "sankichi92/LiveLog",
+  "bytes": 2303,
+  "n_headings": 8,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "saubakirov/KZ-IT-telegram-list",
+  "bytes": 8768,
+  "n_headings": 22,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "schwehr/noaadata",
+  "bytes": 7703,
+  "n_headings": 18,
+  "tags": [
+   "agent_meta",
+   "boundaries",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "shikokuchuo/secretbase",
+  "bytes": 3628,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "sous-chefs/xinetd",
+  "bytes": 3760,
+  "n_headings": 11,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure"
+  ]
+ },
+ {
+  "repo": "supabase/pg-toolbelt",
+  "bytes": 29,
+  "n_headings": 0,
+  "tags": []
+ },
+ {
+  "repo": "thomasnormal/codex-auto-continue",
+  "bytes": 2940,
+  "n_headings": 7,
+  "tags": [
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "thumbor/libthumbor",
+  "bytes": 3002,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "environment",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "topocm/topocm_content",
+  "bytes": 771,
+  "n_headings": 1,
+  "tags": []
+ },
+ {
+  "repo": "tovifun/VivalArc",
+  "bytes": 2393,
+  "n_headings": 7,
+  "tags": [
+   "boundaries",
+   "build_test",
+   "overview",
+   "structure",
+   "style",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "treyhunner/dotfiles",
+  "bytes": 2853,
+  "n_headings": 7,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "workflow"
+  ]
+ },
+ {
+  "repo": "vcz-Gray/loophaus",
+  "bytes": 1411,
+  "n_headings": 6,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview",
+   "structure",
+   "style"
+  ]
+ },
+ {
+  "repo": "yanyiwu/nodejieba",
+  "bytes": 211,
+  "n_headings": 2,
+  "tags": [
+   "agent_meta"
+  ]
+ },
+ {
+  "repo": "yuanyuekejiJN/AivoClaw",
+  "bytes": 25807,
+  "n_headings": 29,
+  "tags": [
+   "boundaries",
+   "build_test",
+   "decisions",
+   "environment",
+   "overview",
+   "structure"
+  ]
+ },
+ {
+  "repo": "yungwood/ical-filter-proxy",
+  "bytes": 2456,
+  "n_headings": 5,
+  "tags": [
+   "agent_meta",
+   "build_test",
+   "overview"
+  ]
+ }
+]

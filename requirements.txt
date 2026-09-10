@@ -1,0 +1,7 @@
+# 抓取与抽取依赖（Python 3.12）
+# 安装（国内必须走镜像，否则 pip 会因响应截断报 JSONDecodeError）：
+#   python -m venv .venv
+#   .venv/bin/pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+datasets==5.0.1
+pandas==3.0.5
+pyarrow==25.0.1

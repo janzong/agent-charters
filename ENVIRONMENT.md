@@ -1,0 +1,144 @@
+# agent-charters 环境与通道备忘
+
+> 记录日期：2026-09-10 ｜ 主机：janz ｜ 磁盘：74G 可用
+> 用途：避免重复踩坑。换机、换会话、换协作者时直接读本文件。
+> 原则：只记录实测结论，**不记录任何凭据**。
+
+## 1. 项目定位
+
+人写给 AI 智能体的书面规约（`AGENTS.md` / `CLAUDE.md` / `.cursorrules` /
+`copilot-instructions.md` / `GEMINI.md` …）的结构化语料库与分析。
+首个发布物 v0.1。本地路径 `/home/janz/workspace/agent-charters/`。
+
+## 2. GitHub 通道实测
+
+访问能力**分路径**，不可一概而论，更不能凭感觉判断"GitHub 慢不慢"。
+
+| 路径 | 状态 | 延迟 | 用途 |
+|---|---|---|---|
+| `api.github.com` | ✅ 稳定 | ~1.1s | gh CLI / API 抓取 |
+| `github.com` git over HTTPS | ❌ 超时（两次复测） | — | **弃用** |
+| `github.com` git over SSH :22 | ✅ | — | **推荐** |
+| `github.com` git over SSH :443 | ✅ | — | 备用（已配置） |
+| `github.com` 网页 | ⚠️ 部分通 | ~1.2s | 具体路径可用，根路径偶发超时 |
+| `uploads.github.com` | ✅ | 0.81s | Release 上传 |
+| `codeload.github.com` | ✅ | 0.67s | zip 下载 |
+| `objects.githubusercontent.com` | ✅ | 0.93s | Release 资产下载 |
+| `raw.githubusercontent.com` | ❌ 超时 | — | 用 contents API 替代 |
+
+**结论**：抓取（90% 依赖 API）零影响；代码管理走 SSH。
+
+### 抓取链路的正确写法
+
+```bash
+# 文件内容（已验证可用）
+gh api repos/{owner}/{repo}/contents/{path} --jq .content | tr -d '\n' | base64 -d
+
+# 或走 CDN
+curl -sL "https://cdn.jsdelivr.net/gh/{owner}/{repo}@{ref}/{path}"
+```
+
+**禁止依赖 `raw.githubusercontent.com`。**
+
+## 3. SSH 配置（已完成 2026-09-10）
+
+- 密钥：`~/.ssh/id_github`（ed25519，专用于 GitHub）
+- 指纹：`SHA256:8gvFejRN/FaoQv0KFGxlvV9ZHedEdK16yB2c7AE9THw`
+- GitHub 注册名：`Janz-agent-20260910`
+- `~/.ssh/config`：`github.com` 与 `ssh.github.com:443` 都绑定该 key，
+  `IdentitiesOnly yes`，`ServerAliveInterval 60`
+- `gh config git_protocol = ssh`
+
+### 30 秒自检
+
+```bash
+ssh -T git@github.com
+# 期望：Hi janzong! You've successfully authenticated, but GitHub does not provide shell access.
+
+git ls-remote git@github.com:SWE-bench/SWE-bench.git HEAD
+# 期望：返回一个 commit sha
+```
+
+## 4. 镜像 / 加速站（实测）
+
+可用：
+
+| 站点 | 延迟 | git 代理能力 |
+|---|---|---|
+| `cnb.cool` | 0.27s | 未测 |
+| `gitclone.com` | 0.36s | ✅ 实测可代理 `ls-remote` |
+| `gitee.com` | 0.54s | ✅ 原生 |
+| `ghproxy.net` | 0.56s | ✅ 实测可代理 `ls-remote` |
+| `gh-proxy.com` | 0.62s | 未测 |
+| `ghfast.top` | 1.41s | 未测 |
+
+已失效（勿再用）：`gh.llkk.cc`、`kkgithub.com`、`bgithub.xyz`、`mirror.ghproxy.com`
+
+用法：
+
+```bash
+git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
+```
+
+> 镜像站寿命很短（本批已有 4 个失效），**每季度复测一次**。
+
+## 5. 数据集发布通道
+
+| 平台 | 状态 | 备注 |
+|---|---|---|
+| GitHub Releases | ✅ | uploads 端点通 |
+| ModelScope（魔搭） | ✅（0.06s） | **建议作为主数据集站** |
+| HuggingFace 官方 | ❌ 不通 | 需代理，二期再上 |
+| `hf-mirror.com` | ✅（2.0s） | 只读镜像，仅用于下载 |
+| Zenodo（DOI） | ❌ 不通 | DOI 方案另议 |
+| Kaggle | ✅ 页面通 | 备选 |
+| Gitee | ✅ | 备用 |
+
+环境变量已预设 `HF_ENDPOINT=https://hf-mirror.com`。
+
+## 6. 配额与硬限制（设计时必须考虑）
+
+- `gh` core：**5000/h**（认证后，未认证只有 60/h）
+- `gh` search：30/min
+- `gh` code_search：**10/min** ← 抓取瓶颈
+- **GitHub search API 单次查询结果上限 1000 条** ← 必须分片
+- 分片策略：按语言 / star 区间 / 时间片切分，多轮搜索后去重
+
+## 7. 本机运行时
+
+- hostname `janz`；磁盘 74G 可用；Node v22.22.3；npm 10.9.8
+- **项目 venv：`/home/janz/workspace/agent-charters/.venv`（Python 3.12.3，369M）**
+- ⚠️ **本机 `python3` 默认指向 hermes 的 venv**
+      （`~/.hermes/hermes-agent/venv/bin/python3`），
+      直接 `pip install` 会污染 hermes → **一律显式使用 `.venv/bin/python`**
+- 项目 venv 已装：`datasets` 5.0.1、`pandas` 3.0.5、`pyarrow` 25.0.1、
+      `huggingface_hub` 1.31.0
+- **pip 必须用国内源**：`-i https://pypi.tuna.tsinghua.edu.cn/simple`
+      （实测 400+ MB/s；直连官方源会因响应被截断报 `JSONDecodeError`）
+- hermes 自带 venv：`~/.hermes/hermes-agent/venv/`（内含 `hf` CLI，勿动）
+
+## 8. 待办 / 未决
+
+- [x] git 全局身份已配置（2026-09-10）：
+      `user.name=Janz`，`user.email=287099612+janzong@users.noreply.github.com`
+      （GitHub noreply，不暴露真实邮箱）；同时设了 `init.defaultBranch=main`、`pull.rebase=false`
+- [x] 测试仓库 `janzong/codex-channel-test` 已删除（2026-09-10，验证 404，
+      `janzong` 名下现为空）
+- [x] 已建项目 venv 并安装 `datasets` / `pandas` / `pyarrow`（2026-09-10，
+      见第 7 节）
+- [ ] ModelScope 账号（若确定用其做主数据集站）
+- [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
+
+**已定**：项目名 `agent-charters` / 智能体章程；
+版本规则为两节（小数位递增＝只增不改、旧结论仍成立；整数位递增＝定义变更、旧结论需重验；
+`1.0` 含义为口径冻结）。
+
+## 9. 已知坑（踩过的）
+
+1. `raw.githubusercontent.com` 不可用 → 一律走 contents API 或 jsdelivr
+2. HTTPS 方式 git 不可用 → 一律走 SSH，`gh` 已切 ssh
+3. `code_search` 限 10/min → 抓取必须做限速与断点续跑，不能硬轮询
+4. 镜像站寿命短 → 定期复测，不要硬编码单一镜像
+5. **版权**：抓取的配置文件版权归原作者，**只发布衍生标注与统计特征，不发布全文**
+6. **可复现性**：LLM 抽取必须记录所用模型版本，否则半年后无法复现
+7. 敏感信息（内网 IP、口令、路径、人名）在提取阶段就要脱敏

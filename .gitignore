@@ -1,0 +1,19 @@
+# 环境
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 数据：原始数据（含 558 份原文）不进版本库
+# data/processed/ 下的衍生标注数据集**要**进版本库，因此不做全局 *.parquet/*.jsonl 排除
+data/raw/
+data/cache/
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/
+
+# 本地临时
+*.log
+tmp/
