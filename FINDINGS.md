@@ -85,6 +85,31 @@ For guidance on working with this repository, see the .ai/ directory:
 - **许可**：MIT 238 + Apache-2.0 114 = **69% 为宽松许可**（对二次使用友好）
 - **规模**：中位数 6.7 KB，p75 12 KB，最长 154 KB
 
+## 10. 结构已经趋同——包括人写的（39 份 / 20 份）
+
+语料库里有 39 份使用 `Repository Guidelines` 这个标题，其中 20 份命中同一套
+子节骨架（`Project Structure & Module Organization` / `Build, Test, and Development
+Commands` / `Coding Style & Naming Conventions` / `Testing Guidelines` /
+`Commit & Pull Request Guidelines` / `Security & Configuration Tips`）。
+
+对照实验（`work/auto_vs_human.md`）里发现：**四个仓库的机器生成版本收敛到同一个骨架，
+而其中两个仓库的人写版本也在用上面这套骨架，正文 8-gram 重合却是 0%**
+——不是抄的，是结构已经约定俗成到被独立采用。
+
+**含义**：讨论"人写的章程 vs 机器写的章程"可能问错了问题。
+更有解释力的轴是**"能从仓库推导出来" vs "推导不出来"**：
+模板化的那部分两边都会写，且越来越像；真正稀缺的是没有证据可读的那部分。
+
+## 11. 机器生成在"经验类内容"上并没有更好
+
+同一实验：`gotchas` 人写 0/4、机器 1/4；`agent_meta` 双方 0/4。
+自动生成补上了结构、命令、约定（甚至覆盖更全），
+但**没有补上"只有踩过的人才知道的东西"**——这与发现 3（`gotchas` 仅 14%）是同一件事，
+只是换了一个角度再次出现。
+
+> 注意边界：n=4，一个生成器、一个提示词，且生成器只读了仓库
+> （没读 issue / PR / CI 日志）。不能读成"自动生成不好"。
+
 ## 可验证性说明
 
 以上每一条都可由 `data/processed/agent-charters-v0.1.parquet` 直接复算。
