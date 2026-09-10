@@ -67,6 +67,11 @@ print(len(sub))
 装好依赖后（或在仓库根目录直接 `.venv/bin/python -m agent_charters`）：
 
 ```bash
+# 写章程之前：检查清单 + 可直接粘贴给生成器的提示词
+agent-charters brief
+# 已有文件：清单会标出你缺哪些，并把缺口写进提示词
+agent-charters brief path/to/AGENTS.md
+
 # 全局分布：语料库长什么样
 agent-charters stats
 
@@ -79,6 +84,13 @@ agent-charters show gotchas --limit 8
 
 `compare` 是给写章程的人用的：它会指出**语料库里写得最多、而你完全没写的类别**，
 以及每个类别在语料库里的覆盖率。中文文件同样适用。
+
+`brief` 是给"要生成一份章程"的人用的，它的依据是实测而不是经验：
+11 个仓库的对照实验发现，自动生成的覆盖面**由提示词的形状决定**——
+提示词不点名"协作流程"，11/11 份都没写；点名后 3/3 立刻写出。
+所以 `brief` 输出的是**该问哪些问题**（比例由语料库实时算出），
+外加一段可直接粘贴的提示词。拿这份提示词重跑上述仓库，
+覆盖从 4–5 类升到 **9/9**（见 `work/auto_vs_human.md` 第 6 节）。
 
 ## 文档
 

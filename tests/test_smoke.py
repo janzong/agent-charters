@@ -17,7 +17,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from agent_charters import analyze_file, analyze_text, load_corpus, substantive  # noqa: E402
+from agent_charters import (analyze_file, analyze_text, category_coverage,  # noqa: E402
+                            load_corpus, substantive)
 from agent_charters.taxonomy import CATEGORIES  # noqa: E402
 
 RAW = ROOT / "data" / "raw" / "full"
@@ -127,6 +128,70 @@ def test_category_counts_are_dense(corpus):
     for d in corpus["category_counts"].tolist():
         assert list(d) == list(CATEGORIES)
         assert not any(v is None for v in d.values())
+
+
+# --- brief（生成时的检查清单）------------------------------------------
+
+def test_brief_lists_every_category_with_live_base_rates(corpus):
+    """清单里的比例必须来自语料库实时计算，不能硬编码。"""
+    from agent_charters.brief import render
+    out = render([], lang="zh")
+    cov = category_coverage(substantive(corpus))
+    for c in CATEGORIES:
+        assert c in out, c
+        assert f"{cov[c]:>3}%" in out, f"{c} 的比例与语料库不一致"
+    assert out.count("【") == len(CATEGORIES)
+
+
+def test_brief_gap_mode_only_asks_for_missing(tmp_path):
+    from agent_charters.brief import render
+    f = tmp_path / "AGENTS.md"
+    f.write_text("# AGENTS.md\n\n## Build\nRun `pytest`.\n\n## Structure\n`src/`.\n",
+                 encoding="utf-8")
+    out = render([str(f)], lang="en")
+    assert "✗" in out                                   # 缺口被标出
+    assert "Cover every one of the following slots" in out
+    # 提示词里只应出现缺的项：已覆盖的 build_test 不该再被要求
+    prompt = out.split("可直接粘贴的提示词")[1]
+    assert "- build_test" not in prompt
+    assert "- workflow" in prompt
+
+
+def test_brief_full_coverage_says_so(tmp_path):
+    from agent_charters.brief import render
+    f = tmp_path / "AGENTS.md"
+    f.write_text("\n".join([
+        "# Everything",
+        "## Overview\nThis is a project. 技术栈: python. Overview of what this is.",
+        "## Architecture 架构与目录\nsrc/ modules 模块 结构",
+        "## Build and Test 构建测试\nrun `pytest` and npm run build in CI",
+        "## Coding Style 规范\nnaming, format, lint config, code quality, type hints",
+        "## Workflow 流程\nconventional commits, git pull then git push, pull request review, release",
+        "## Environment 环境\ntoolchain, dependencies, setup, install, config, environment variables",
+        "## Boundaries 禁止\n🚫 never commit secrets; **禁止** deleting files; keep this invariant",
+        "## Gotchas 陷阱\nknown issue: upstream breaks if you do X; 踩坑 recorded here",
+        "## Agent instructions\nyou are an assistant; your role; be concise; ask before acting",
+    ]), encoding="utf-8")
+    out = render([str(f)], lang="en")
+    if "九类全覆盖" in out:
+        assert "没有要补的槽位" in out
+    else:                       # 有缺口就应给出针对性提示词，两者必居其一
+        assert "Cover every one of the following slots" in out
+
+
+def test_brief_carries_the_measured_pitfall_warning():
+    """34% 不是坑、58% 读得出——这两条是实验结论，不许在重构中丢掉。"""
+    from agent_charters.brief import render
+    for lang in ("zh", "en"):
+        out = render([], lang=lang)
+        assert "34%" in out
+        assert "58%" in out
+        assert "workflow 0/11" in out or "11/11" in out
+
+
+def test_brief_is_deterministic():
+    from agent_charters.brief import render
+    assert render([], lang="zh") == render([], lang="zh")
 
 
 # --- 可重放性 -----------------------------------------------------------

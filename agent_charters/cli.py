@@ -1,6 +1,7 @@
 """agent-charters 命令行入口。
 
   agent-charters stats                     全局分布
+  agent-charters brief [FILE...]           写章程前的检查清单 + 可粘贴的提示词
   agent-charters compare FILE [FILE...]    把你的章程与语料库对比
   agent-charters show CATEGORY             看某类别的真实样本
 """
@@ -88,6 +89,13 @@ def cmd_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_brief(args: argparse.Namespace) -> int:
+    from .brief import render
+    df = load_corpus(args.data) if args.data else None
+    print(render(args.files, lang=args.lang, df=df))
+    return 0
+
+
 def cmd_show(args: argparse.Namespace) -> int:
     df = substantive(load_corpus(args.data) if args.data else load_corpus())
     hit = df[df["categories"].map(lambda t: args.category in t)]
@@ -111,12 +119,20 @@ def cmd_show(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="agent-charters",
-        description="人写给 AI 智能体的书面规约语料库（v0.1）")
-    p.add_argument("--data", help="自定义语料库 parquet 路径（默认用随包的 v0.1）")
+        description="人写给 AI 智能体的书面规约语料库（数据 v0.1.1 / 工具 v0.2.0）")
+    p.add_argument("--data", help="自定义语料库 parquet 路径（默认用随包的 v0.1.1）")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s1 = sub.add_parser("stats", help="全局分布")
     s1.set_defaults(func=cmd_stats)
+
+    sb = sub.add_parser("brief",
+                        help="写章程前的检查清单 + 可直接粘贴的生成提示词")
+    sb.add_argument("files", nargs="*",
+                    help="可选：已有的章程文件，清单会标出你缺了哪些")
+    sb.add_argument("--lang", choices=["en", "zh"], default="en",
+                    help="提示词语言（默认 en：喂给模型最稳）")
+    sb.set_defaults(func=cmd_brief)
 
     s2 = sub.add_parser("compare", help="把你的章程与语料库对比")
     s2.add_argument("files", nargs="+", help="一个或多个章程文件")
