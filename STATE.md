@@ -38,6 +38,7 @@
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | 0 star / 0 fork / 0 流量 |
+| 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |
 | 分类准确率 | v0.1 抽样 12 份：准确 9 / 漏标 3 / **错标 0**（v0.1.1 未重做人工核对） |
 | 无标签率 | 1.4%（7 / 507，v0.1 时为 2.1% = 11 / 518） |
 
@@ -114,9 +115,12 @@ agent-charters compare <你的AGENTS.md>
 
 ### 第二优先：可发现性（技术侧）
 
-- 给仓库加 topics（`agents-md` / `ai-agents` / `dataset` / `prompt-engineering`）
+- ~~给仓库加 topics~~ ✅ 已完成
 - 补标准 dataset card
-- 同步 ModelScope
+- 同步 ModelScope（需账号）
+
+> 技术侧到此基本做完。**剩下的只有人能做的：把链接发出去。**
+> 0 star / 0 流量的状态不会因为再改代码而改变。
 
 **注意**：技术侧只能提高"被找到的概率"，真正的发现靠人分享。
 
