@@ -110,6 +110,16 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 > 抓取依赖已认证的 `gh` CLI，且需注意 `code_search` 限流（10/min）。
 > 环境细节见 `ENVIRONMENT.md`。
 
+## 许可与版权
+
+- **代码**（`agent_charters/`、`work/`）：MIT，见 [`LICENSE`](LICENSE)
+- **数据**（`data/processed/` 下的标注与统计）：CC-BY-4.0，署名 `agent-charters v0.1.1`
+- **原文**：本仓库**不含任何 `AGENTS.md` 原文全文**（`data/raw/` 已在 `.gitignore` 中）。
+  数据集只含衍生标注、统计特征与极短引用，原文版权归各仓库作者。
+
+要取回原文：用每行的 `repo_full_name` + `file_path` + `file_sha`
+从 GitHub 取回与快照**逐字节相同**的文件。
+
 ## 引用
 
 ```

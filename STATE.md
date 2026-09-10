@@ -135,6 +135,7 @@ agent-charters compare <你的AGENTS.md>
 ### 需要人类做的事（智能体做不了）
 
 - 对外分享：Show HN / Reddit / 知乎 / V2EX
+  → **文案已写好**：见 [`SHARE.md`](SHARE.md)（四版文案 + 发布顺序 + 预期质疑答法）
 - 机器发帖会被当作 spam，必须由人来做
 - ModelScope 同步（需账号）
 
