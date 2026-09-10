@@ -16,7 +16,12 @@ def main() -> None:
     # list/dict 列在 parquet 里保留为列，便于下游直接展开
     out = Path("data/processed/agent-charters-v0.1.parquet")
     df.to_parquet(out, index=False, compression="zstd")
+    # 随包发布的那一份必须与仓库里的一致，否则 CLI 与数据集会对不上
+    pkg = Path("agent_charters/data/agent-charters-v0.1.parquet")
+    pkg.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(pkg, index=False, compression="zstd")
     print(f"{len(df)} 行 x {len(df.columns)} 列 -> {out}")
+    print(f"                               -> {pkg}（随包）")
     print(f"文件大小 {out.stat().st_size / 1024:.1f} KB")
     print("\n列清单:")
     for c in df.columns:
