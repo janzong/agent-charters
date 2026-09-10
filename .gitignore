@@ -17,3 +17,8 @@ data/cache/
 # 本地临时
 *.log
 tmp/
+
+# 打包产物（pip install -e . 生成）
+*.egg-info/
+build/
+dist/
