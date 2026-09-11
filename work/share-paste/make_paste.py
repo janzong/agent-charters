@@ -7,6 +7,7 @@
       --out work/share-paste/zhihu-article.txt
 
 约定：该章节里必须有两个 fenced code block，顺序为 ①标题 ②正文。
+`--raw` 用于 Markdown 原生站点（掘金）：不剥标记、不合并段落，正文里的 ``` 代码块原样保留。
 生成时去掉 Markdown 标记（`##` / `**` / 反引号），并把源代码里为排版折开的硬换行
 合并回整段——知乎/开源中国的编辑器不吃 Markdown，直接贴会到处断句。
 """
@@ -72,11 +73,39 @@ def reflow(raw: list[str]) -> str:
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
+def fence_len(line: str) -> int:
+    """返回该行的围栏长度（```` 或 ```），非围栏行返回 0。
+
+    必须按长度配对：掘金那版正文里自带 ``` 代码块，用"任意围栏"配对会把正文截断。
+    """
+    m = re.match(r"^(`{3,})\s*$", line)
+    return len(m.group(1)) if m else 0
+
+
+def extract_blocks(lines: list[str], start: int, end: int) -> list[list[str]]:
+    """按**相同长度**的围栏配对，切出章节里的代码块内容。"""
+    blocks: list[list[str]] = []
+    i = start
+    while i < end:
+        n = fence_len(lines[i].strip())
+        if not n:
+            i += 1
+            continue
+        j = i + 1
+        while j < end and fence_len(lines[j].strip()) != n:
+            j += 1
+        blocks.append(lines[i + 1 : j])
+        i = j + 1
+    return blocks
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", default="SHARE.md")
     ap.add_argument("--section", required=True, help='章节起始行，例如 "## 3. 知乎"')
     ap.add_argument("--header", required=True, help="含 {title} / {body} 占位的模板")
+    ap.add_argument("--raw", action="store_true",
+                    help="保留 Markdown 原样（掘金等原生吃 Markdown 的站点用），不做去标记与段落合并")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -89,12 +118,12 @@ def main() -> int:
         (i for i in range(start + 1, len(lines)) if re.match(r"^## \d", lines[i] or "")),
         len(lines),
     )
-    fences = [i for i in range(start, end) if lines[i].strip() == "```"]
-    if len(fences) < 4:
-        raise SystemExit(f"章节里需要 2 个 fenced code block（实际 {len(fences) // 2} 个）：{args.section}")
+    blocks = extract_blocks(lines, start, end)
+    if len(blocks) < 2:
+        raise SystemExit(f"章节里需要 2 个 fenced code block（实际 {len(blocks)} 个）：{args.section}")
 
-    title = "\n".join(lines[fences[0] + 1 : fences[1]]).strip()
-    body = reflow(lines[fences[2] + 1 : fences[3]])
+    title = "\n".join(blocks[0]).strip()
+    body = ("\n".join(blocks[1]) if args.raw else reflow(blocks[1])).strip()
 
     template = pathlib.Path(args.header).read_text(encoding="utf-8")
     text = template.replace("{title}", title).replace("{body}", body)
