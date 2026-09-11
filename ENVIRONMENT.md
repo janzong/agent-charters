@@ -122,6 +122,17 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    处置：`git config --global --unset-all core.sshCommand`，改由 `~/.ssh/config` 的
    `Host gitee.com → IdentityFile ~/.ssh/id_gitee` 接管；复验五仓默认路径全绿。
    另查：云电脑 Windows 凭据管理器里无 gitee 缓存凭据。
+7. **五机全量补扫完成（2026-09-11，五机同时在线时）**：
+   `DXPC`（`DESKTOP-FNFT1GI`，反隧道 `127.0.0.1:2224`，用户 `admin`）—— **没装 git**、
+   `.git` 目录 0 个、凭据管理器无 gitee/github 条目、`~/.ssh` 只有 `id_dxpc`，
+   **无凭证可清**；该机磁盘响应慢，Desktop/Documents 的逐文件深扫未跑完（如实记，
+   且三枚令牌已作废，残留风险为零）。
+   `Mac`（`127.0.0.1:2223`，`janzh`）复核：无全局 `core.sshCommand`、无凭据，
+   唯一仓库是 `cnb.cool` 上的 hermes-agent 镜像（裸 HTTPS，不含令牌）。
+   `240` 复核：无全局 `core.sshCommand`；`C:\Users\Janz\projects\mohu` 与 `MoYa` 是
+   **裸 HTTPS 远端（本身不含令牌）**，远端自 2026-06-26 后未更新，令牌撤销后
+   **非交互拉取已失效**（`wincredman` 已无可用凭证）——**待定**：给 240 登记一枚 Gitee
+   部署公钥改走 SSH，或就当 6 月的旧快照留着。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -231,8 +242,12 @@ git push origin main && git push gitee main && git push --tags
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
 - [x] 旧 Gitee 令牌撤销（2026-09-11 完成）：三枚（`hjz-hermes` / `rmasv3` / `rmas-v3-data`）
       已全部删除，删后全机复验通过（见第 4.5 节第 5 条）
-- [ ] DXPC(2224) 上线后补扫 Gitee 凭证（240/Mac/云电脑已扫；云电脑另有 1 枚 GitHub token
-      明文躺在 `.codex\vendor_imports\skills`，待处置）
+- [x] 五机凭证补扫全部完成（2026-09-11，见 §4.5 第 5-7 条）：DXPC 未装 git 无凭证；
+      Mac / 240 复核无凭证
+- [ ] 240 两个 Gitee 仓（`mohu` / `MoYa`，裸 HTTPS）令牌撤销后已拉不动：
+      要么登记 240 的部署公钥改 SSH，要么留作旧快照
+- [ ] 云电脑主库 `state.vscdb` 明文令牌待脱敏（被运行中的 VS Code 独占锁定）
+- [ ] 云电脑另有 1 枚 GitHub token 明文躺在 `.codex\vendor_imports\skills`，待处置
 - [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
       外部真实视角实测通过（密钥通、纯口令被拒）
 - [ ] （可选）fail2ban 收紧：`maxretry` 5→3、`bantime` 600→3600
