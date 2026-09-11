@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-charters"
-version = "0.3.1"
+version = "0.3.2"
 description = "人写给 AI 智能体的书面规约（AGENTS.md）的结构化语料库"
 readme = "README.md"
 requires-python = ">=3.10"
