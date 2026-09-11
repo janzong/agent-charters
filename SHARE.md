@@ -39,6 +39,9 @@ taxonomy for them (9 categories), then published the annotations. No model was u
 to label anything; it's keyword/heading rules, so you can read exactly why any file
 got any tag.
 
+Percentages below are over the 511 files that actually contain instructions. Of the
+558 collected, 40 are near-empty (<40 bytes) and 7 are pure pointers ("see CLAUDE.md").
+
 Some things that surprised me:
 
 - "How to build/test/run" dominates: 87% of files have build/test content. That's the
@@ -156,6 +159,9 @@ false positives are the ones that actually hurt.
 于是把 GitHub 上能公开拿到的 558 份 AGENTS.md 抓下来（来自 558 个仓库），
 做了一次结构化标注，结果和直觉不太一样。
 
+558 份里有 47 份不含实质内容（40 份近乎空文件、7 份只是转发指针），
+下面所有百分比都以剩下的 **511 份**为分母。
+
 ## 方法：没有用大模型打标
 
 这一点必须先说清楚，因为它决定了结论的可靠边界。
@@ -176,8 +182,9 @@ false positives are the ones that actually hurt.
 
 **一、"怎么跑起来"压倒一切（87%）**
 
-构建、测试、运行的命令出现在 87% 的文件里，是第二位（git/PR 流程 66%）的
-两倍多。人给 AI 写的第一件事非常朴素：告诉它怎么编译、怎么测、怎么跑。
+构建、测试、运行的命令出现在 87% 的文件里，比第二位（git/PR 流程 66%）
+高出一截。（按标签出现次数算，是第二位 git 流程的 2.6 倍。）
+人给 AI 写的第一件事非常朴素：告诉它怎么编译、怎么测、怎么跑。
 
 **二、禁令排在很前面（65%）**
 
@@ -225,7 +232,7 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
     agent-charters compare 你的AGENTS.md
 
-它会把你的文件和 558 份基线对照，输出每个类别的覆盖率、你命中了哪几类，
+它会把你的文件和 511 份基线对照，输出每个类别的覆盖率、你命中了哪几类，
 以及**语料库里写得很多、而你一个字没写的类别**。
 
 写它的原因很实际：我总忘记把"怎么跑测试"写进去，而这是语料库里 87% 的人
@@ -233,8 +240,9 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 ## 边界（请认真看这段）
 
-- 分类由规则完成，**没有逐份人工校验**。抽样 12 份人工核对的结果是
-  准确 9、漏标 3、错标 0——方向是"宁可漏标，不做错标"，所以所有覆盖率都是下界
+- 分类由规则完成，**没有逐份人工校验**。v0.1 时抽样 12 份人工核对的结果是
+  准确 9、漏标 3、错标 0（v0.1.1 / v0.1.2 两轮改动未重做核对）——
+  方向是"宁可漏标，不做错标"，所以所有覆盖率都是下界
 - 候选仓库偏向 AI / agent 话题，**不能代表 GitHub 全体**
 - 中文样本仅 5%，任何按语言做的对比都缺统计效力
 - 数据集**不含任何原文全文**，只发布标注与统计特征，原文版权归各仓库作者
@@ -269,7 +277,7 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 几条比较意外的：
 
-- 87% 的文件写了构建/测试/运行的命令，是第二位（git 流程 66%）的两倍多
+- 87% 的文件写了构建/测试/运行的命令，比第二位（git 流程 66%）高出一截
 - "不要做什么"排在很前面（65%）——信任是从划线开始的
 - 坑/pitfall 只有 14%，是最低的一类，但这类知识恰恰没法从代码里反推
 - 有 7 份文件全文只有一句"见 CLAUDE.md"，纯做转发
@@ -298,7 +306,7 @@ https://github.com/janzong/agent-charters
 
 > 没有用模型打标，是规则匹配。九类关键词 + 跨语言强信号通道，
 > 每一行都记了 ruleset 版本，改了什么、什么时候改的都写在 STATE.md 里。
-> 局限我也写了：抽样 12 份人工核对，漏标 3、错标 0，所以覆盖率是下界。
+> 局限我也写了：v0.1 时抽样 12 份人工核对，漏标 3、错标 0，所以覆盖率是下界。
 
 **"这有什么用？"**
 
