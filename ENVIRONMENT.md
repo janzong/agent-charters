@@ -143,6 +143,18 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    只是这两个仓自 2026-06-26 起就没有新提交。240 上另有未提交改动（`MoYa`：
    `.moya/memory.json`、`src/tools/charRegistry.ts` + 两个日志；`mohu`：一个 `nul` 残留文件），
    未动。
+8. **更正一处假阳性（2026-09-11）**：此前记的"云电脑 `.codex\vendor_imports\skills` 里有一枚
+   GitHub token 明文"——**核实后不成立**。该目录里唯一"像凭据"的字符串是
+   `cloudflare-deploy` 技能文档里的**模板行**
+   `git clone https://${env.GITHUB_TOKEN}@github.com/user/repo.git`，
+   是教用户用环境变量的示例，不是真令牌。逐项复核：该仓库远端是
+   `https://github.com/openai/skills.git`（无 userinfo）；按真令牌形状
+   （`gh[pousr]_…` / `github_pat_…`）扫 `.codex`、`.continue`、`projects` 三处**均为 0 命中**；
+   `cmdkey /list` 无 git/github/gitee 条目；无 `%APPDATA%\GitHub CLI\hosts.yml`。
+   **教训**：拿"URL 里有 userinfo"当"有令牌"会命中文档模板与变量插值，
+   必须用**真令牌形状**二次判定。
+   （未跑完：`AppData\Roaming\Code\User` 的令牌形状扫描超时；但该目录今天已按
+   "带凭证 URL" 形态扫过并脱敏 142 处。）
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -257,7 +269,8 @@ git push origin main && git push gitee main && git push --tags
 - [x] 240 两个 Gitee 仓已改 SSH（2026-09-11，见 §4.5 第 7 条）：专用密钥 + 网页登记公钥，
       `ssh -T` 与两仓 `ls-remote` 默认路径均通过；本地与远端 HEAD 一致，无需拉取
 - [ ] 云电脑主库 `state.vscdb` 明文令牌待脱敏（被运行中的 VS Code 独占锁定）
-- [ ] 云电脑另有 1 枚 GitHub token 明文躺在 `.codex\vendor_imports\skills`，待处置
+- [x] 云电脑 `.codex\vendor_imports\skills` 的 "GitHub token 明文" **已核实为假阳性**
+      （是技能文档里的 `${env:GITHUB_TOKEN}` 模板行），无需处置，见 §4.5 第 8 条
 - [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
       外部真实视角实测通过（密钥通、纯口令被拒）
 - [ ] （可选）fail2ban 收紧：`maxretry` 5→3、`bantime` 600→3600
