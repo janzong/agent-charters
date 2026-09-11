@@ -37,6 +37,8 @@
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
 | 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main+3 tag+Release `v0.2` 已对齐，SSH 专用密钥 `id_gitee`） |
 | 首发 | ✅ 2026-09-11 知乎《我把 558 份 AGENTS.md 全抓下来标了一遍》<https://zhuanlan.zhihu.com/p/2081788025013539447> |
+| 第二站 | ⏳ 2026-09-11 21:33 **开源中国**定时发布（文案 `SHARE.md` §4.5；粘贴版 + 发布后补充评论见 `work/share-paste/oschina-article.txt`）。发布后要确认：是否进"待审核"、无痕窗口是否可见、5 个小标题是否设成标题样式 |
+| 站点情报 | 2026-09-11 站内搜 `AGENTS.md` 命中 6 篇博客，**清一色"教程/实战/心得"，没有同类数据资产**——差异化话术用"别人给观点，我给可复算的数据" |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | 0 star / 0 fork / 0 流量（知乎首发当天，尚未有回馈） |
