@@ -248,7 +248,7 @@ git push origin main && git push gitee main && git push --tags
 | 开源中国 | ✅ 通 | 登录/注册同一页 <https://www.oschina.net/home/login>：免密（**未注册手机号验证后自动注册**）/ 密码 / **Gitee 授权**三种；发文入口＝顶部「博客」（登录后 `my.oschina.net/u/<uid>/blog/write`），轻量位＝动弹 `/osc-tweet/`。非浏览器请求（curl）主页只返回 3.6KB 的 JS 外壳，**必须用真浏览器看** |
 | 掘金 | ✅ 通 | 200（V2EX 的另一个候选替代位，未细查发文流程） |
 | Gitee / B站 | ✅ 通 | 200 |
-| github.com 网页 | ✅ 通（10/10） | 2026-09-11 复测：仓库页连续 10 次全 200（早先单次测到 000 属瞬时，不是常态） |
+| github.com 网页 | ⚠️ **波动** | 2026-09-11 同日两次测量相反：中午前后仓库页 **10/10** 全 200；**约 40 分钟后**根路径与仓库页 **0/5**，失败在 **TCP 连接超时**（DNS 正常解析到 `20.205.243.166`）。⇒ 属**窗口型开关**，不是稳定通/稳定不通 |
 | **V2EX** | ❌ 阻断 | DNS 污染（本地/AliDNS 解析成 Facebook IP）+ **SNI 阻断**：直连真身（Cloudflare `172.66.133.207`）时裸 IP→403、换良性 SNI→301，唯独 SNI=`v2ex.com` 立即 `Connection reset by peer` ⇒ **hosts 无效，必须代理** |
 | **HN** | ❌ 阻断（仅 DNS） | DNS 污染，但直连真身 `209.216.230.207` + SNI 返回 **200** ⇒ **加 hosts 可访问/发帖**（IP 会变，发前复核） |
 | Reddit / X / Google | ❌ 阻断 | 直连真身亦 000 |
@@ -266,7 +266,7 @@ git push origin main && git push gitee main && git push --tags
 
 | 通道 | 状态 | 证据 |
 |---|---|---|
-| 网页 `github.com` | ✅ 通 | 仓库页连续 **10/10** 返回 200 |
+| 网页 `github.com` | ⚠️ 波动 | 同日：窗口期仓库页 **10/10**；40 分钟后 **0/5**，`Trying 20.205.243.166:443... Connection timed out`（TCP 层被丢包，DNS 正常） |
 | API `api.github.com` | ✅ 通 | 200；Release 资产元数据可读 |
 | 探针 `raw.githubusercontent.com` | ⚠️ 约 4/10 | 5 次里 200/000 交替；**能通但不可依赖** |
 | **`git` over HTTPS → GitHub** | ❌ 不可用 | 直连**超时无响应**（`exit=124`，HTTP/1.1 与 HTTP/2 都一样）；若本机 git 配了代理则**快速失败**（`exit=128`，报 `gnutls_handshake()` 之类的错） |
@@ -289,6 +289,11 @@ git push origin main && git push gitee main && git push --tags
 `curl -o /dev/null -w '%{http_code}\n' "https://github.com/janzong/agent-charters.git/info/refs?service=git-upload-pack"`（应 200）、
 `git ls-remote https://github.com/janzong/agent-charters HEAD`（预期仍失败）、
 `git config --global --get-regexp proxy`（有任何输出都先怀疑代理）。
+
+**采样纪律（2026-09-11 两次踩坑后定）**：本线路的 GitHub 可达性是**窗口型波动**，同一小时内即可翻转。
+当日两次误判都源于采样不足——先是用**单次** 000 得出"时通时断"，后用**连续 10 次**全 200 得出"稳定通"，
+而 40 分钟后 0/5。⇒ 对这类线路，**任何一次性采样都不足以支撑结论**；要下结论必须跑长时间序列
+（建议每 15 分钟一次、覆盖至少 24 小时），并记录**失败发生在哪一层**（DNS / TCP / TLS）。
 
 **对文案的影响**：不能写"GitHub 打不开"（不实），要写"**本线路 `git`-over-HTTPS 不稳，用 Gitee 镜像或 SSH**"——
 国外读者和用 OpenSSL 版 git 的人不受影响，说成"GitHub 被墙"会被人当场纠正。
