@@ -112,12 +112,12 @@ GENERATOR_RULES = [
 OUTPUT_LANG = {"en": 1, "zh": 0}
 
 
-def _bar(pct: int, width: int = 20) -> str:
+def _bar(pct: float, width: int = 20) -> str:
     filled = int(round(pct / 100 * width))
     return "█" * filled + "·" * (width - filled)
 
 
-def base_rates(df=None) -> dict[str, int]:
+def base_rates(df=None) -> dict[str, float]:
     from .extract import load_corpus
     return category_coverage(substantive(df if df is not None else load_corpus()))
 
@@ -144,7 +144,7 @@ def render(files: list[str], lang: str = "en", df=None) -> str:
     out += [head, "-" * 58]
     for c, pct in sorted(cov.items(), key=lambda kv: -kv[1]):
         mark = "" if not files else ("   " if c in mine else " ✗ ")
-        out.append(f"  {mark}{c:<13}{pct:>3}%  {_bar(pct)}")
+        out.append(f"  {mark}{c:<13}{pct:>5.1f}%  {_bar(pct)}")
     out.append("")
 
     out += ["每一项该问什么", "-" * 58]

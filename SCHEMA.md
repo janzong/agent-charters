@@ -1,7 +1,12 @@
-# 字段说明 SCHEMA v0.2
+# 字段说明 SCHEMA v0.3
 
 共 **30** 个字段（v0.2 起；v0.1.1 为 26 个）。**粒度：一行 = 一份 `AGENTS.md` 文件。**
 
+> **v0.3 变更**（相对 v0.2）：字段与行数**都不变**（558 行 × 30 列），只换了判定规则
+> `ruleset_v0.1.3`——修掉标题通道的子串误命中（`ci` 命中 `Deci|sions` 之类）。
+> 覆盖率随之变动：`build_test` 87.9% → **85.7%**，其余类别 ≤0.5pp，方向与排序未变。
+> **v0.2 与 v0.3 的覆盖率也不可直接比**（同一批文件、不同规则）。见 `LIMITATIONS.md` §11。
+>
 > **v0.2 变更**（相对 v0.1.1）：①新增 4 个"知识放在哪里"的结构字段（见下节）；
 > ②`is_pointer` 判定收紧（ruleset v0.1.2），转引用文件 11 → 7，可用于统计的实质文件
 > 507 → 511。**v0.1.1 与 v0.2 的覆盖率不可直接比较。**
@@ -85,7 +90,7 @@
 |---|---|---|
 | `extractor_version` | str | 抽取脚本版本 |
 | `taxonomy_version` | str | 分类法**定义**版本（九类是什么） |
-| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 标题词表（v0.2 数据集用的就是它） |
+| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 标题词表；v0.1.3 标题通道改词首匹配 + 删裸词 `make`（v0.3 数据集用的就是它） |
 | `used_fulltext_fallback` | bool | 是否启用了全文补救通道（说明该文件无有效标题） |
 | `strong_patterns` | bool | 是否启用了强模式通道。**v0.1.1 全行为 `true`**；`false` 用于复现 v0.1 基线 |
 
@@ -94,35 +99,47 @@
 
 ## 示例行
 
+> 取自数据集 v0.3 的真实一行（`google/benchmark`），不是编的。
+
 ```json
 {
   "repo_full_name": "google/benchmark",
   "file_path": "AGENTS.md",
-  "file_sha": "…",
-  "commit_date": "2026-09-08T04:11:07Z",
+  "file_sha": "72f2abe0f0621fec538fa753b0b5e3f69a706ec0",
+  "commit_date": "2026-09-10T08:35:13Z",
   "retrieved_at": "2026-09-10",
-  "repo_stars": 9200,
+  "repo_stars": 10392,
   "repo_language": "C++",
   "license": "Apache-2.0",
   "bytes": 1716,
-  "lines": 41,
-  "section_count": 5,
+  "lines": 45,
+  "section_count": 1,
   "size_tier": "medium",
   "doc_language": "en",
   "is_substantive": true,
   "is_pointer": false,
   "content_mode": "mixed",
-  "rule_signals": 7,
-  "categories": ["agent_meta", "boundaries"],
-  "category_counts": {"overview": 0, "structure": 0, "build_test": 0, "style": 0,
-                      "workflow": 0, "environment": 0, "boundaries": 2,
-                      "gotchas": 0, "agent_meta": 1},
-  "total_sections_tagged": 3,
+  "rule_signals": 3,
+  "categories": [
+    "build_test"
+  ],
+  "category_counts": {
+    "overview": 0,
+    "structure": 0,
+    "build_test": 1,
+    "style": 0,
+    "workflow": 0,
+    "environment": 0,
+    "boundaries": 0,
+    "gotchas": 0,
+    "agent_meta": 0
+  },
+  "total_sections_tagged": 1,
   "used_fulltext_fallback": false,
   "strong_patterns": true,
   "extractor_version": "extract_v1",
   "taxonomy_version": "taxonomy_v0.1",
-  "ruleset_version": "ruleset_v0.1.2",
+  "ruleset_version": "ruleset_v0.1.3",
   "routes_outward": false,
   "imperative_route": false,
   "hard_route": false,

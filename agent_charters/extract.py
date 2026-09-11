@@ -19,7 +19,7 @@ EXTRACTOR_VERSION = "extract_v1"
 
 # 数据集版本：决定发布文件名里的版本位（agent-charters-<DS>.parquet）。
 # 与工具版本解耦（D24）——工具在迭代，数据没变时不该跟着升。
-DATASET_VERSION = "v0.2"
+DATASET_VERSION = "v0.3"
 
 
 def doc_language(text: str) -> str:
@@ -157,8 +157,12 @@ def substantive(df: pd.DataFrame) -> pd.DataFrame:
     return df[df["is_substantive"] & ~df["is_pointer"]]
 
 
-def category_coverage(df: pd.DataFrame) -> dict[str, int]:
-    """各类别的覆盖率（百分比，整数）。"""
+def category_coverage(df: pd.DataFrame) -> dict[str, float]:
+    """各类别的覆盖率（百分比，一位小数）。
+
+    保留一位小数不是为了好看：整数取整会把 85.7% 印成 85%，与对外文案、数据集
+    报告里的数字对不上——本项目"可复算"的承诺要求工具打印的就是引用时该用的数。
+    """
     n = len(df) or 1
-    return {c: int(sum(1 for tags in df["categories"] if c in tags) * 100 / n)
+    return {c: round(sum(1 for tags in df["categories"] if c in tags) * 100 / n, 1)
             for c in CATEGORIES}

@@ -1,7 +1,7 @@
 """内容级抽取器：把 data/raw/full 的 558 份章程变成结构化数据集。
 
 用法: .venv/bin/python work/extract_v1.py
-输出: data/processed/agent_charters_v0.2.jsonl + data/processed/extract_report.md
+输出: data/processed/agent_charters_<DATASET_VERSION>.jsonl + data/processed/extract_report.md
 
 设计：
   - 分类/切分逻辑**不在本文件**，全部委托给 agent_charters.extract.analyze_text，
@@ -17,8 +17,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from agent_charters.extract import EXTRACTOR_VERSION, analyze_text  # noqa: E402
-from agent_charters.taxonomy import CATEGORIES, VERSION  # noqa: E402
+from agent_charters.extract import (DATASET_VERSION, EXTRACTOR_VERSION,  # noqa: E402
+                                    analyze_text)
+from agent_charters.taxonomy import CATEGORIES, RULESET_VERSION, VERSION  # noqa: E402
 
 # 抓取快照日期。判据 2 要求每行都带 retrieved_at（可追溯）。
 # 注意：这与 commit_date（仓库最后推送时间）不同——后者是内容的时间，前者是采集的时间。
@@ -56,12 +57,14 @@ def main() -> None:
         rec["extractor_version"] = EXTRACTOR_VERSION
         records.append(rec)
 
-        if rec["is_substantive"]:
+        # 统计口径＝与 agent_charters.extract.substantive() 一致（实质且非转引用，511 份），
+        # 否则报告里的"份数"会和 category_coverage()/对外文案差 7 份（口径不一，2026-09-12 修）。
+        if rec["is_substantive"] and not rec["is_pointer"]:
             for t in rec["categories"]:
                 cat_doc_count[t] += 1
                 cat_item_count[t] += rec["category_counts"][t]
 
-    out = outdir / "agent_charters_v0.2.jsonl"
+    out = outdir / f"agent_charters_{DATASET_VERSION}.jsonl"
     with out.open("w", encoding="utf-8") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
@@ -76,9 +79,9 @@ def main() -> None:
         f"（排除转引用后可用于分类统计 {len(usable)}），非实质 {n - len(valid)}",
         f"- 无任何类别标签的实质文件 {len(no_tag)}",
         f"- 内容重复文件（sha 出现>1 次）{sum(1 for r in records if r['duplicate_sha_count'] > 1)}",
-        f"- 分类规则版本 {VERSION} ｜ 抽取器 {EXTRACTOR_VERSION}"
+        f"- 分类规则版本 {VERSION} / {RULESET_VERSION} ｜ 抽取器 {EXTRACTOR_VERSION}"
         f" ｜ 强模式通道 on",
-        "", "## 类别分布（实质文件数 / 标签出现次数）", "",
+        "", f"## 类别分布（{len(usable)} 份可用样本的文件数 / 标签出现次数）", "",
     ]
     for c in CATEGORIES:
         lines.append(f"- `{c}`: {cat_doc_count[c]} 份 / {cat_item_count[c]} 次")

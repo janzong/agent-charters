@@ -6,8 +6,11 @@
 "build" 会命中 allow**Build**s。这些命中与词义无关。
 
 本脚本按"命中是否落在词首"重算一遍标题通道，统计：
-  - 有多少份文件的某个类别**只**靠这种误命中撑着（= 该标签应被拿掉的候选）
-  - 有多少份文件因此**少一个类别**
+  - 有多少个 (文件, 类别) 组合**只**靠这种误命中撑着（= 该标签应被拿掉的候选）
+  - 其中有多少**实际掉了标签**（其余靠正文/强模式通道兜住，标签仍在，只是证据变干净）
+
+⚠️ 必须对**出错的那一版快照**跑，不能对修好后的当前数据跑——所以默认读 v0.2 数据集。
+   用法: .venv/bin/python work/substring_audit.py [--dataset data/processed/agent-charters-v0.2.parquet]
 输出：work/audit/substring-impact.md
 """
 from __future__ import annotations
@@ -38,7 +41,20 @@ def clean(low: str, kw: str) -> bool:
 
 
 def main() -> int:
-    df = substantive(load_corpus())
+    import argparse
+
+    import pandas as pd
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dataset", default="data/processed/agent-charters-v0.2.parquet",
+                    help="被审计的那一版数据集（默认 v0.2＝出错的那版）")
+    ap.add_argument("--fixed", default="data/processed/agent-charters-v0.3.parquet",
+                    help="修好后的数据集，用来核对哪些标签实际掉了")
+    args = ap.parse_args()
+
+    df = substantive(pd.read_parquet(args.dataset))
+    fixed = {r["repo_full_name"]: set(r["categories"])
+             for _, r in substantive(pd.read_parquet(args.fixed)).iterrows()}
     dirty_only: list[tuple[str, str, str]] = []
     weak_only: list[tuple[str, str]] = []
     dirty_files: set[str] = set()
@@ -77,22 +93,28 @@ def main() -> int:
                 weak_only.append((r["repo_full_name"], cat))
                 weak_files.add(r["repo_full_name"])
 
+    lost = sorted({(repo, cat) for repo, cat, _ in dirty_only
+                   if repo in fixed and cat not in fixed[repo]})
     out = ["# 子串误命中的语料库级影响（只读评估）\n",
+           f"- 被审计数据集：`{args.dataset}`（出错的那版）；对照修复版：`{args.fixed}`",
            f"- 实质文件：{len(df)}",
            f"- **子串误命中**：{len(dirty_only)} 处 (文件, 类别) 组合，涉及 {len(dirty_files)} 份文件",
+           f"- 其中**实际掉标签**：{len(lost)} 处（其余靠正文/强模式通道兜住，标签仍在，只是证据变干净）",
            f"- **仅兜底通道**（全文规则/强模式，证据弱但不是子串问题）：{len(weak_only)} 处，涉及 {len(weak_files)} 份文件\n",
            "## 子串误命中按类别\n"]
     for c, n in per_cat.most_common():
         out.append(f"- {CAT_ZH[c]}：{n} 份")
-    out.append("\n## 子串误命中明细（文件 :: 类别 :: 误命中词@标题）\n")
+    out.append("\n## 子串误命中明细（文件 :: 类别 :: 误命中词@标题 :: 是否掉标签）\n")
+    lost_set = set(lost)
     for repo, cat, ev in dirty_only:
-        out.append(f"- {repo} :: {CAT_ZH[cat]} ← {ev}")
+        mark = "**掉**" if (repo, cat) in lost_set else "保留（另有正文/强模式证据）"
+        out.append(f"- {repo} :: {CAT_ZH[cat]} ← {ev} :: {mark}")
     out.append("\n## 仅兜底通道明细（不计入子串问题）\n")
     for repo, cat in weak_only:
         out.append(f"- {repo} :: {CAT_ZH[cat]}")
     p = pathlib.Path("work/audit/substring-impact.md")
     p.write_text("\n".join(out) + "\n", encoding="utf-8")
-    print(f"wrote {p}; 受影子串标签 {len(dirty_only)} 处 / 文件 {len(dirty_files)}")
+    print(f"wrote {p}; 受影子串标签 {len(dirty_only)} 处 / 文件 {len(dirty_files)}；实际掉标签 {len(lost)} 处")
     print(dict(per_cat))
     return 0
 

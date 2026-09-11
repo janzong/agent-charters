@@ -16,7 +16,21 @@ VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么
 #      把有实质规则的小章程也剔出统计。11 份人工标注：真 4 / 半 2 / 误 5。
 #   U2 `structure` 标题词表漏了"职责/归属"类标题：33 个这类章节里 9 个无标签。
 # 与 refs.py 第一版那个 87% 假阳性同源——用"出现过文件名"代理"内容为空"。
-RULESET_VERSION = "ruleset_v0.1.2"
+# v0.1.3（2026-09-12）两处收紧，都由一次"回头看证据行"触发（`work/substring_audit.py`）：
+#   (a) 标题通道由**子串**改为**词首**匹配：
+#       `ci` 命中 De**ci**sions / Prin**ci**ples、`script` 命中 Type**Script**、
+#       `build` 命中 allow**Build**s、`review` 命中 p**review**、`format` 命中 in**format**ion。
+#   (b) `build_test` 标题词表删掉裸词 `make`，只留 `makefile` 与具体目标（`make build` 等）。
+#       `make` 是普通英文动词：511 份里 12 份标题命中，逐条看 7 份是散文
+#       （"Make changes" / "Where to make changes" / "make sure" / "makes variables global"），
+#       只有 5 份真是构建工具——与 STRONG_PATTERNS 里"只认具体 make 目标"的既有口径对齐。
+#   实测影响（511 份可用样本，`work/v0.2-to-v0.3-diff.md`）：18 份文件各掉 1 个类别标签
+#   （build_test 11、agent_meta 2、environment 2、structure/style/workflow 各 1），**无一例新增**；
+#   `build_test` 覆盖率 87.9% → 85.7%，其余类别 ≤0.5pp。11 份掉 build_test 的逐份复核过：
+#   证据全是词中命中（principles / behavior / TypeScript / specification / description）。
+#   注意：词首**前缀**命中是规则有意为之（`convention`→Conventions、`boundar`→Boundary、
+#   `responsibilit`→Responsibility、`test`→Testing），不在本次收紧范围内。
+RULESET_VERSION = "ruleset_v0.1.3"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -51,7 +65,12 @@ HEAD_RULES: dict[str, list[str]] = {
                     "maintainer guide", "component map", "domain map",
                     "架构", "目录", "结构", "布局", "模块", "路径", "代码组织",
                     "分工", "职责", "归属", "负责人"],
-    "build_test":  ["build", "test", "command", "ci", "lint", "run", "make",
+    # v0.1.3：裸词 `make` 已删——它是普通英文动词（"Make changes"），
+    # 只留 makefile 与具体目标，与 STRONG_PATTERNS 的既有口径一致。
+    "build_test":  ["build", "test", "command", "ci", "lint", "run",
+                    "makefile", "make build", "make test", "make dev", "make run",
+                    "make install", "make lint", "make check", "make clean",
+                    "make all", "make command", "make target", "make ci",
                     "compile", "usage", "task", "script", "verification", "validation",
                     "quality check",
                     "构建", "测试", "命令", "运行", "编译", "校验",
@@ -216,6 +235,29 @@ def split_sections(text: str) -> list[tuple[str, str]]:
     return sections
 
 
+def heading_keyword_hits(low_head: str, kw: str) -> bool:
+    """标题关键词命中判定：**词首**匹配，不是任意子串。
+
+    为什么要这样：关键词表里既有完整词（`build`、`review`）也有**故意截断的词干**
+    （`convention`、`boundar`、`responsibilit`），所以不能用 `\b` 收口——那会把词干规则一起废掉。
+    可行的判据是"命中点必须落在词首"：
+
+      - 词首前缀命中算命中：`convention` → "Coding Conventions"、`test` → "Testing"、
+        `boundar` → "Critical Boundaries"（规则有意为之）
+      - 词中命中不算：`ci` → "De**ci**sions"、`script` → "Type**Script**"、
+        `build` → "allow**Build**s"、`review` → "p**review**"、`format` → "in**format**ion"
+
+    连字符视作词边界（"-" 不是字母）：`commit` 仍能命中 "Pre-Commit Requirements"。
+    中文关键词与含空格的多词短语不适用词边界，按原样的子串/短语匹配。
+    """
+    if not kw.isascii() or " " in kw:
+        return kw in low_head
+    for m in re.finditer(re.escape(kw), low_head):
+        if m.start() == 0 or not low_head[m.start() - 1].isalpha():
+            return True
+    return False
+
+
 def classify(heading: str, body: str) -> tuple[set[str], dict[str, list[str]]]:
     """双通道分类：标题强信号 + 正文弱信号。"""
     tags: set[str] = set()
@@ -223,7 +265,7 @@ def classify(heading: str, body: str) -> tuple[set[str], dict[str, list[str]]]:
     low_head = heading.lower()
     for cat, keys in HEAD_RULES.items():
         for k in keys:
-            if k in low_head:
+            if heading_keyword_hits(low_head, k):
                 tags.add(cat)
                 evidence.setdefault(cat, []).append(f"heading:{k}")
                 break

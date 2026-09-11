@@ -17,7 +17,7 @@ from .extract import (CATEGORIES, DATASET_VERSION, analyze_file,
                       category_coverage, load_corpus, substantive)
 
 
-def _bar(pct: int, width: int = 28) -> str:
+def _bar(pct: float, width: int = 28) -> str:
     filled = int(round(pct / 100 * width))
     return "█" * filled + "·" * (width - filled)
 
@@ -34,7 +34,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
     print("-" * 58)
     cov = category_coverage(sub)
     for c, pct in sorted(cov.items(), key=lambda x: -x[1]):
-        print(f"  {c:<13} {pct:>3}%  {_bar(pct)}")
+        print(f"  {c:<13} {pct:>5.1f}%  {_bar(pct)}")
 
     print("\n内容模式")
     print("-" * 58)
@@ -78,7 +78,7 @@ def cmd_compare(args: argparse.Namespace) -> int:
             mark = "✓" if c in rec["categories"] else "—"
             cnt = rec["category_counts"].get(c, 0)
             extra = f" x{cnt}" if cnt else ""
-            print(f"  {c:<14}{cov[c]:>5}%    {mark}{extra}")
+            print(f"  {c:<14}{cov[c]:>6.1f}%    {mark}{extra}")
 
     print("\n" + "=" * 52)
     absent = [c for c in CATEGORIES if c not in all_mine]
@@ -86,7 +86,7 @@ def cmd_compare(args: argparse.Namespace) -> int:
     if absent:
         print("\n你没有、但语料库写得最多的：")
         for pct, c in sorted(((cov[c], c) for c in absent), reverse=True):
-            print(f"  {c:<14} 语料库覆盖率 {pct}%")
+            print(f"  {c:<14} 语料库覆盖率 {pct:.1f}%")
     else:
         print("九类全覆盖——超过语料库平均（4.4 类）。")
     return 0

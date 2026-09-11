@@ -3,19 +3,19 @@
 - 总记录 558，其中实质内容 518（排除转引用后可用于分类统计 511），非实质 40
 - 无任何类别标签的实质文件 7
 - 内容重复文件（sha 出现>1 次）34
-- 分类规则版本 taxonomy_v0.1 ｜ 抽取器 extract_v1 ｜ 强模式通道 on
+- 分类规则版本 taxonomy_v0.1 / ruleset_v0.1.3 ｜ 抽取器 extract_v1 ｜ 强模式通道 on
 
-## 类别分布（实质文件数 / 标签出现次数）
+## 类别分布（511 份可用样本的文件数 / 标签出现次数）
 
 - `overview`: 178 份 / 240 次
-- `structure`: 306 份 / 552 次
-- `build_test`: 449 份 / 1874 次
-- `style`: 291 份 / 662 次
-- `workflow`: 339 份 / 715 次
-- `environment`: 229 份 / 521 次
-- `boundaries`: 336 份 / 690 次
+- `structure`: 305 份 / 546 次
+- `build_test`: 438 份 / 1558 次
+- `style`: 290 份 / 656 次
+- `workflow`: 337 份 / 707 次
+- `environment`: 227 份 / 515 次
+- `boundaries`: 335 份 / 689 次
 - `gotchas`: 72 份 / 90 次
-- `agent_meta`: 189 份 / 277 次
+- `agent_meta`: 186 份 / 274 次
 
 ## content_mode 分布
 

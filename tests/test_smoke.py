@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from agent_charters import (analyze_file, analyze_text, category_coverage,  # noqa: E402
                             load_corpus, substantive)
+from agent_charters.extract import DATASET_VERSION  # noqa: E402
 from agent_charters.taxonomy import CATEGORIES  # noqa: E402
 
 RAW = ROOT / "data" / "raw" / "full"
@@ -89,9 +90,48 @@ def test_non_substantive_marker():
     ("Please make sure to double check.", "build_test"),      # make sure ≠ make test
     ("Gradle 9.3.1 and AGP 9.1.1 are used.", "build_test"),   # 版本号 ≠ 构建命令
     ("记录输出日志、失败原因。", "gotchas"),                    # 记录失败原因 ≠ 坑
+    # v0.1.3 删裸词 make 的实测依据：511 份里 12 个标题命中，7 个是散文。
+    ("Never Make Legal Decisions as an Agent", "build_test"),  # Make ≠ make build
+    ("Where to make changes", "build_test"),                   # make changes ≠ make
 ])
+
 def test_known_false_positives_stay_out(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
+
+
+# U3（ruleset_v0.1.3）：标题通道曾是**纯子串**匹配，于是 "ci" 命中了 "De**ci**sions"、
+# "script" 命中了 "Type**Script**"。实测 511 份里 18 份文件各掉 1 个类别标签（无一例新增），
+# `build_test` 覆盖率因此从 87.9% 回到 85.7%（v0.2 的公开数字偏乐观）。
+# 下面两条是相反方向的锁：词中命中必须消失，**词首前缀命中必须保留**（那是规则有意为之）。
+
+@pytest.mark.parametrize("heading, forbidden", [
+    ("Core development principles", "build_test"),             # ci ⊂ principles
+    ("Types & TypeScript", "build_test"),                      # script ⊂ TypeScript
+    ("Show uncommitted changes", "workflow"),                   # commit ⊂ uncommitted
+    ("Learned Information (Dotcom)", "style"),                  # format ⊂ information
+    ("3. open the preview", "workflow"),                        # review ⊂ preview
+    ("allowBuilds", "build_test"),                              # build ⊂ allowBuilds
+])
+def test_substring_hits_do_not_tag(heading, forbidden):
+    """词中命中不算命中——这是 v0.1.3 修掉的那一类假阳性。"""
+    assert forbidden not in analyze_text(f"# {heading}\n\n正文。")["categories"]
+
+
+@pytest.mark.parametrize("heading, expected", [
+    ("Coding Conventions", "style"),            # 截断词干：convention
+    ("Critical Boundaries", "boundaries"),      # 截断词干：boundar
+    ("Code Ownership Map", "structure"),        # 截断词干：ownership
+    ("Testing", "build_test"),                  # 词首前缀：test
+    ("Running Tests", "build_test"),            # 词首前缀：run / test
+    ("Pre-Commit Requirements", "workflow"),    # 连字符是词边界：commit
+    ("CI", "build_test"),                       # 独立词仍要命中
+    ("`make` commands", "build_test"),          # 删裸词 make 后，这些写法仍要抓住
+    ("Makefile Build (Alternative)", "build_test"),
+    ("Prerequisites before `make dev`", "build_test"),
+])
+def test_word_start_prefix_still_tags(heading, expected):
+    """收紧词中命中时，不能把有意为之的词干/前缀规则一起废掉。"""
+    assert expected in analyze_text(f"# {heading}\n\n正文。")["categories"]
 
 
 # U1（v0.1.2）：`is_pointer` 曾被"提到 ≥2 个 .md 文件名"命中——于是"有实质规则但引用了
@@ -226,7 +266,7 @@ def test_brief_lists_every_category_with_live_base_rates(corpus):
     cov = category_coverage(substantive(corpus))
     for c in CATEGORIES:
         assert c in out, c
-        assert f"{cov[c]:>3}%" in out, f"{c} 的比例与语料库不一致"
+        assert f"{cov[c]:>5.1f}%" in out, f"{c} 的比例与语料库不一致"
     assert out.count("【") == len(CATEGORIES)
 
 
@@ -343,11 +383,11 @@ def test_jsonl_is_byte_identical_across_hash_seeds(tmp_path):
                        cwd=ROOT, env=env, check=True,
                        stdout=subprocess.DEVNULL)
         rows = [json.loads(l) for l in
-                (outdir / "agent_charters_v0.2.jsonl").read_text().splitlines()]
+                (outdir / f"agent_charters_{DATASET_VERSION}.jsonl").read_text().splitlines()]
         import pandas as pd
         buf = outdir / "x.parquet"
         pd.DataFrame(rows).to_parquet(buf, index=False, compression="zstd")
-        outs.append(((outdir / "agent_charters_v0.2.jsonl").read_bytes(),
+        outs.append(((outdir / f"agent_charters_{DATASET_VERSION}.jsonl").read_bytes(),
                      buf.read_bytes()))
     assert outs[0][0] == outs[1][0], "jsonl 不确定：同数据不同哈希种子字节不同"
     assert outs[0][1] == outs[1][1], "parquet 不确定：同数据不同哈希种子字节不同"

@@ -1,12 +1,28 @@
 # 对外分享包 SHARE
 
 > 给作者（人）用的发帖文案。**机器发帖会被当 spam，必须你自己发。**
-> 这不是数据集的组成部分，发完可以删；留着也行——下次发 v0.2 时能复用结构。
-> 文案里的每个数字都可由 `data/processed/agent-charters-v0.2.parquet` 复算。
+> 这不是数据集的组成部分，发完可以删；留着也行——下次发版时能复用结构。
+> 文案里的每个数字都可由 `data/processed/agent-charters-v0.3.parquet` 复算。
+
+## 数字口径（当前，2026-09-12）
+
+**对外一律用 `build_test` = 85.7%（438/511），数据集 v0.3 / `ruleset_v0.1.3`。**
+
+这个数字改过两次，原因和留痕都在 `LIMITATIONS.md` §11：
+
+| 版本 | 数字 | 怎么来的 |
+|---|---|---|
+| v0.2（错误） | 87.9% (449) | 标题通道子串匹配，`ci` 命中了 `Deci\|sions` 这类词 |
+| 09-12 我口头给的更正 | 84.7% (433) | **推算错误**：拿"误命中组合数 16"当"会掉标签的份数" |
+| v0.3（实测） | **85.7% (438)** | 修好后逐份比对两份数据集，真正掉标签的是 11 份 |
+
+**已按 87% 发布**：知乎（§3）、开源中国（§4.5）。
+**已按 84.7% 发布**：掘金（§4.6）。
+三站的更正话术见 §7；**未发布的渠道（HN / Reddit / V2EX）直接用 85.7%。**
 
 ## 0. 发布前 checklist
 
-- [ ] 链接：`https://github.com/janzong/agent-charters`（Release `v0.2`）
+- [ ] 链接：`https://github.com/janzong/agent-charters`（Release `v0.3`）
 - [ ] 先自己走一遍 README 的 `compare` 例子，评论里有人问细节时要能现场回答
 - [ ] 只发你能守得住的量：一次 2 个渠道，隔 3–5 天再发下一批。
       同一天到处贴 = 看起来像推广机器人
@@ -46,9 +62,9 @@ Percentages below are over the 511 files that actually contain instructions. Of 
 
 Some things that surprised me:
 
-- "How to build/test/run" dominates: 87% of files have build/test content. That's the
+- "How to build/test/run" dominates: 85.7% of files have build/test content. That's the
   single thing people most want their agent to know.
-- Prohibitions come second (65%), ahead of architecture and style. People draw lines
+- Prohibitions come second (65.9%), ahead of architecture and style. People draw lines
   before they hand over autonomy.
 - "Gotchas" is the rarest category at 14% — yet it's the knowledge you can't re-derive
   by reading the code. The most useful thing is the least written.
@@ -83,7 +99,7 @@ versions. Happy to hear what categories I got wrong — that's the most useful f
 **标题**
 
 ```
-[OC] I annotated 558 AGENTS.md files from public repos — 87% document build/test commands, only 14% warn about pitfalls
+[OC] I annotated 558 AGENTS.md files from public repos — 86% document build/test commands, only 14% warn about pitfalls
 ```
 
 **正文**
@@ -102,15 +118,15 @@ Numbers worth a look (511 substantive files):
 
 | category | share |
 |---|---|
-| build/test/run commands | 87% |
-| git/PR/release workflow | 66% |
-| prohibitions & boundaries | 65% |
-| architecture & file layout | 59% |
-| code style | 56% |
-| environment & toolchain | 44% |
-| AI-specific behavior rules | 36% |
-| project overview | 34% |
-| pitfalls / gotchas | 14% |
+| build/test/run commands | 85.7% |
+| git/PR/release workflow | 65.9% |
+| prohibitions & boundaries | 65.6% |
+| architecture & file layout | 59.7% |
+| code style | 56.8% |
+| environment & toolchain | 44.4% |
+| AI-specific behavior rules | 36.4% |
+| project overview | 34.8% |
+| pitfalls / gotchas | 14.1% |
 
 The 14% is the interesting one for me. "Don't use `bun install`, it breaks the
 lockfile" is knowledge that no one can recover by reading the code, and it's the
@@ -144,6 +160,10 @@ false positives are the ones that actually hurt.
 ---
 
 ## 3. 知乎（中文长文）
+
+> **状态：已发布 2026-09-11**（<https://zhuanlan.zhihu.com/p/2081788025013539447>）。
+> 正文里的 87% / 2.6 倍是当时的数字；**引用请用 §7 的 85.7%**。下面保留原文不改，
+> 目的是留档"当时到底发了什么"。评论区更正见 §7。
 
 **标题**
 
@@ -279,9 +299,9 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 几条比较意外的：
 
-- 87% 的文件写了构建/测试/运行的命令，比第二位（git 流程 66%）高出一截
-- "不要做什么"排在很前面（65%）——信任是从划线开始的
-- 坑/pitfall 只有 14%，是最低的一类，但这类知识恰恰没法从代码里反推
+- 85.7% 的文件写了构建/测试/运行的命令，比第二位（git 流程 65.9%）高出一截
+- "不要做什么"排在很前面（65.6%）——信任是从划线开始的
+- 坑/pitfall 只有 14.1%，是最低的一类，但这类知识恰恰没法从代码里反推
 - 有 7 份文件全文只有一句"见 CLAUDE.md"，纯做转发
 - 中文只有 5%，低得不太正常
 
@@ -303,6 +323,9 @@ https://github.com/janzong/agent-charters
 ---
 
 ## 4.5 开源中国（中文，项目介绍体）
+
+> **状态：已发布 2026-09-12**（<https://my.oschina.net/u/9764589/blog/19758304>）。
+> 正文数字是当时的 87%；评论区已贴更正（84.7%，事后看也偏低），**正确值 85.7%，见 §7**。
 
 **为什么单独一版**：OSC 的读者是开源/开发者，打开就想知道"这是什么项目、能干嘛、怎么装"。
 知乎那种"我发现了一个现象"的悬念开头在这里会显得绕——所以这一版是**项目介绍体**：
@@ -386,13 +409,17 @@ file_sha、采集日期、抽取器版本和规则集版本，任何人都能复
 
 ## 4.6 掘金（中文长文，Markdown 原生）
 
+> **状态：已发布 2026-09-12**（<https://juejin.cn/post/7684156210712166442>）。
+> 正文用的是**修正后**的 84.7% —— 事后实测应为 **85.7%**（84.7% 是我推算错的那一版，
+> 见 `LIMITATIONS.md` §11.4）。**下面保留已发布的原文不改**，更正话术见 §7。
+
 **为什么单独一版**：掘金编辑器原生吃 Markdown——**切到「Markdown 模式」直接粘源码即可**，
 标题、代码块、链接都不会被吃掉（OSC 那种"编辑器吃 Markdown"的问题在这里不存在，见 `STATE.md` §2 末列的遗留）。
 所以这一版的正文是**真 Markdown**，生成时用 `--raw`（不剥标记、不合并段落），正文里的代码块原样保留。
 
-**数字口径（重要）**：这一版用**修正后**的 84.7%，不用 87%。
-87% 是标题子串误命中的高估值（实测见 `LIMITATIONS.md` §11）。
-知乎、开源中国两版已按 87% 发出、用评论区更正；**未发布的渠道一律用 84.7%**。
+**数字口径（重要）**：这一版发布时用的是 84.7%（**那是推算值，事后实测为 85.7%**）。
+87% 是标题子串误命中的高估值（`LIMITATIONS.md` §11）；84.7% 是把"误命中组合数"当
+"会掉标签的份数"推算出来的，同样不对。**未发布的渠道一律用 85.7%。**
 
 **发在哪**：<https://juejin.cn> → 写文章 → 切「Markdown 模式」。
 分类建议 **后端**（或「人工智能」）；标签最多 5 个：`AGENTS.md`、`AI`、`开源`、`数据集`、`效率工具`。
@@ -552,6 +579,15 @@ agent-charters compare 你的AGENTS.md
 > 只发布衍生标注与统计特征，不含原文全文。要原文请用 repo + file_sha 自行取回。
 > 数据 CC-BY-4.0，代码 MIT。
 
+**"你的数字改了两次（87% → 84.7% → 85.7%），还能信吗？"**
+
+> 能信的是**最后一个**，因为它是唯一一个"跑出来的"。前两个都是**推算**：
+> 87.9% 是没发现子串误命中时的实测值；84.7% 是我发现 bug 后用"有多少个误命中组合"
+> 推算出来的掉幅——方向对、幅度没验。修完之后逐份比对两份数据集，真正掉标签的是 11 份，
+> 所以是 438/511 = 85.7%。
+> 教训我写进了 `LIMITATIONS.md` §11.4：**推算的幅度不许直接进对外文案，必须先跑一遍修复版再比差集。**
+> 修完的审计脚本现在同时打印"误命中组合数"和"实际掉标签数"，两者不再混用。
+
 **"数据能复现吗？"**
 
 > 能。每行有 file_sha（内容指纹）和 retrieved_at（采集日期）。
@@ -562,6 +598,74 @@ agent-charters compare 你的AGENTS.md
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破
-- 记下所有"这个标错了"的反馈 → 直接进 v0.2 的分类法修订清单
+- 记下所有"这个标错了"的反馈 → 直接进下一版分类法修订清单
 - 如果有人在别处引用/分析这份数据 → 立刻记进 STATE.md 第 2 节"外部信号"，
   这是比 star 更硬的证据
+- **已发布的数字更正要及时、要写清"我怎么错的"**：§7 是三站的更正话术；
+  更正本身也是可信度的一部分，藏起来比说错更伤
+
+---
+
+## 7. 数字更正话术（三站，2026-09-12 起）
+
+**背景一句话**：`build_test` 的正确值是 **85.7%（438/511）**，不是我先前说的 87%，
+也不是我推算的 84.7%。两处都错了，原因不同，都写在 `LIMITATIONS.md` §11。
+
+### 7.1 知乎（追加在首发那条更正评论下面）
+
+```
+再更正一次，这次是我自己的推算错。
+
+上次我说"87% 偏乐观，正确值 84.7%（433/511）"——84.7% 这个数错了，
+正确值是 85.7%（438/511）。
+
+原因：我拿审计脚本打印的"误命中组合数（构建测试 16 处）"直接相减，
+当成"会掉标签的文件数"。但修好之后逐份比对两份数据集，真正掉标签的是 11 份
+（其余 5 处被正文规则或强模式通道兜住，标签仍成立，只是证据列变干净）。
+449 − 11 = 438。
+
+这个数现在是跑出来的，不是估的：仓库里有 work/substring_audit.py（对出错的那版
+快照跑）和 work/dataset_diff.py（两份数据集逐行比差集），任何人都能复算。
+教训写在 LIMITATIONS.md §11.4：推算出来的幅度，不许直接进对外文案。
+
+数据集 v0.3（ruleset_v0.1.3）已随修正发布，工具打印的也是 85.7% 了。
+```
+
+### 7.2 开源中国（追加评论，≤500 字）
+
+```
+再更正一次：上次那条评论里我说"正确值 84.7%（433/511）"，这个数是我推算的，错了。
+正确值是 85.7%（438/511）。
+
+为什么错：我拿"误命中组合数"（构建测试 16 处）直接当"会掉标签的文件数"来减。
+实际修完逐份比对两份数据集，真正掉标签的是 11 份——另外 5 处的标签被正文规则或
+强模式通道兜住了，类别仍成立，只是证据列从"ci@Decisions"这种变成干净证据。
+449 − 11 = 438。
+
+所以完整链条是：87.9%（v0.2，含子串误命中）→ 84.7%（我推算错）→ 85.7%（实测）。
+数据集 v0.3 / ruleset_v0.1.3 已发布，仓库里 work/substring_audit.py 与
+work/dataset_diff.py 可复算，LIMITATIONS.md §11 记了全过程和教训。
+```
+
+### 7.3 掘金（追加评论）
+
+```
+补一处更正：文中"84.7%（433/511）"是我推算的值，错了，正确值是 85.7%（438/511）。
+
+文中那处说明"工具当前版本仍打印 87%"也已经不成立——规则修正已随数据集
+v0.3 / ruleset_v0.1.3 发布，工具现在打印的就是 85.7%。
+
+错在哪：我拿审计脚本打印的"误命中组合数"（构建测试 16 处）直接减，
+当成"会掉标签的文件数"。修完逐份比对两份数据集，真正掉标签的是 11 份
+（另 5 处被正文/强模式通道兜住，标签仍成立、只是证据变干净）。449 − 11 = 438。
+
+全过程、复算脚本和教训都在仓库 LIMITATIONS.md §11 与 work/ 下。
+```
+
+### 7.4 若有人追问"那 87% 到底错在哪"
+
+- 标题通道曾是纯子串：`ci` 命中 `Deci|sions`、`script` 命中 `Type|Script`、
+  `build` 命中 `allow|Builds`；另有裸词 `make` 把 `Make changes` 算成构建。
+- 修法：命中点必须落在词首（保留词首前缀），并删掉裸词 `make`。
+- 影响：511 份里 23 处 (文件, 类别) 组合的标签只靠误命中撑着 → 18 处掉标签（无一例新增）。
+- 复算：`work/substring_audit.py`（对 v0.2 快照跑）+ `work/dataset_diff.py`。
