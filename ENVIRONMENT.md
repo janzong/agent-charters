@@ -93,7 +93,11 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
 
 1. 一开始 Gitee 的 SSH 不通（`Host gitee.com` 没配 `IdentityFile`，也没有公钥登记）。
    首次推送是**借用 `mohu` 远端 URL 里嵌的 Gitee token** 走 HTTPS 完成的。
-   ⚠️ 那枚 token 明文躺在 `mohu/.git/config` 里——**建议换 SSH，长期看应轮换**。
+   **已处理（同日）**：巡检发现本机 **6 个仓库**（`mohu` / `research_mas` /
+   `research-mas-v2` / `rmas-v3` / `rmas-v3-data` / `zhira`）的远端 URL 里嵌着**同一枚**明文
+   令牌，`moya` 是裸 HTTPS；已全部换成 `git@gitee.com:…`，7 仓 `ls-remote HEAD` 实测通过，
+   本机已无凭证落盘。⚠️ **那枚旧令牌在 Gitee 侧仍有效，需轮换**；
+   **轮换前先查 148**——生产机若用同一枚拉取，换掉会断部署。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -160,7 +164,8 @@ git push origin main && git push gitee main && git push --tags
       见第 7 节）
 - [ ] ModelScope 账号（若确定用其做主数据集站）
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
-- [ ] `mohu` 远端里那枚明文 Gitee token：换 SSH + 轮换（见第 4.5 节）
+- [ ] 旧 Gitee 令牌轮换：**先确认 148 没有用同一枚**，再在
+      <https://gitee.com/profile/personal_access_tokens> 撤销（见第 4.5 节）
 
 **已定**：项目名 `agent-charters` / 智能体章程；
 版本规则为两节（小数位递增＝只增不改、旧结论仍成立；整数位递增＝定义变更、旧结论需重验；
