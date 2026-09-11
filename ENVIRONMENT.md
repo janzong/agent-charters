@@ -133,6 +133,16 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    **裸 HTTPS 远端（本身不含令牌）**，远端自 2026-06-26 后未更新，令牌撤销后
    **非交互拉取已失效**（`wincredman` 已无可用凭证）——**待定**：给 240 登记一枚 Gitee
    部署公钥改走 SSH，或就当 6 月的旧快照留着。
+   **已处置（同日，选项 A）**：在 240 生成专用密钥 `%USERPROFILE%\.ssh\id_gitee`
+   （ed25519，注释 `Janz-240-gitee-20260911`，指纹 `SHA256:DShTHbsh5YLLyoQUGo6vbJ8GleM6YbqIPUZjCL4m31U`，
+   **公钥由用户在网页登记**——三枚令牌已删，无法再走 API 代登记）；
+   `~/.ssh/config` 追加 `Host gitee.com`（`IdentityFile ~/.ssh/id_gitee` + `IdentitiesOnly`，
+   原 251 / 251-lan 两段未动）；两仓远端改 `git@gitee.com:janzong/{mohu,MoYa}.git`。
+   **复验（默认路径）**：`ssh -T git@gitee.com` → `Hi janz(@janzong)!`；两仓 `ls-remote` 通，
+   且**本地 HEAD 与远端逐一相同**（`mohu 849e316` / `MoYa 2038266`）——并不落后，
+   只是这两个仓自 2026-06-26 起就没有新提交。240 上另有未提交改动（`MoYa`：
+   `.moya/memory.json`、`src/tools/charRegistry.ts` + 两个日志；`mohu`：一个 `nul` 残留文件），
+   未动。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -244,8 +254,8 @@ git push origin main && git push gitee main && git push --tags
       已全部删除，删后全机复验通过（见第 4.5 节第 5 条）
 - [x] 五机凭证补扫全部完成（2026-09-11，见 §4.5 第 5-7 条）：DXPC 未装 git 无凭证；
       Mac / 240 复核无凭证
-- [ ] 240 两个 Gitee 仓（`mohu` / `MoYa`，裸 HTTPS）令牌撤销后已拉不动：
-      要么登记 240 的部署公钥改 SSH，要么留作旧快照
+- [x] 240 两个 Gitee 仓已改 SSH（2026-09-11，见 §4.5 第 7 条）：专用密钥 + 网页登记公钥，
+      `ssh -T` 与两仓 `ls-remote` 默认路径均通过；本地与远端 HEAD 一致，无需拉取
 - [ ] 云电脑主库 `state.vscdb` 明文令牌待脱敏（被运行中的 VS Code 独占锁定）
 - [ ] 云电脑另有 1 枚 GitHub token 明文躺在 `.codex\vendor_imports\skills`，待处置
 - [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
