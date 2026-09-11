@@ -35,7 +35,7 @@
 | 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（v0.3.1） |
 | 测试 | ✅ `pytest` 34 项通过（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和"三道刹车） |
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
-| 国内镜像 | ✅ `gitee` 远端 `https://gitee.com/janzong/agent-charters`（**私有**，main+3 tag 已对齐；SSH 未配，见 `ENVIRONMENT.md` §4.5） |
+| 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main+3 tag+Release `v0.2` 已对齐，SSH 专用密钥 `id_gitee`） |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | 0 star / 0 fork / 0 流量 |
