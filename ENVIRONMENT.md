@@ -102,7 +102,12 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    `research_mas` 是另一枚且已失效。实测 148 的 `rmas-v3` 的 `git pull` 正靠它跑，
    故当时**不能直接撤**。处理：在 148 生成专用密钥 `~/.ssh/id_gitee`、登记 Gitee、
    4 仓远端改 SSH、`ls-remote`+`fetch` 全绿（**只 fetch 不 pull**，避免变相部署）、
-   工作区 HEAD 未动。240 / Mac 扫描无 Gitee 令牌；云电脑 / DXPC 离线未扫。
+   工作区 HEAD 未动。240 / Mac 扫描无 Gitee 令牌。
+   **已补做（同日）**：云电脑（反隧道 `127.0.0.1:2222`，`administrator`）有 5 个仓库
+   （`MoHu` / `MoYa` / `rmas-v3` / `rmas-v3-data` / `zhira`）带凭证，其中 3 枚 Gitee 令牌已失效；
+   已在云电脑本地生成专用密钥 `~/.ssh/id_gitee`（key id `6048616`，**登记动作在目标机本地调 API 完成，令牌不出机器**）、
+   5 仓远端改 SSH，`ls-remote` + `fetch` 全绿、HEAD 未动；云电脑上无任何自动化在用这些令牌。
+   **只剩 DXPC(2224) 离线未扫。**
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -122,6 +127,47 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
 ```bash
 git push origin main && git push gitee main && git push --tags
 ```
+
+## 4.6 SSH 服务端加固（2026-09-11）
+
+做凭证巡检时顺带看了 251 的 sshd，发现它对公网开放（路由器把内网 22 映射到一枚 DDNS
+域名的非标端口），而 `PasswordAuthentication` 是 `yes`；机器上**唯一有口令的账号是 `janz`**。
+近 23 天 `auth.log` 累计 **9.1 万次**爆破尝试（来源 `45.148.10.173` / `193.32.162.39` 等）。
+`fail2ban` 本来就装着且在生效（累计 ban 31 个 IP），但慢速爆破挡不住。
+
+**处置结果**（`sudo sshd -T` 前后对比）：
+
+| 项 | 之前 | 之后 |
+|---|---|---|
+| 公网来源 `PasswordAuthentication` | `yes` | **`no`**（只许公钥） |
+| 内网 / 回环 `PasswordAuthentication` | `yes` | `yes`（保留兜底，防自锁） |
+| `PermitRootLogin` | `without-password` | `no`（root 本无口令、无授权公钥） |
+| `MaxAuthTries` / `LoginGraceTime` | `6` / `120` | `3` / `30` |
+
+落点：`/etc/ssh/sshd_config.d/99-fleet-hardening.conf`（全局值）+ 主配置**末尾**的
+`Match Address 127.0.0.0/8,::1/128,192.168.31.0/24`（内网口令兜底）。
+原文件备份 `/etc/ssh/sshd_config.bak-20260911-harden`；监听端口与监听地址**未动**。
+
+**⚠️ 踩坑（重要）**：Ubuntu 的 `sshd_config` 首行就是 `Include /etc/ssh/sshd_config.d/*.conf`，
+所以 **`Match` 块不能写进 drop-in 文件**——Match 会一直作用到下一个 Match 或文件结尾，
+把主配置后面的指令全吞进 Match 上下文，`sshd -t` 直接报错。正确做法：
+**drop-in 只放全局值，Match 追加到主配置末尾**。
+
+**验证**（四条都做了，不靠猜）：
+
+1. `sudo sshd -T -C user=janz,addr=<公网IP>,host=251,laddr=192.168.31.251,lport=22` →
+   `passwordauthentication no`；把 addr 换成 `192.168.31.240` → `yes`（分支选择正确）
+2. 本机回环密钥登录通过；`240 → 251` 跨机密钥登录实测通过（重载后 sshd 无报错）
+3. **外部真实视角**：从云电脑走公网域名 + 非标端口 —— 密钥登录 `OK`，
+   纯口令尝试返回 `Permission denied (publickey)`，`auth.log` 对应两行已确认
+4. `fail2ban` 未误封（探测次数远低于 `maxretry=5`）
+
+**回滚**：`sudo rm /etc/ssh/sshd_config.d/99-fleet-hardening.conf`，去掉主配置末尾 Match 块
+（或直接恢复备份）→ `sudo sshd -t && sudo systemctl reload ssh`。
+
+**影响面**：251 上只有 `janz` 一个人类账号；`root` / `nova` 均无口令、无授权公钥。
+用户偶发从云电脑用口令登录（近 30 天 7 次），但那台机器公钥登录有 729 次，
+密钥本来就在，切换后实测无感。
 
 ## 5. 数据集发布通道
 
@@ -171,7 +217,11 @@ git push origin main && git push gitee main && git push --tags
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
 - [ ] 旧 Gitee 令牌撤销：251 与 148 均已不再依赖，可在
       <https://gitee.com/profile/personal_access_tokens> 撤销（API 无撤销端点，须网页操作，见第 4.5 节）
-- [ ] 云电脑(2222) / DXPC(2224) 上线后补扫 Gitee 凭证（240/Mac 已扫，无）
+- [ ] DXPC(2224) 上线后补扫 Gitee 凭证（240/Mac/云电脑已扫；云电脑另有 1 枚 GitHub token
+      明文躺在 `.codex\vendor_imports\skills`，待处置）
+- [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
+      外部真实视角实测通过（密钥通、纯口令被拒）
+- [ ] （可选）fail2ban 收紧：`maxretry` 5→3、`bantime` 600→3600
 
 **已定**：项目名 `agent-charters` / 智能体章程；
 版本规则为两节（小数位递增＝只增不改、旧结论仍成立；整数位递增＝定义变更、旧结论需重验；
