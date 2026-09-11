@@ -24,7 +24,7 @@ import re
 import pandas as pd
 
 from agent_charters.extract import load_corpus, substantive
-from agent_charters.taxonomy import STRONG_PATTERNS, classify, split_sections
+from agent_charters.taxonomy import STRONG_PATTERNS, classify, classify_fulltext, split_sections
 
 CATS = ["overview", "structure", "build_test", "style", "workflow",
         "environment", "boundaries", "gotchas", "agent_meta"]
@@ -45,6 +45,14 @@ def evidence_for(text: str, tags: set[str]) -> dict[str, list[str]]:
             ev[c].append(f"{head or '(无标题段)'} ← {terms}" if terms else (head or "(无标题段)"))
     for c in tags:
         if ev[c]:
+            continue
+        # 兜底顺序必须与抽取器一致：先全文规则通道，再强模式通道。
+        # 2026-09-11 修：先前漏了 classify_fulltext 这一档，导致靠全文规则打上的标签
+        # 在工作表里显示成"空证据"（如 jantimon/web-performance-debugger 的"流程"），
+        # 会把人误导成"错标"。
+        ft, _ = classify_fulltext(text)
+        if c in ft:
+            ev[c].append("[全文规则命中]（无标题/正文信号时的兜底通道）")
             continue
         for p in STRONG_PATTERNS.get(c, []):
             if re.search(p, text, re.I):
@@ -80,6 +88,9 @@ def main() -> int:
     L.append("> 判定口径：**准确** = 该类确实存在；**漏标** = 文件里明明有这类内容但没打上；"
              "**错标** = 打上了但文件里没有这类内容。\n")
     L.append("> 每组判定完，把汇总填进文末的统计表——那份汇总才是我要写进 `LIMITATIONS.md` 的东西。\n")
+    L.append("> ⚠ **判「错标」请回到原文**，不要只信「命中证据」列：那一列是**抽取器实际用的证据**，它可能是错的\n"
+             "> （实测：`ci` 命中了 `De**ci**sions` / `Prin**ci**ples`，`script` 命中了 `Type**Script**`）。\n"
+             "> 「命中证据」错的场合，类别本身仍然可能是对的——两件事要分开判。每条的完整原文路径见该条末尾。\n")
     L.append("\n---\n")
 
     for title, idxs in (("主样本（随机 30，用于整体估计）", main_idx),
@@ -106,6 +117,8 @@ def main() -> int:
             L.append(f"- 文件标题（{len(heads)}）：" + (" / ".join(heads[:14]) or "（无标题）"))
             body = re.sub(r"\n{2,}", "\n", raw.strip())[:600]
             L.append("- 原文摘录（前 600 字）：\n\n```text\n" + body + "\n```")
+            cand_path = f"data/raw/full/{r['repo_full_name'].replace('/', '__')}.md"
+            L.append(f"- 完整原文：`{cand_path}`（本页只摘前 600 字）")
             L.append("- 判定：□ 准确　□ 漏标（缺哪类：______）　□ 错标（多哪类：______）　备注：")
             L.append("")
     L.append("\n---\n\n## 汇总（判完填这里）\n")
