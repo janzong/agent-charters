@@ -97,7 +97,12 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    `research-mas-v2` / `rmas-v3` / `rmas-v3-data` / `zhira`）的远端 URL 里嵌着**同一枚**明文
    令牌，`moya` 是裸 HTTPS；已全部换成 `git@gitee.com:…`，7 仓 `ls-remote HEAD` 实测通过，
    本机已无凭证落盘。⚠️ **那枚旧令牌在 Gitee 侧仍有效，需轮换**；
-   **轮换前先查 148**——生产机若用同一枚拉取，换掉会断部署。
+   **已补查并处理（同日）**：148（生产，`192.168.31.148`，用户 `h010218`，`id_research_mas` 可连）
+   有 4 个仓库嵌着凭证 —— `rmas-v3` / `research-mas-v2` / `zhira` 是**同一枚**，
+   `research_mas` 是另一枚且已失效。实测 148 的 `rmas-v3` 的 `git pull` 正靠它跑，
+   故当时**不能直接撤**。处理：在 148 生成专用密钥 `~/.ssh/id_gitee`、登记 Gitee、
+   4 仓远端改 SSH、`ls-remote`+`fetch` 全绿（**只 fetch 不 pull**，避免变相部署）、
+   工作区 HEAD 未动。240 / Mac 扫描无 Gitee 令牌；云电脑 / DXPC 离线未扫。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -164,8 +169,9 @@ git push origin main && git push gitee main && git push --tags
       见第 7 节）
 - [ ] ModelScope 账号（若确定用其做主数据集站）
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
-- [ ] 旧 Gitee 令牌轮换：**先确认 148 没有用同一枚**，再在
-      <https://gitee.com/profile/personal_access_tokens> 撤销（见第 4.5 节）
+- [ ] 旧 Gitee 令牌撤销：251 与 148 均已不再依赖，可在
+      <https://gitee.com/profile/personal_access_tokens> 撤销（API 无撤销端点，须网页操作，见第 4.5 节）
+- [ ] 云电脑(2222) / DXPC(2224) 上线后补扫 Gitee 凭证（240/Mac 已扫，无）
 
 **已定**：项目名 `agent-charters` / 智能体章程；
 版本规则为两节（小数位递增＝只增不改、旧结论仍成立；整数位递增＝定义变更、旧结论需重验；
