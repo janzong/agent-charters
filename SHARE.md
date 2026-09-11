@@ -242,6 +242,7 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 ## 数据和代码
 
     仓库：https://github.com/janzong/agent-charters
+    国内镜像（GitHub 访问不稳时用这个）：https://gitee.com/janzong/agent-charters
     数据集：558 行 × 30 列（parquet / jsonl），代码 MIT，数据 CC-BY-4.0
 
 如果你手上有被它标错的 AGENTS.md，或者你觉得该有第十个类别，
@@ -284,6 +285,7 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 它会告诉你语料库里写得很多、而你一个字没写的类别。
 
 https://github.com/janzong/agent-charters
+国内镜像（打不开 GitHub 时用）：https://gitee.com/janzong/agent-charters
 
 数据集不含原文全文，只有标注和统计。有标错的欢迎拍砖。
 ```
