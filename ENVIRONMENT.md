@@ -175,9 +175,14 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
 4. Gitee 的 Release 与 GitHub 不共享：需要单独 `POST /v5/repos/{o}/{r}/releases`，
    再 `POST .../releases/{id}/attach_files`（multipart）传附件。
 
-**镜像内容**：`main` + tag `v0.1` / `v0.1.1` / `v0.2` 全部对齐；Release `v0.2` 已建，
+**镜像内容**：`main` + tag `v0.1` / `v0.1.1` / `v0.2` / `v0.3` 全部对齐；Release `v0.2` 已建，
 附 parquet + jsonl（Gitee 另自动生成 `v0.2.zip` / `v0.2.tar.gz` 源码包）。
 匿名可下：`https://gitee.com/janzong/agent-charters/releases/download/v0.2/agent-charters-v0.2.parquet`
+
+**v0.3 状态（2026-09-12）**：tag `v0.3` 已推到 Gitee；**Gitee Release `v0.3` 尚未建**——
+Gitee 建 Release 必须走 API 或网页，而三枚旧私人令牌已按纪律删除，API 代建需要
+**临时新建一枚令牌（命名 `janz-codex-<日期>`，用完即删）**，或直接在网页上手动建。
+GitHub Release `v0.3` 已发（含 parquet + jsonl + SHA256SUMS，匿名 200 实测通过）。
 
 **日常同步**（新提交后）：
 
@@ -230,8 +235,8 @@ git push origin main && git push gitee main && git push --tags
 
 | 平台 | 状态 | 备注 |
 |---|---|---|
-| GitHub Releases | ✅ | uploads 端点通；`v0.1` / `v0.1.1` / `v0.2` 已发（含数据资产） |
-| Gitee | ✅ | 仓库 + Release `v0.2` + 附件均已通（public，匿名可下） |
+| GitHub Releases | ✅ | uploads 端点通；`v0.1` / `v0.1.1` / `v0.2` / **`v0.3`** 已发（含数据资产；v0.3 匿名下载实测 200） |
+| Gitee | ⚠️ | 仓库 + Release `v0.2` 通（public，匿名可下）；**Release `v0.3` 待建**（tag 已推，建 Release 需临时令牌或网页操作） |
 | ModelScope（魔搭） | ✅（0.06s） | **建议作为主数据集站** |
 | HuggingFace 官方 | ❌ 不通 | 需代理，二期再上 |
 | `hf-mirror.com` | ✅（2.0s） | 只读镜像，仅用于下载 |
