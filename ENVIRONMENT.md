@@ -245,7 +245,8 @@ git push origin main && git push gitee main && git push --tags
 | 渠道 | 结果 | 判据 |
 |---|---|---|
 | 知乎 | ✅ 通 | `www.zhihu.com` 302、注册/登录页 200；**创作中心未登录 302 跳登录**（发文必须登录，手机号注册即可） |
-| 掘金 / 开源中国 | ✅ 通 | 均为 200（V2EX 的候选替代位） |
+| 开源中国 | ✅ 通 | 登录/注册同一页 <https://www.oschina.net/home/login>：免密（**未注册手机号验证后自动注册**）/ 密码 / **Gitee 授权**三种；发文入口＝顶部「博客」（登录后 `my.oschina.net/u/<uid>/blog/write`），轻量位＝动弹 `/osc-tweet/`。非浏览器请求（curl）主页只返回 3.6KB 的 JS 外壳，**必须用真浏览器看** |
+| 掘金 | ✅ 通 | 200（V2EX 的另一个候选替代位，未细查发文流程） |
 | Gitee / B站 | ✅ 通 | 200 |
 | github.com 网页 | ⚠️ 时通时断 | `api.github.com` 稳定 200；网页 200 与 000 交替 |
 | **V2EX** | ❌ 阻断 | DNS 污染（本地/AliDNS 解析成 Facebook IP）+ **SNI 阻断**：直连真身（Cloudflare `172.66.133.207`）时裸 IP→403、换良性 SNI→301，唯独 SNI=`v2ex.com` 立即 `Connection reset by peer` ⇒ **hosts 无效，必须代理** |
