@@ -108,6 +108,20 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    已在云电脑本地生成专用密钥 `~/.ssh/id_gitee`（key id `6048616`，**登记动作在目标机本地调 API 完成，令牌不出机器**）、
    5 仓远端改 SSH，`ls-remote` + `fetch` 全绿、HEAD 未动；云电脑上无任何自动化在用这些令牌。
    **只剩 DXPC(2224) 离线未扫。**
+5. **旧令牌已撤销（同日）**：Gitee 上原有三枚私人令牌 —— `hjz-hermes`（最早，也是最可能那枚
+   被嵌进各仓 URL 的）、`rmasv3`、`rmas-v3-data` —— **三枚全部删除**。删前做过最后确认：
+   Hermes/系统配置里没有任何 Gitee 令牌字段，251 本地仓全部是 SSH 远端，agent-charters
+   用的是独立 SSH 部署密钥，因此删除不影响 git 通道与 API 之外的任何东西。
+   删后复验：251 九条远端（含 GitHub）/ 148 四条 / 云电脑五条的 `ls-remote` 全绿，
+   Release 附件匿名下载 `302→302→200`（`application/octet-stream`），仓库页 200。
+6. **⚠️ 云电脑踩坑（已修）**：云电脑的 `~/.gitconfig` **全局**设了
+   `core.sshCommand = ssh -i C:\Users\Administrator\.ssh\id_ed25519 -o IdentitiesOnly=yes`，
+   Windows 反斜杠路径经 Git Bash 会被吃掉，实际变成 `C:UsersAdministrator.sshid_ed25519`，
+   **5 个 Gitee 仓一登就失败**。之前那次"云电脑迁移验证通过"是因为测试时用了显式 `-i` 参数，
+   把这个坏配置盖住了 —— **教训：验收必须走默认路径（`git ls-remote` 不带 `-i`/`GIT_SSH_COMMAND`）**。
+   处置：`git config --global --unset-all core.sshCommand`，改由 `~/.ssh/config` 的
+   `Host gitee.com → IdentityFile ~/.ssh/id_gitee` 接管；复验五仓默认路径全绿。
+   另查：云电脑 Windows 凭据管理器里无 gitee 缓存凭据。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -215,8 +229,8 @@ git push origin main && git push gitee main && git push --tags
       见第 7 节）
 - [ ] ModelScope 账号（若确定用其做主数据集站）
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
-- [ ] 旧 Gitee 令牌撤销：251 与 148 均已不再依赖，可在
-      <https://gitee.com/profile/personal_access_tokens> 撤销（API 无撤销端点，须网页操作，见第 4.5 节）
+- [x] 旧 Gitee 令牌撤销（2026-09-11 完成）：三枚（`hjz-hermes` / `rmasv3` / `rmas-v3-data`）
+      已全部删除，删后全机复验通过（见第 4.5 节第 5 条）
 - [ ] DXPC(2224) 上线后补扫 Gitee 凭证（240/Mac/云电脑已扫；云电脑另有 1 枚 GitHub token
       明文躺在 `.codex\vendor_imports\skills`，待处置）
 - [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
