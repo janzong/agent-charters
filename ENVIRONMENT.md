@@ -155,6 +155,16 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
    必须用**真令牌形状**二次判定。
    （未跑完：`AppData\Roaming\Code\User` 的令牌形状扫描超时；但该目录今天已按
    "带凭证 URL" 形态扫过并脱敏 142 处。）
+9. **云电脑 VS Code 主库脱敏收尾（2026-09-11）**：等用户关掉云电脑上的 VS Code 后，
+   对 `%APPDATA%\Code\User\globalStorage\state.vscdb` 与其 `.backup` 各做一次
+   **字节级等长脱敏**（Latin-1 单字节映射）：各命中 **2 处**，
+   `733184 → 733184` 字节不变、残留 0、文件头 `SQLite format 3` 完好。
+   备份留在 `*.bak-20260911b`（令牌已作废，留着仅为万一 VS Code 异常时回滚；
+   确认无异常后可删）。
+   **⚠️ 新踩的坑**：**VS Code 关闭时会把主库轮转覆盖 `.backup`** ——
+   上午趁它运行时只脱了 `.backup`，傍晚关掉后那个文件被写回原样（明文复活）。
+   **正确姿势：等 VS Code 完全退出（`Get-Process Code` 计数为 0）再同时脱主库与 .backup**；
+   另外该库无 `-wal`/`-shm` 残留（关闭时会 checkpoint）。
 2. 已生成**专用密钥** `~/.ssh/id_gitee`（`Janz-gitee-20260911`，ed25519，无口令），
    经 API 登记到 Gitee（key id `6048580`），`~/.ssh/config` 的 `Host gitee.com` 补了
    `IdentityFile` + `IdentitiesOnly`（原配置备份 `~/.ssh/config.bak-20260911`）。
@@ -268,7 +278,8 @@ git push origin main && git push gitee main && git push --tags
       Mac / 240 复核无凭证
 - [x] 240 两个 Gitee 仓已改 SSH（2026-09-11，见 §4.5 第 7 条）：专用密钥 + 网页登记公钥，
       `ssh -T` 与两仓 `ls-remote` 默认路径均通过；本地与远端 HEAD 一致，无需拉取
-- [ ] 云电脑主库 `state.vscdb` 明文令牌待脱敏（被运行中的 VS Code 独占锁定）
+- [x] 云电脑主库 `state.vscdb` + `.backup` 明文令牌已脱敏（2026-09-11，见 §4.5 第 9 条）：
+      各 2 处，等长替换、字节不变、SQLite 头完好
 - [x] 云电脑 `.codex\vendor_imports\skills` 的 "GitHub token 明文" **已核实为假阳性**
       （是技能文档里的 `${env:GITHUB_TOKEN}` 模板行），无需处置，见 §4.5 第 8 条
 - [x] 251 sshd 加固（2026-09-11，见 §4.6）：公网只许公钥 + 内网保留口令兜底，
