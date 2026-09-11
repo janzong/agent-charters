@@ -4,11 +4,13 @@
   agent-charters brief [FILE...]           写章程前的检查清单 + 可粘贴的提示词
   agent-charters compare FILE [FILE...]    把你的章程与语料库对比
   agent-charters show CATEGORY             看某类别的真实样本
+  agent-charters refs FILE [FILE...]       看章程的外部引用与断链
 """
 
 import argparse
 import sys
 from collections import Counter
+from pathlib import Path
 
 from .extract import (CATEGORIES, analyze_file, category_coverage, load_corpus,
                       substantive)
@@ -116,6 +118,30 @@ def cmd_show(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_refs(args: argparse.Namespace) -> int:
+    """看章程的外部引用：是自足的，还是把知识指去了别处。"""
+    from .refs import find_refs, resolve_targets
+    for f in args.files:
+        text = Path(f).read_text(encoding="utf-8", errors="replace")
+        rec = find_refs(text)
+        kind = ("知识库/规则目录" if rec["hard"]
+                else "祈使转引" if rec["imperative"] else "自足")
+        print(f"\n{f}")
+        print(f"  类型：{kind}   指向 {len(rec['targets'])} 个路径")
+        if not rec["routes_outward"]:
+            print("  未发现外部引用——该章程是自足的。")
+            continue
+        res = resolve_targets(rec, Path(f).parent)
+        order = {"missing": 0, "by_name": 1, "exists": 2}
+        for t, st in sorted(res, key=lambda x: order[x[1]]):
+            mark = {"exists": "✓", "by_name": "~", "missing": "✗"}[st]
+            print(f"    {mark} {t}")
+        bad = [t for t, st in res if st == "missing"]
+        if bad:
+            print(f"  ⚠ {len(bad)} 个指向的路径找不到——指错方向比不指更糟。")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="agent-charters",
@@ -137,6 +163,10 @@ def main(argv: list[str] | None = None) -> int:
     s2 = sub.add_parser("compare", help="把你的章程与语料库对比")
     s2.add_argument("files", nargs="+", help="一个或多个章程文件")
     s2.set_defaults(func=cmd_compare)
+
+    s4 = sub.add_parser("refs", help="看章程的外部引用与断链")
+    s4.add_argument("files", nargs="+", help="章程文件路径")
+    s4.set_defaults(func=cmd_refs)
 
     s3 = sub.add_parser("show", help="看某类别的真实样本")
     s3.add_argument("category", choices=CATEGORIES)

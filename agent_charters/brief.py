@@ -12,7 +12,10 @@
 本模块不含任何硬编码的比例——基准率一律从随包语料库实时计算。
 """
 
+from pathlib import Path
+
 from .extract import category_coverage, substantive
+from .refs import find_refs, resolve_targets
 from .taxonomy import CATEGORIES
 
 # 每个类别对应"作者/生成器该问自己什么"。中文用于清单，英文用于粘贴的提示词。
@@ -63,12 +66,32 @@ GOTCHA_ANTI = (
     "Do not write generic advice (\"remember to install dependencies\", "
     "\"don't commit .env\"): 34% of the pitfalls in the corpus are not pitfalls.")
 
+# 外部引用不是一个"类别"，而是"知识放在哪里"。规则集尚未覆盖它，
+# 所以这两个基准率**不是**从随包语料库实时算的，出处是 work/external_ref_scan.py
+# （507 份实测）。等 v0.2 把该信号并入数据集后，改为实时计算（STATE.md D28）。
+REFS_BASE = {
+    "zh": "语料库实测：49% 的章程会转引外部文件，15% 指向知识库或规则目录"
+          "（来源 work/external_ref_scan.py，非实时计算）",
+    "en": "Measured on the corpus: 49% route to another file, 15% point at a "
+          "knowledge store or rules directory (source: work/external_ref_scan.py, "
+          "not computed live)",
+}
+
+REFS_ASK = (
+    "知识放在哪？如果坑/模式写在别的文件里，章程要明确指过去——"
+    "并且要检查指过去的路径真的存在。",
+    "Where does the knowledge live? If pitfalls or patterns are kept in other "
+    "files, say so explicitly - and make sure every path you point at exists.",
+)
+
 # 实验得出的生成侧要点
 GENERATOR_RULES = [
     ("提示词必须点名每一个槽位", "未点名的槽位会被系统性跳过（workflow 0/11 → 点名后 3/3）"),
     ("要求“没有证据就明说，不要猜”", "否则会编出不存在的命令"),
     ("生成后立刻核对", "用 agent-charters compare 把结果与语料库基线对比"),
     ("把人能补的那部分补上", "58% 的坑读代码可得，剩下 8% 只能问人（见 work/gotcha_origin.md）"),
+    ("指向别处就要保证指得对", "指错方向比不指更糟——agent 会照着不存在的文件找；"
+     "用 agent-charters refs 检查断链"),
 ]
 
 OUTPUT_LANG = {"en": 1, "zh": 0}
@@ -122,6 +145,27 @@ def render(files: list[str], lang: str = "en", df=None) -> str:
         out.append(f"  · {title} —— {why}")
     out.append("")
 
+    out += ["外部引用（不在九类之内，规则集尚未覆盖）", "-" * 58]
+    out.append(f"  {REFS_BASE[lang]}")
+    out.append(f"  该问：{REFS_ASK[OUTPUT_LANG[lang]]}")
+    if files:
+        for f in files:
+            rec = find_refs(Path(f).read_text(encoding="utf-8", errors="replace"))
+            if not rec["routes_outward"]:
+                out.append(f"  {f}: 未发现外部引用（章程是自足的）")
+                continue
+            kind = "知识库/规则目录" if rec["hard"] else "祈使转引"
+            res = resolve_targets(rec, Path(f).parent)
+            bad = [t for t, st in res if st == "missing"]
+            soft = [t for t, st in res if st == "by_name"]
+            line = f"  {f}: {kind}，指向 {len(rec['targets'])} 个路径"
+            if bad:
+                line += f"  ⚠ {len(bad)} 个找不到：{', '.join(bad[:4])}"
+            if soft:
+                line += f"  （{len(soft)} 个只在同名位置找到）"
+            out.append(line)
+    out.append("")
+
     targets = [c for c in CATEGORIES if (not files) or c not in mine]
     out += ["可直接粘贴的提示词", "-" * 58]
     if not targets:
@@ -153,6 +197,9 @@ def generator_prompt(categories: list[str] | None = None, lang: str = "en",
             "For pitfalls, do not write generic advice: "
             "34% of the pitfalls in a 507-file corpus of AGENTS.md files are not "
             "pitfalls at all.",
+            "If the knowledge lives in other files (pitfalls list, rules directory, "
+            "decision log), say so explicitly and make sure every path you point at "
+            "actually exists.",
             "Base everything on what is actually in the repository - never invent a "
             "command that is not discoverable.",
         ]
@@ -166,6 +213,8 @@ def generator_prompt(categories: list[str] | None = None, lang: str = "en",
         lines += [
             "如果某一项在仓库里找不到依据，就明写“仓库里没有证据”，不要猜。",
             "写坑的时候不要写通用建议：507 份章程语料库里 34% 的“坑”其实不是坑。",
+            "如果知识放在别的文件里（坑点清单、规则目录、决策记录），要明确指过去，"
+            "并确保每个路径都真实存在。",
             "一切以仓库里真实存在的东西为准，不要编造找不到的命令。",
         ]
     if files:

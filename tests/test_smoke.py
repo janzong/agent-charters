@@ -274,3 +274,53 @@ def test_corpus_is_reproducible_from_raw(corpus):
         if fresh["categories"] != sorted(rec["categories"]):
             tainted.append(rec["repo_full_name"])
     assert not tainted, f"数据集与分类规则不一致（需重跑 work/extract_v1.py）: {tainted[:5]}"
+
+
+# —— 外部引用检测（refs）——
+# 这一组守的是口径：第一版用「文本里出现任意 .md 路径」做信号，507 份里命中 87%，
+# 抽验后判定为假阳性机器（README 列表、PR 模板、日志文件名全被算进去）。
+# 下面第一条测试就是那个教训的回归锁。
+
+def test_refs_rejects_plain_md_listings():
+    """仅仅列出一堆 .md 文件不算"把知识外包"——必须是指去读。"""
+    from agent_charters.refs import find_refs
+    text = ("## Public Documentation\n\n"
+            "Public entry points:\n"
+            "- `README.md`\n- `README.en.md`\n- `WHITEPAPER.md`\n\n"
+            "Fill in `.github/pull_request_template.md` when opening a PR.\n")
+    assert find_refs(text)["routes_outward"] is False
+
+
+def test_refs_detects_knowledge_store():
+    from agent_charters.refs import find_refs
+    rec = find_refs("# 规则\n\n改代码前先读 `.github/memories/MEMORY.md`。\n")
+    assert rec["hard"] is True and rec["routes_outward"] is True
+
+
+def test_refs_detects_imperative_routing():
+    from agent_charters.refs import find_refs
+    assert find_refs("Read ARCHITECTURE.md before touching the runtime.\n")["imperative"]
+    assert find_refs("详见 `docs/theme-state-ui.md` 的 State Machine 节。\n")["imperative"]
+
+
+def test_resolve_targets_three_states(tmp_path):
+    from agent_charters.refs import find_refs, resolve_targets
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "a.md").write_text("x")
+    (tmp_path / "deep").mkdir()
+    (tmp_path / "deep" / "b.md").write_text("x")
+    text = "参考 `docs/a.md`、`b.md`、`nowhere.md`。\n"
+    got = dict(resolve_targets(find_refs(text), tmp_path))
+    assert got["docs/a.md"] == "exists"
+    assert got["b.md"] == "by_name"      # 只在 deep/ 下，同名
+    assert got["nowhere.md"] == "missing"
+
+
+def test_brief_reports_external_refs(tmp_path):
+    from agent_charters.brief import render
+    f = tmp_path / "AGENTS.md"
+    f.write_text("# AGENTS.md\n\n## Build\nRun `pytest`.\n\n"
+                 "改动前先读 `.github/memories/pitfalls.md`。\n", encoding="utf-8")
+    out = render([str(f)], lang="zh")
+    assert "外部引用" in out
+    assert "pitfalls.md" in out
