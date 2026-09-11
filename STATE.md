@@ -35,7 +35,7 @@
 | 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`——现在打印的基线就是修正后的 85.7% |
 | 测试 | ✅ `pytest` 51 passed + 1 xfailed（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和"，以及 v0.1.3 新增的"词中命中不许打标签／词首前缀必须打标签"两组参数化锁） |
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
-| 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/**`v0.3`** 已对齐，SSH 专用密钥 `id_gitee`）｜⚠️ **Gitee Release `v0.3` 未建**：建 Release 需 API（临时令牌）或网页手动 |
+| 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/`v0.3` 已对齐；**Release `v0.3` 已建**，资产哈希与仓库内逐字节一致；SSH 专用密钥 `id_gitee`） |
 | 首发 | ✅ 2026-09-11 知乎《我把 558 份 AGENTS.md 全抓下来标了一遍》<https://zhuanlan.zhihu.com/p/2081788025013539447> |
 | 第二站 | ✅ **开源中国已上线**：<https://my.oschina.net/u/9764589/blog/19758304>（2026-09-12，未登录可访问）。更正状态：正文与平台 AI 摘要仍是 87%，**第一条更正评论（84.7%）已贴**，但 84.7% 本身是我推算错的 → **第二条更正（85.7%）待贴**，文案 `work/share-paste/oschina-comment-02.txt`（386 字，≤500 限）。排版遗留不影响内容：5 个小标题只生效 3 个、代码块 0 个、正文 URL 未成超链接。 |
 | 第三站 | ✅ **掘金已上线**：<https://juejin.cn/post/7684156210712166442>（2026-09-12；未登录可访问；6 个小标题全部生效、2 个代码块正常、链接被 `link.juejin.cn` 重写属正常）。正文用的是 **84.7%（推算错的那版）** → **更正评论待贴**，文案 `work/share-paste/juejin-comment-01.txt`。遗留：作者显示名仍是默认「用户66114510929」，建议设昵称+头像。 |
