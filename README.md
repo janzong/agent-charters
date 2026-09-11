@@ -34,6 +34,9 @@
 
 **不含原文全文**——只发布衍生标注与统计特征。原文版权归各仓库作者。
 
+> **国内访问**：主仓在 GitHub；国内镜像 <https://gitee.com/janzong/agent-charters>。
+> 数据集可从 [Release `v0.2`](https://github.com/janzong/agent-charters/releases/tag/v0.2) 直接下载（parquet + jsonl）。
+
 ## 快速开始
 
 ```python

@@ -82,17 +82,35 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
 
 > 镜像站寿命很短（本批已有 4 个失效），**每季度复测一次**。
 
+## 4.5 仓库远端（已配 2026-09-11）
+
+| 远端 | 地址 | 认证 | 说明 |
+|---|---|---|---|
+| `origin` | `git@github.com:janzong/agent-charters.git` | SSH（`~/.ssh/id_github`，`Host github.com`） | 主仓 |
+| `gitee` | `https://gitee.com/janzong/agent-charters.git` | **未配**（见下） | 国内镜像，2026-09-11 建 |
+
+- 镜像内容：`main` + tag `v0.1` / `v0.1.1` / `v0.2` 已对齐（`git push gitee --all && git push gitee --tags`）。
+- ⚠️ **Gitee 仓库当前是私有**（建仓时 `private:false` 未生效）。要公开需在网页或调 API 改。
+- ⚠️ **Gitee 的 SSH 不通**（`ssh -T git@gitee.com` → `Permission denied (publickey)`）：
+  `~/.ssh/config` 里 `Host gitee.com` 没有 `IdentityFile`，且没有公钥登记在 Gitee 上。
+  首次推送是借用了 `mohu` 仓库远端里嵌的那枚 Gitee token（HTTPS）。
+  **要让 `git push gitee` 长期可用，二选一**：
+  ①在 <https://gitee.com/profile/sshkeys> 加一枚公钥（如 `~/.ssh/id_github.pub`），
+    并给 `~/.ssh/config` 的 `Host gitee.com` 补 `IdentityFile`；
+  ②`git config credential.helper store` 存入 token（**明文落盘，不推荐**，mohu 就是前车之鉴）。
+- Gitee 仓库还没有 Release 页面（GitHub 侧 `v0.2` 已发，含 parquet + jsonl 两个资产）。
+
 ## 5. 数据集发布通道
 
 | 平台 | 状态 | 备注 |
 |---|---|---|
-| GitHub Releases | ✅ | uploads 端点通 |
+| GitHub Releases | ✅ | uploads 端点通；`v0.1` / `v0.1.1` / `v0.2` 已发 |
+| Gitee | ✅ | **代码镜像已通**（私有）；Release/附件未做 |
 | ModelScope（魔搭） | ✅（0.06s） | **建议作为主数据集站** |
 | HuggingFace 官方 | ❌ 不通 | 需代理，二期再上 |
 | `hf-mirror.com` | ✅（2.0s） | 只读镜像，仅用于下载 |
 | Zenodo（DOI） | ❌ 不通 | DOI 方案另议 |
 | Kaggle | ✅ 页面通 | 备选 |
-| Gitee | ✅ | 备用 |
 
 环境变量已预设 `HF_ENDPOINT=https://hf-mirror.com`。
 
@@ -127,6 +145,7 @@ git ls-remote https://ghproxy.net/https://github.com/OWNER/REPO.git HEAD
 - [x] 已建项目 venv 并安装 `datasets` / `pandas` / `pyarrow`（2026-09-10，
       见第 7 节）
 - [ ] ModelScope 账号（若确定用其做主数据集站）
+- [ ] Gitee 镜像：是否转公开 + 是否给 `gitee` 远端配 SSH 公钥（见第 4.5 节）
 - [ ] 是否建 GitHub Org（倾向先用个人账号，后续可 transfer，不阻塞）
 
 **已定**：项目名 `agent-charters` / 智能体章程；
