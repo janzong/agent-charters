@@ -240,6 +240,25 @@ git push origin main && git push gitee main && git push --tags
 
 环境变量已预设 `HF_ENDPOINT=https://hf-mirror.com`。
 
+### 5.1 社区渠道可达性实测（2026-09-11，251 出口）
+
+| 渠道 | 结果 | 判据 |
+|---|---|---|
+| 知乎 | ✅ 通 | `www.zhihu.com` 302、注册/登录页 200；**创作中心未登录 302 跳登录**（发文必须登录，手机号注册即可） |
+| 掘金 / 开源中国 | ✅ 通 | 均为 200（V2EX 的候选替代位） |
+| Gitee / B站 | ✅ 通 | 200 |
+| github.com 网页 | ⚠️ 时通时断 | `api.github.com` 稳定 200；网页 200 与 000 交替 |
+| **V2EX** | ❌ 阻断 | DNS 污染（本地/AliDNS 解析成 Facebook IP）+ **SNI 阻断**：直连真身（Cloudflare `172.66.133.207`）时裸 IP→403、换良性 SNI→301，唯独 SNI=`v2ex.com` 立即 `Connection reset by peer` ⇒ **hosts 无效，必须代理** |
+| **HN** | ❌ 阻断（仅 DNS） | DNS 污染，但直连真身 `209.216.230.207` + SNI 返回 **200** ⇒ **加 hosts 可访问/发帖**（IP 会变，发前复核） |
+| Reddit / X / Google | ❌ 阻断 | 直连真身亦 000 |
+| r.jina.ai（Jina Reader） | ❌ 不通 | agent-reach 的 web 只读通道在本机不可用 |
+| 云电脑出口 | ❌ 同为墙内 | 同一批域名全 000，**不是"独立出口"** |
+
+绕开污染的查询方式：`curl -s -H 'accept: application/dns-json' 'https://doh.pub/dns-query?name=<域名>&type=A'`
+（doh.pub 实测给真身；本地 DNS 与 AliDNS 已被污染）。HN 的 hosts 行：
+`209.216.230.207 news.ycombinator.com`。
+知乎对非浏览器/机房 IP 一律返回 40362 反爬，**自动验可见性不可行——只能用无痕窗口人工确认**。
+
 ## 6. 配额与硬限制（设计时必须考虑）
 
 - `gh` core：**5000/h**（认证后，未认证只有 60/h）
