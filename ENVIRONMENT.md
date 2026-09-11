@@ -248,7 +248,7 @@ git push origin main && git push gitee main && git push --tags
 | 开源中国 | ✅ 通 | 登录/注册同一页 <https://www.oschina.net/home/login>：免密（**未注册手机号验证后自动注册**）/ 密码 / **Gitee 授权**三种；发文入口＝顶部「博客」（登录后 `my.oschina.net/u/<uid>/blog/write`），轻量位＝动弹 `/osc-tweet/`。非浏览器请求（curl）主页只返回 3.6KB 的 JS 外壳，**必须用真浏览器看** |
 | 掘金 | ✅ 通 | 200（V2EX 的另一个候选替代位，未细查发文流程） |
 | Gitee / B站 | ✅ 通 | 200 |
-| github.com 网页 | ⚠️ 时通时断 | `api.github.com` 稳定 200；网页 200 与 000 交替 |
+| github.com 网页 | ✅ 通（10/10） | 2026-09-11 复测：仓库页连续 10 次全 200（早先单次测到 000 属瞬时，不是常态） |
 | **V2EX** | ❌ 阻断 | DNS 污染（本地/AliDNS 解析成 Facebook IP）+ **SNI 阻断**：直连真身（Cloudflare `172.66.133.207`）时裸 IP→403、换良性 SNI→301，唯独 SNI=`v2ex.com` 立即 `Connection reset by peer` ⇒ **hosts 无效，必须代理** |
 | **HN** | ❌ 阻断（仅 DNS） | DNS 污染，但直连真身 `209.216.230.207` + SNI 返回 **200** ⇒ **加 hosts 可访问/发帖**（IP 会变，发前复核） |
 | Reddit / X / Google | ❌ 阻断 | 直连真身亦 000 |
@@ -259,6 +259,32 @@ git push origin main && git push gitee main && git push --tags
 （doh.pub 实测给真身；本地 DNS 与 AliDNS 已被污染）。HN 的 hosts 行：
 `209.216.230.207 news.ycombinator.com`。
 知乎对非浏览器/机房 IP 一律返回 40362 反爬，**自动验可见性不可行——只能用无痕窗口人工确认**。
+
+### 5.2 GitHub 四条通道分层实测（2026-09-11 复测）
+
+同一台机器、同一个站点，四条路的状态**完全不同**，别再笼统说"GitHub 被墙"或"GitHub 通了"：
+
+| 通道 | 状态 | 证据 |
+|---|---|---|
+| 网页 `github.com` | ✅ 通 | 仓库页连续 **10/10** 返回 200 |
+| API `api.github.com` | ✅ 通 | 200；Release 资产元数据可读 |
+| 探针 `raw.githubusercontent.com` | ⚠️ 约 4/10 | 5 次里 200/000 交替；**能通但不可依赖** |
+| **`git` over HTTPS → GitHub** | ❌ 稳定失败 | `git ls-remote https://github.com/...` 3/3 失败，`gnutls_handshake(): The TLS connection was non-properly terminated` |
+| **`git` over SSH → GitHub** | ✅ 通 | `ls-remote git@github.com:...` 正常 |
+
+**归因（有对照，不是猜）**：失败只出现在 GitHub 上——
+① `curl`（OpenSSL）打**同一个** git 端点 `https://github.com/<owner>/<repo>.git/info/refs?service=git-upload-pack` 返回 **200**；
+② 同一条 `git`-over-HTTPS 打 Gitee 正常（`git ls-remote https://gitee.com/janzong/agent-charters HEAD` 秒回 SHA）。
+⇒ 本机 git/TLS 栈健康，Gitee 正常；**干扰只针对 GitHub 的 git-over-GnuTLS 握手**（GnuTLS 的 ClientHello 指纹），HTTPS 浏览与 OpenSSL 客户端不受影响。
+`http.version=HTTP/1.1`、`http.sslVersion=tlsv1.2/1.3` 三个开关都试过，无效。
+
+**30 秒复验法**：三条一起跑，任何一条结果变化都说明线路变了——
+`curl -o /dev/null -w '%{http_code}\n' https://github.com/janzong/agent-charters`（应 200）、
+`curl -o /dev/null -w '%{http_code}\n' "https://github.com/janzong/agent-charters.git/info/refs?service=git-upload-pack"`（应 200）、
+`git ls-remote https://github.com/janzong/agent-charters HEAD`（预期仍失败）。
+
+**对文案的影响**：不能写"GitHub 打不开"（不实），要写"**本线路 `git`-over-HTTPS 不稳，用 Gitee 镜像或 SSH**"——
+国外读者和用 OpenSSL 版 git 的人不受影响，说成"GitHub 被墙"会被人当场纠正。
 
 ## 6. 配额与硬限制（设计时必须考虑）
 
@@ -312,8 +338,9 @@ git push origin main && git push gitee main && git push --tags
 
 ## 9. 已知坑（踩过的）
 
-1. `raw.githubusercontent.com` 不可用 → 一律走 contents API 或 jsdelivr
-2. HTTPS 方式 git 不可用 → 一律走 SSH，`gh` 已切 ssh
+1. `raw.githubusercontent.com` **时通时断（实测约 4/10）** → 不要依赖，一律走 contents API 或 jsdelivr
+2. **`git` over HTTPS 连 GitHub 稳定失败**（GnuTLS 握手被干扰；`curl` 打同一端点 200、同样命令打 Gitee 正常）
+   → 一律走 SSH，`gh` 已切 ssh。注意这是**针对 GitHub + GnuTLS 指纹**的干扰，不是"GitHub 全不通"，见 §5.2
 3. `code_search` 限 10/min → 抓取必须做限速与断点续跑，不能硬轮询
 4. 镜像站寿命短 → 定期复测，不要硬编码单一镜像
 5. **版权**：抓取的配置文件版权归原作者，**只发布衍生标注与统计特征，不发布全文**
