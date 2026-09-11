@@ -269,19 +269,26 @@ git push origin main && git push gitee main && git push --tags
 | 网页 `github.com` | ✅ 通 | 仓库页连续 **10/10** 返回 200 |
 | API `api.github.com` | ✅ 通 | 200；Release 资产元数据可读 |
 | 探针 `raw.githubusercontent.com` | ⚠️ 约 4/10 | 5 次里 200/000 交替；**能通但不可依赖** |
-| **`git` over HTTPS → GitHub** | ❌ 稳定失败 | `git ls-remote https://github.com/...` 3/3 失败，`gnutls_handshake(): The TLS connection was non-properly terminated` |
+| **`git` over HTTPS → GitHub** | ❌ 不可用 | 直连**超时无响应**（`exit=124`，HTTP/1.1 与 HTTP/2 都一样）；若本机 git 配了代理则**快速失败**（`exit=128`，报 `gnutls_handshake()` 之类的错） |
 | **`git` over SSH → GitHub** | ✅ 通 | `ls-remote git@github.com:...` 正常 |
 
-**归因（有对照，不是猜）**：失败只出现在 GitHub 上——
+**能确定的事实（有对照）**：
 ① `curl`（OpenSSL）打**同一个** git 端点 `https://github.com/<owner>/<repo>.git/info/refs?service=git-upload-pack` 返回 **200**；
-② 同一条 `git`-over-HTTPS 打 Gitee 正常（`git ls-remote https://gitee.com/janzong/agent-charters HEAD` 秒回 SHA）。
-⇒ 本机 git/TLS 栈健康，Gitee 正常；**干扰只针对 GitHub 的 git-over-GnuTLS 握手**（GnuTLS 的 ClientHello 指纹），HTTPS 浏览与 OpenSSL 客户端不受影响。
-`http.version=HTTP/1.1`、`http.sslVersion=tlsv1.2/1.3` 三个开关都试过，无效。
+② 同一条 `git`-over-HTTPS 打 Gitee 正常（`git ls-remote https://gitee.com/janzong/agent-charters HEAD` 秒回 SHA）；
+③ 直连 GitHub 是**挂起超时**而不是立刻报错；`http.version=HTTP/1.1 / HTTP/2` 都一样。
+⇒ 本机 git/TLS 栈健康、Gitee 正常，**问题只出现在"git 走 HTTPS 到 GitHub"这一条组合上**。
+
+**成因未坐实**（别把推断写成结论）：看形状像"针对 GnuTLS 客户端的干扰"，但没有抓到确凿证据
+（无抓包、无 RST 记录）。**更要注意的坑**：若本机 git 全局配置里指向一个**已失效的代理**
+（`git config --global --get-regexp proxy` 可查），失败会**伪装成 gnutls 报错**，
+把"代理死了"误读成"被墙"——2026-09-11 就这么误判过一次。
+排查顺序因此固定为：**先查代理配置 → 再屏蔽全局配置直连复测 → 再下结论**。
 
 **30 秒复验法**：三条一起跑，任何一条结果变化都说明线路变了——
 `curl -o /dev/null -w '%{http_code}\n' https://github.com/janzong/agent-charters`（应 200）、
 `curl -o /dev/null -w '%{http_code}\n' "https://github.com/janzong/agent-charters.git/info/refs?service=git-upload-pack"`（应 200）、
-`git ls-remote https://github.com/janzong/agent-charters HEAD`（预期仍失败）。
+`git ls-remote https://github.com/janzong/agent-charters HEAD`（预期仍失败）、
+`git config --global --get-regexp proxy`（有任何输出都先怀疑代理）。
 
 **对文案的影响**：不能写"GitHub 打不开"（不实），要写"**本线路 `git`-over-HTTPS 不稳，用 Gitee 镜像或 SSH**"——
 国外读者和用 OpenSSL 版 git 的人不受影响，说成"GitHub 被墙"会被人当场纠正。
@@ -339,8 +346,9 @@ git push origin main && git push gitee main && git push --tags
 ## 9. 已知坑（踩过的）
 
 1. `raw.githubusercontent.com` **时通时断（实测约 4/10）** → 不要依赖，一律走 contents API 或 jsdelivr
-2. **`git` over HTTPS 连 GitHub 稳定失败**（GnuTLS 握手被干扰；`curl` 打同一端点 200、同样命令打 Gitee 正常）
-   → 一律走 SSH，`gh` 已切 ssh。注意这是**针对 GitHub + GnuTLS 指纹**的干扰，不是"GitHub 全不通"，见 §5.2
+2. **`git` over HTTPS 连 GitHub 不可用**（直连超时；`curl` 打同一端点 200、同样命令打 Gitee 正常）
+   → 一律走 SSH，`gh` 已切 ssh。**排查前先看 `git config --global --get-regexp proxy`**：
+   指向失效代理时失败会伪装成 gnutls 报错，容易误判成"被墙"。详见 §5.2
 3. `code_search` 限 10/min → 抓取必须做限速与断点续跑，不能硬轮询
 4. 镜像站寿命短 → 定期复测，不要硬编码单一镜像
 5. **版权**：抓取的配置文件版权归原作者，**只发布衍生标注与统计特征，不发布全文**
