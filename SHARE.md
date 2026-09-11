@@ -20,6 +20,11 @@
 **已按 84.7% 发布**：掘金（§4.6）。
 三站的更正话术见 §7；**未发布的渠道（HN / Reddit / V2EX）直接用 85.7%。**
 
+**v0.4 追加（2026-09-12）**：四条**口径裁决**落地（人定，见 `TAXONOMY.md`「口径裁决」），
+其中一条改动了数字——`agent_meta`（"AI 行为规定"）**36.4% → 29.5%**：
+标题里出现 agent/instructions 不再算数（那多是文件自己的名字）。
+**这条只影响未发布渠道的表格**；已发的三篇都没引用过 36% 这个数，所以不需要再更正。
+
 ## 0. 发布前 checklist
 
 - [ ] 链接：`https://github.com/janzong/agent-charters`（Release `v0.3`）
@@ -124,7 +129,7 @@ Numbers worth a look (511 substantive files):
 | architecture & file layout | 59.7% |
 | code style | 56.8% |
 | environment & toolchain | 44.4% |
-| AI-specific behavior rules | 36.4% |
+| AI-specific behavior rules | 29.5% |
 | project overview | 34.8% |
 | pitfalls / gotchas | 14.1% |
 

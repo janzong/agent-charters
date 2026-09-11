@@ -1,7 +1,7 @@
 # agent-charters ｜ 智能体章程语料库
 
 > **人写给 AI 智能体的书面规约**的结构化语料库。
-> 数据集 **v0.3** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
+> 数据集 **v0.4** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
 
 ## 这是什么
 
@@ -44,7 +44,7 @@
 ```python
 import pandas as pd
 
-df = pd.read_parquet("data/processed/agent-charters-v0.3.parquet")
+df = pd.read_parquet("data/processed/agent-charters-v0.4.parquet")
 
 # 最常出现的主题
 from collections import Counter
@@ -56,7 +56,7 @@ sub = df[df["is_substantive"] & ~df["is_pointer"]]
 print(len(sub))
 ```
 
-## 类别分布（511 份实质文件，数据集 v0.3 / `ruleset_v0.1.3`）
+## 类别分布（511 份实质文件，数据集 v0.4 / `ruleset_v0.1.4`）
 
 | 类别 | 覆盖 | 含义 |
 |---|---|---|
@@ -66,8 +66,8 @@ print(len(sub))
 | `structure` | 59.7% | 架构、目录与文件组织 |
 | `style` | 56.8% | 代码风格、命名、约定 |
 | `environment` | 44.4% | 环境、工具链、依赖 |
-| `agent_meta` | 36.4% | 关于 AI 自身行为的规定 |
-| `overview` | 34.8% | 项目概览、技术栈、目的 |
+| `agent_meta` | 29.5% | 关于 AI 自身行为的规定 |
+| `overview` | 34.8% | 项目概览、技术栈、目的（v0.4 起高于 `agent_meta`） |
 | `gotchas` | 14.1% | 坑、陷阱、已知问题 |
 
 ## 命令行工具
@@ -149,7 +149,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## 许可与版权
 
 - **代码**（`agent_charters/`、`work/`）：MIT，见 [`LICENSE`](LICENSE)
-- **数据**（`data/processed/` 下的标注与统计）：CC-BY-4.0，署名 `agent-charters v0.3`
+- **数据**（`data/processed/` 下的标注与统计）：CC-BY-4.0，署名 `agent-charters v0.4`
 - **原文**：本仓库**不含任何 `AGENTS.md` 原文全文**（`data/raw/` 已在 `.gitignore` 中）。
   数据集只含衍生标注、统计特征与极短引用，原文版权归各仓库作者。
 
@@ -159,7 +159,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## 引用
 
 ```
-agent-charters v0.3 (2026). 智能体章程语料库.
+agent-charters v0.4 (2026). 智能体章程语料库.
 https://github.com/janzong/agent-charters
 ```
 

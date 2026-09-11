@@ -30,7 +30,17 @@ VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么
 #   证据全是词中命中（principles / behavior / TypeScript / specification / description）。
 #   注意：词首**前缀**命中是规则有意为之（`convention`→Conventions、`boundar`→Boundary、
 #   `responsibilit`→Responsibility、`test`→Testing），不在本次收紧范围内。
-RULESET_VERSION = "ruleset_v0.1.3"
+# v0.1.4（2026-09-12）口径裁决落地（D31 同批，人定四条定义边界，见 TAXONOMY.md「口径裁决」）：
+#   `agent_meta` 删掉三个**路由型**标题词（`agent instruction` / `agent guidance` / `ai instruction`）。
+#   依据：这三类标题在实际语料里几乎都是**文件自己的名字**（"WSL2 Distro Manager — Agent Instructions"），
+#   而本语料库的每份文件按定义都是写给 agent 的——所以这个标签不携带区分度，
+#   与 v0.1b 修掉的"文件名叫 AGENTS.md 导致命中率 79%"是同一类错误。
+#   实测（511 份）：agent_meta 36.4% → **29.5%**（−35 份，无新增）；副作用 build_test +1
+#   （某份文件因此章节无标签，落到全文兜底通道）。正文通道（`you are` / `be concise`）保留，
+#   真有行为内容的文件不掉（如 PraisonAI 靠 `body:\byou are\b` 保住）。
+#   更宽的删除口径（再删 agent tool/prompt/note/skill/behavior/workflow）实测会到 25.2%——
+#   **未采纳**：那些章节通常是内容型，等 100 份人工核对给出 precision 数据再定。
+RULESET_VERSION = "ruleset_v0.1.4"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -96,8 +106,8 @@ HEAD_RULES: dict[str, list[str]] = {
                     "troubleshoot", "common issue", "footgun", "limitation",
                     "陷阱", "注意", "常见问题", "坑", "注意事项", "调试",
                     "局限"],
-    "agent_meta":  ["agent instruction", "agent guidance", "ai instruction",
-                    "you are", "your role", "tone", "persona", "behavior",
+    # v0.1.4：删掉 agent instruction / agent guidance / ai instruction（路由型标题，见 RULESET_VERSION 注释）
+    "agent_meta":  ["you are", "your role", "tone", "persona", "behavior",
                     "behaviour", "assistant", "subagent", "sub-agent",
                     "plan mode", "agent workflow", "agent behavior",
                     "协作", "行为", "角色", "智能体",

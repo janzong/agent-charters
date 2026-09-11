@@ -19,7 +19,7 @@ EXTRACTOR_VERSION = "extract_v1"
 
 # 数据集版本：决定发布文件名里的版本位（agent-charters-<DS>.parquet）。
 # 与工具版本解耦（D24）——工具在迭代，数据没变时不该跟着升。
-DATASET_VERSION = "v0.3"
+DATASET_VERSION = "v0.4"
 
 
 def doc_language(text: str) -> str:

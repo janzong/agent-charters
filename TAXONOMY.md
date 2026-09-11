@@ -73,8 +73,40 @@
 | **v0.1.2** | `structure` 标题词表补「分工/职责/归属/ownership/code owner/responsibilit…」 | 33 个这类章节里 9 个原先完全无标签，而"新代码该放哪里、谁负责哪块"正是 `structure` 要答的 |
 | **v0.1.3** | 标题通道由**子串**改为**词首**匹配（连字符算边界；保留词首前缀命中） | `ci` 命中 `Deci\|sions`、`script` 命中 `TypeScript`。实测 511 份里 23 处 (文件,类别) 组合的标签只靠这种误命中撑着，修好后 18 处掉标签 |
 | **v0.1.3** | `build_test` 删裸词 `make`，只留 `makefile` 与具体目标（`make build`/`make dev`…） | 511 份里 12 个标题命中裸词，逐条看 7 份是散文（`Make changes`/`make sure`），与 `STRONG_PATTERNS` 既有口径对齐 |
+| **v0.1.4** | `agent_meta` 删 3 个路由型标题词（`agent instruction` / `agent guidance` / `ai instruction`） | 这类标题多是文件自己的名字，标签无区分度（同 v0.1b 的教训）。实测 36.4% → 29.5%（−35 份，无新增）|
 
-## 已知问题（v0.3 待改进）
+## 口径裁决（2026-09-12，由人定，非智能体自决）
+
+`work/audit/v0.2-agent-verdicts.md` 里有 ≥6 条判定卡在"定义没说要收不收"。这类**定义边界**
+不该由规则作者自己拍，2026-09-12 由项目所有者裁定如下四条。它们是后面 100 份人工核对的前提：
+口径不定，审计会把"定义模糊"记成"规则错"，测出来的准确率不可信。
+
+| # | 问题 | 裁决 | 对规则的影响 |
+|---|---|---|---|
+| 1 | `风格` 收不收 Git 规范（"Commit message: conventional commits"） | **收**——它是"写成什么形状"的约定，与命名/格式同族 | 无需改词表：实测 0 份受影响（这类标题已被 `convention` / `style` / `规范` 命中） |
+| 2 | `环境` 收不收 SDK/语言版本号（"Node 22、Python ≥3.11"） | **收**——工具链版本就是环境的一部分 | 暂不加规则：实测只有 1 个候选，且是探针误报（`Ignore Python 2 compatibility` 并非版本清单）。**先记录口径，出现真实样本再补规则** |
+| 3 | `构建测试` 收不收"该不该跑构建"（"默认不要执行编译/构建/测试，除非用户明确要求"） | **收**——类别定义是"构建/测试/运行**这件事**"，不是"命令清单"；"别盲目跑测试"恰是给 agent 的关键信息 | 无需改词表：这类章节含 `构建/测试` 等词，本就会命中 |
+| 4 | `AI行为` 收不收"标题里出现 agent / instructions" | **不收**——见下 | 改词表：`agent_meta` 删 3 个路由型标题词 |
+
+### 裁决 4 的依据与实测（`ruleset_v0.1.4`）
+
+删掉 `agent instruction` / `agent guidance` / `ai instruction`。理由：这三类标题在实际语料里
+几乎都是**文件自己的名字**（"WSL2 Distro Manager — Agent Instructions"、"Private Agent Instructions"），
+而本语料库的每份文件按定义都是写给 agent 的——**这个标签不携带区分度**，
+与 v0.1b 修掉的"文件名叫 `AGENTS.md` 导致命中率 79%"是同一类错误。
+
+实测（511 份可用样本，`work/v0.3-to-v0.4-diff.md`）：
+
+- `agent_meta` **36.4% (186) → 29.5% (151)**，−35 份，**无新增**；排名从第 7 位降到第 8 位（低于 `overview`）
+- 副作用：`build_test` 438 → 439（某份文件因此章节无标签，落到全文兜底通道）
+- 抽查确认没有误伤：`MervinPraison/PraisonAI` 这类**真有**行为内容的文件靠正文通道
+  （`body:\byou are\b`）保住了标签；掉标签的是"标题叫 Agent Instructions、正文是项目规则"的那些
+
+**更宽的删除口径未采纳**：若再删 `agent tool` / `agent prompt` / `agent note` / `agent skill` /
+`agent behavior` / `agent workflow`，`agent_meta` 会到 25.2%（实测）。那些章节通常是内容型，
+**等 100 份人工核对给出 precision 数据再定**——不凭"看起来像"删。
+
+## 已知问题（v0.4 待改进）
 
 0. **规则法无法处理同义表达**：只有写进关键词的措辞才能命中。
    v0.1.1 的扩充都是"补近义词"，不是"学会理解"——这条路天然有上限。

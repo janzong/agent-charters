@@ -1,7 +1,13 @@
-# 字段说明 SCHEMA v0.3
+# 字段说明 SCHEMA v0.4
 
 共 **30** 个字段（v0.2 起；v0.1.1 为 26 个）。**粒度：一行 = 一份 `AGENTS.md` 文件。**
 
+> **v0.4 变更**（相对 v0.3）：字段与行数仍然不变，只换规则 `ruleset_v0.1.4`——
+> `agent_meta` 删掉 3 个**路由型**标题词（`agent instruction` / `agent guidance` / `ai instruction`，
+> 这类标题多是文件自己的名字），覆盖率 36.4% → **29.5%**（−35 份，无新增）。
+> 依据是 2026-09-12 的四条**口径裁决**（人定），见 `TAXONOMY.md`「口径裁决」。
+> **v0.3 与 v0.4 的覆盖率不可直接比。**
+>
 > **v0.3 变更**（相对 v0.2）：字段与行数**都不变**（558 行 × 30 列），只换了判定规则
 > `ruleset_v0.1.3`——修掉标题通道的子串误命中（`ci` 命中 `Deci|sions` 之类）。
 > 覆盖率随之变动：`build_test` 87.9% → **85.7%**，其余类别 ≤0.5pp，方向与排序未变。
@@ -90,7 +96,7 @@
 |---|---|---|
 | `extractor_version` | str | 抽取脚本版本 |
 | `taxonomy_version` | str | 分类法**定义**版本（九类是什么） |
-| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 标题词表；v0.1.3 标题通道改词首匹配 + 删裸词 `make`（v0.3 数据集用的就是它） |
+| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 词表；v0.1.3 标题改词首匹配 + 删裸词 `make`；v0.1.4 删 3 个路由型 `agent_meta` 标题词（**v0.4 数据集用的就是它**） |
 | `used_fulltext_fallback` | bool | 是否启用了全文补救通道（说明该文件无有效标题） |
 | `strong_patterns` | bool | 是否启用了强模式通道。**v0.1.1 全行为 `true`**；`false` 用于复现 v0.1 基线 |
 
@@ -139,7 +145,7 @@
   "strong_patterns": true,
   "extractor_version": "extract_v1",
   "taxonomy_version": "taxonomy_v0.1",
-  "ruleset_version": "ruleset_v0.1.3",
+  "ruleset_version": "ruleset_v0.1.4",
   "routes_outward": false,
   "imperative_route": false,
   "hard_route": false,
