@@ -305,6 +305,7 @@ def test_refs_detects_imperative_routing():
 
 def test_resolve_targets_three_states(tmp_path):
     from agent_charters.refs import find_refs, resolve_targets
+    (tmp_path / ".git").mkdir()          # 假装是个仓库根，否则一律 unverified
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "a.md").write_text("x")
     (tmp_path / "deep").mkdir()
@@ -318,9 +319,32 @@ def test_resolve_targets_three_states(tmp_path):
 
 def test_brief_reports_external_refs(tmp_path):
     from agent_charters.brief import render
+    (tmp_path / ".git").mkdir()
     f = tmp_path / "AGENTS.md"
     f.write_text("# AGENTS.md\n\n## Build\nRun `pytest`.\n\n"
                  "改动前先读 `.github/memories/pitfalls.md`。\n", encoding="utf-8")
     out = render([str(f)], lang="zh")
     assert "外部引用" in out
     assert "pitfalls.md" in out
+
+
+def test_refs_does_not_cry_wolf_on_global_charters(tmp_path):
+    """真用一次发现的假警报：用户级章程指向的是"别的项目的根"。
+
+    ~/.codex/AGENTS.md 写着"必须读并遵守项目根 CODEX.md"，按章程自身目录
+    解析必然找不到——宁可说"验不了"，也不要点名报断链。
+    """
+    from agent_charters.refs import find_refs, resolve_targets
+    f = tmp_path / "AGENTS.md"
+    f.write_text("干活前必须读并遵守项目根 `CODEX.md`。\n", encoding="utf-8")
+    res = resolve_targets(find_refs(f.read_text(encoding="utf-8")), tmp_path)
+    assert [st for _, st in res] == ["unverified"]      # 不是 missing
+
+
+def test_refs_still_reports_missing_inside_a_repo(tmp_path):
+    from agent_charters.refs import find_refs, resolve_targets
+    (tmp_path / ".git").mkdir()
+    f = tmp_path / "AGENTS.md"
+    f.write_text("先读 `docs/nope.md`。\n", encoding="utf-8")
+    res = dict(resolve_targets(find_refs(f.read_text(encoding="utf-8")), tmp_path))
+    assert res["docs/nope.md"] == "missing"

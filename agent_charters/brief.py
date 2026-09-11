@@ -163,6 +163,9 @@ def render(files: list[str], lang: str = "en", df=None) -> str:
                 line += f"  ⚠ {len(bad)} 个找不到：{', '.join(bad[:4])}"
             if soft:
                 line += f"  （{len(soft)} 个只在同名位置找到）"
+            unv = [p for p, st in res if st == "unverified"]
+            if unv:
+                line += f"  （{len(unv)} 个无法核验：目录不是仓库根）"
             out.append(line)
     out.append("")
 

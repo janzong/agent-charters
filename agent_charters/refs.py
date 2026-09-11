@@ -105,10 +105,18 @@ def resolve_targets(refs: dict, base_dir: str | Path) -> list[tuple[str, str]]:
     三态：`exists` 精确存在 ｜ `by_name` 精确路径不对但同名文件在仓库里
     （多为相对某个目录写短名，如 `pitfalls.md` 实际在 `.github/memories/`）｜
     `missing` 全仓库找不到同名文件。
+
+    另有一态 `unverified`：当 base_dir 不像仓库根（无 `.git`）时**不判断链**。
+    理由（真用一次发现）：用户级章程如 `~/.codex/AGENTS.md` 写的是
+    "必须读并遵守项目根 `CODEX.md`"——指向的是**别的项目的根**，
+    按章程自身所在目录解析会报出假断链。宁可说"验不了"，不要误报。
     """
     base = Path(base_dir)
     if not base.exists():
         return []
+    if not (base / ".git").exists():
+        return [(t, "unverified") for t in refs["targets"]
+                if not t.startswith("/") and ".." not in Path(t).parts]
     index = _index(base)
     out: list[tuple[str, str]] = []
     for t in refs["targets"]:

@@ -132,13 +132,18 @@ def cmd_refs(args: argparse.Namespace) -> int:
             print("  未发现外部引用——该章程是自足的。")
             continue
         res = resolve_targets(rec, Path(f).parent)
-        order = {"missing": 0, "by_name": 1, "exists": 2}
+        order = {"missing": 0, "unverified": 1, "by_name": 2, "exists": 3}
         for t, st in sorted(res, key=lambda x: order[x[1]]):
-            mark = {"exists": "✓", "by_name": "~", "missing": "✗"}[st]
+            mark = {"exists": "✓", "by_name": "~", "missing": "✗",
+                    "unverified": "?"}[st]
             print(f"    {mark} {t}")
         bad = [t for t, st in res if st == "missing"]
+        unv = [t for t, st in res if st == "unverified"]
         if bad:
             print(f"  ⚠ {len(bad)} 个指向的路径找不到——指错方向比不指更糟。")
+        if unv:
+            print(f"  (基准目录不是仓库根，{len(unv)} 个指向无法核验——"
+                  f"若章程指向的是别的项目，这是正常的)")
     return 0
 
 
