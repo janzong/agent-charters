@@ -245,7 +245,7 @@ grep -rh --include=SKILL.md '^author:' ~/.hermes/skills | sort | uniq -c | sort 
 
 | 编号 | 对应 | 载体 | 来源性质 | 可公开性 |
 |---|---|---|---|---|
-| S0 | 语料库基线 | `data/processed/agent_charters_v0.1.jsonl`（558 份） | 公开抓取，逐行 `repo_full_name + file_path + file_sha` | ✅ 已公开 |
+| S0 | 语料库基线 | `data/processed/agent_charters_v0.2.jsonl`（558 份） | 公开抓取，逐行 `repo_full_name + file_path + file_sha` | ✅ 已公开 |
 | S1 | F1 | `rmas-v3/CODEX.md` 修订史 | git 记录（机器痕迹） | 🟡 去业务化后 |
 | S2 | F2 | `mohu` / `moya` 章程文件的存续 | git 记录 | ✅ 行数/时间可公开 |
 | S3 | F3 | `moya/docs/{TRUST,COLLABORATION,SHARED_RULES,AGENT_PROMPT}.md` | **对话形成 + 当事人确认** | 🟡 内容近通用，去业务化后建议公开 |

@@ -11,7 +11,12 @@ import re
 VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么、边界在哪）
 # 判定**规则**的版本。定义没变但规则变了（v0.1.1 加强模式通道 + 扩充关键词）时递增。
 # 缺了它，两个数字不同的数据集会顶着同一个 taxonomy_version，无法机器校验可比性。
-RULESET_VERSION = "ruleset_v0.1.1"
+# v0.1.2（2026-09-11）两处规则修正，均来自"真用一次"的审计（work/usage_audit.md）：
+#   U1 `is_pointer` 口径过宽：原先"提到 ≥2 个 .md 文件名 + 体积 <2000B"即判为转引用，
+#      把有实质规则的小章程也剔出统计。11 份人工标注：真 4 / 半 2 / 误 5。
+#   U2 `structure` 标题词表漏了"职责/归属"类标题：33 个这类章节里 9 个无标签。
+# 与 refs.py 第一版那个 87% 假阳性同源——用"出现过文件名"代理"内容为空"。
+RULESET_VERSION = "ruleset_v0.1.2"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -40,7 +45,12 @@ HEAD_RULES: dict[str, list[str]] = {
                     "organisation", "directory", "module", "repository map",
                     "repo map", "file organization", "source tree", "monorepo",
                     "key file", "key director", "where to look",
-                    "架构", "目录", "结构", "布局", "模块", "路径", "代码组织"],
+                    # v0.1.2 补：职责/归属类标题。实测 33 个这类章节里 9 个原先无标签，
+                    # 而"新代码该放哪里/谁负责哪块"正是 structure 要答的问题。
+                    "ownership", "code owner", "who owns", "responsibilit",
+                    "maintainer guide", "component map", "domain map",
+                    "架构", "目录", "结构", "布局", "模块", "路径", "代码组织",
+                    "分工", "职责", "归属", "负责人"],
     "build_test":  ["build", "test", "command", "ci", "lint", "run", "make",
                     "compile", "usage", "task", "script", "verification", "validation",
                     "quality check",
@@ -124,6 +134,28 @@ FULLTEXT_RULES: dict[str, list[str]] = {
 POINTER_PAT = re.compile(
     r"(?:see|read|refer to)\s+[`\[]?\s*([A-Za-z0-9_\-\.]+\.(?:md|mdc))", re.I)
 MD_LINK_PAT = re.compile(r"\]\([^)]*\.md(?:#[\w\-]+)?\)|`[A-Za-z0-9_\-\.]+\.md`")
+
+# v0.1.2：判定"正文是不是空壳"用——去掉链接、路径、markdown 装饰后的正文字节数。
+# 原先只看体积 + 提到几个 .md，把"短但有料"的章程误判为转引用（见 RULESET_VERSION 注释）。
+_STRIP_LINK = re.compile(r"\[[^\]]*\]\([^)\s]+\)")
+_STRIP_PATH = re.compile(r"`[^`\n]*`|[\w\-./]+\.(?:md|mdc|txt)\b")
+_STRIP_DECOR = re.compile(r"[-*`#>|=|]")
+
+# 语义门：这些话说等于作者自陈"本文件只是路由"，与厚度无关。
+# 只用**精确自陈**的短语。"single source of truth" 这类口语化的不算——实测它在 34 份
+# 文件里出现，其中大多是几万字节的大文件，拿它当判据会大面积误伤。
+POINTER_SEMANTIC = re.compile(
+    r"(?i)no instructions in this file|all instructions are in|thin[- ]pointer"
+    r"|contains? routing rules|for guidance .{0,30}?see"
+    r"|本文不写规则|全部规则在")
+
+
+def content_bytes(text: str) -> int:
+    """去掉链接/路径/markdown 装饰后的正文字节数——"壳"有多厚。"""
+    s = _STRIP_LINK.sub("", text)
+    s = _STRIP_PATH.sub("", s)
+    s = _STRIP_DECOR.sub("", s)
+    return len(re.sub(r"\s+", " ", s).strip().encode())
 
 # 指令词密度用于判定 content_mode
 IMPERATIVE_PAT = re.compile(

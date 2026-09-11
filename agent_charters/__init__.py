@@ -8,14 +8,15 @@
     print(mine["categories"])
 """
 
-from .extract import (analyze_file, analyze_text, category_coverage,
-                      load_corpus, substantive)
+from .extract import (DATASET_VERSION, analyze_file, analyze_text,
+                      category_coverage, load_corpus, substantive)
 from .taxonomy import CATEGORIES, RULESET_VERSION, VERSION
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = [
     "CATEGORIES",
+    "DATASET_VERSION",
     "RULESET_VERSION",
     "VERSION",
     "analyze_file",

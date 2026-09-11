@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 RAW = Path("data/raw/full")
-PARQUET = "data/processed/agent-charters-v0.1.parquet"
+PARQUET = "data/processed/agent-charters-v0.2.parquet"
 
 # 一行"在划边界"的线索（第一版线索太松：抽验发现 never/do not 命中的
 # 多是普通英文散文，如 "never from the stored token"，与边界无关。收紧为"必须带对象"）

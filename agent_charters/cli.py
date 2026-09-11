@@ -12,8 +12,9 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from .extract import (CATEGORIES, analyze_file, category_coverage, load_corpus,
-                      substantive)
+from . import __version__
+from .extract import (CATEGORIES, DATASET_VERSION, analyze_file,
+                      category_coverage, load_corpus, substantive)
 
 
 def _bar(pct: int, width: int = 28) -> str:
@@ -26,7 +27,7 @@ def cmd_stats(args: argparse.Namespace) -> int:
     sub = substantive(df)
     ruleset = (df["ruleset_version"].iloc[0]
                if "ruleset_version" in df.columns else "ruleset_v0.1")
-    print(f"语料库 v0.1.1 ｜ 抓取 {len(df)} 份 ｜ 实质内容 {len(sub)} 份 "
+    print(f"语料库 {DATASET_VERSION} ｜ 抓取 {len(df)} 份 ｜ 实质内容 {len(sub)} 份 "
           f"｜ 快照 {df['retrieved_at'].iloc[0]} ｜ {ruleset}\n")
 
     print("类别覆盖（实质文件）")
@@ -150,8 +151,10 @@ def cmd_refs(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="agent-charters",
-        description="人写给 AI 智能体的书面规约语料库（数据 v0.1.1 / 工具 v0.2.0）")
-    p.add_argument("--data", help="自定义语料库 parquet 路径（默认用随包的 v0.1.1）")
+        description="人写给 AI 智能体的书面规约语料库"
+                    f"（数据 {DATASET_VERSION} / 工具 {__version__}）")
+    p.add_argument("--data",
+                   help=f"自定义语料库 parquet 路径（默认用随包的 {DATASET_VERSION}）")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s1 = sub.add_parser("stats", help="全局分布")

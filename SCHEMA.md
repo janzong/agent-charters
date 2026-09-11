@@ -1,6 +1,10 @@
-# 字段说明 SCHEMA v0.1
+# 字段说明 SCHEMA v0.2
 
-共 26 个字段（v0.1.1 起）。**粒度：一行 = 一份 `AGENTS.md` 文件。**
+共 **30** 个字段（v0.2 起；v0.1.1 为 26 个）。**粒度：一行 = 一份 `AGENTS.md` 文件。**
+
+> **v0.2 变更**（相对 v0.1.1）：①新增 4 个"知识放在哪里"的结构字段（见下节）；
+> ②`is_pointer` 判定收紧（ruleset v0.1.2），转引用文件 11 → 7，可用于统计的实质文件
+> 507 → 511。**v0.1.1 与 v0.2 的覆盖率不可直接比较。**
 
 ## 标识与可追溯
 
@@ -56,13 +60,32 @@
 | `content_mode` | str | `rule` / `knowledge` / `mixed` |
 | `rule_signals` | int | 指令词（do not / must / never / always / avoid / required）出现次数 |
 
+## 知识放在哪里（结构信号，v0.2 新增）
+
+九类按**内容**分类，量不出"我指向别处"。这四个字段补上那个维度——
+发现 16 表明近一半章程是**入口**而非全集（见 `FINDINGS.md`）。
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `routes_outward` | bool | 是否存在外部引用（下面两者任一）。实测 **54%** |
+| `imperative_route` | bool | **祈使式**转引："read / see / 详见 X.md"。实测 **49%**（发现 16 的那个 49%） |
+| `hard_route` | bool | 指向**知识载体或规则目录**（`memories/`、`MEMORY.md`、`pitfalls`、`.cursor/rules`、`copilot-instructions`…）。实测 **15%** |
+| `ref_targets` | int | 检测到几个被指向的路径 |
+
+> `imperative_route` 与 `hard_route` **不是**包含关系：既有"只祈使、不点载体"的
+> （200 份），也有"只点载体、没有祈使动词"的（29 份）。`routes_outward` 是两者的并集。
+> 口径来源：`work/external_ref_scan.py`（第一版"任意 .md 路径"命中 87%，是假阳性机器，已否决）。
+>
+> **这里只记录"指向"，不判断"指向的东西是否存在"**——存在性要拿到被指向的文件才能判，
+> 属于工具侧能力（`agent-charters refs`，四态：`exists` / `by_name` / `missing` / `unverified`）。
+
 ## 抽取元数据（可复现性）
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
 | `extractor_version` | str | 抽取脚本版本 |
 | `taxonomy_version` | str | 分类法**定义**版本（九类是什么） |
-| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了（v0.1.1 加强模式通道）时递增 |
+| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 标题词表（v0.2 数据集用的就是它） |
 | `used_fulltext_fallback` | bool | 是否启用了全文补救通道（说明该文件无有效标题） |
 | `strong_patterns` | bool | 是否启用了强模式通道。**v0.1.1 全行为 `true`**；`false` 用于复现 v0.1 基线 |
 
@@ -99,7 +122,11 @@
   "strong_patterns": true,
   "extractor_version": "extract_v1",
   "taxonomy_version": "taxonomy_v0.1",
-  "ruleset_version": "ruleset_v0.1.1",
+  "ruleset_version": "ruleset_v0.1.2",
+  "routes_outward": false,
+  "imperative_route": false,
+  "hard_route": false,
+  "ref_targets": 0,
   "duplicate_sha_count": 1
 }
 ```

@@ -9,11 +9,17 @@ import pandas as pd
 
 import re as _re
 
+from .refs import find_refs
 from .taxonomy import (CATEGORIES, IMPERATIVE_PAT, MD_LINK_PAT, POINTER_PAT,
-                       RULESET_VERSION, STRONG_PATTERNS, VERSION, classify,
-                       classify_fulltext, split_sections)
+                       POINTER_SEMANTIC, RULESET_VERSION, STRONG_PATTERNS,
+                       VERSION, classify, classify_fulltext, content_bytes,
+                       split_sections)
 
 EXTRACTOR_VERSION = "extract_v1"
+
+# 数据集版本：决定发布文件名里的版本位（agent-charters-<DS>.parquet）。
+# 与工具版本解耦（D24）——工具在迭代，数据没变时不该跟着升。
+DATASET_VERSION = "v0.2"
 
 
 def doc_language(text: str) -> str:
@@ -66,7 +72,14 @@ def analyze_text(text: str, meta: dict | None = None, *,
     is_sub = size >= 100 and not re.fullmatch(
         r"\s*[^\n]{0,80}\.(?:md|mdc|txt)\s*", text)
     md_links = len(MD_LINK_PAT.findall(text))
-    is_pointer = (bool(POINTER_PAT.search(text)) or md_links >= 2) and size < 2000
+    # v0.1.2：加"壳厚"门与语义门。原先 = (出现 see/read X.md 或 ≥2 个 .md 链接) 且 <2000B，
+    # 于是"提到两个 .md 文件名"≈"只是指针"，把短但有料的章程剔出了统计（11 份里 5 份误判）。
+    # 两个门必须都过：①薄（去链接去路径后 <400B）②确实在指向（出现 see/read X.md 或 ≥2 个 .md）
+    # 或作者自陈"本文件只是路由"。
+    thin = content_bytes(text) < 400
+    routey = bool(POINTER_PAT.search(text)) or md_links >= 2
+    is_pointer = size < 2000 and (bool(POINTER_SEMANTIC.search(text))
+                                  or (thin and routey))
     rule_signals = len(IMPERATIVE_PAT.findall(text))
     mode = ("rule" if rule_signals >= 5 else
             "knowledge" if rule_signals <= 1 else "mixed")
@@ -104,7 +117,20 @@ def analyze_text(text: str, meta: dict | None = None, *,
         "extractor_version": EXTRACTOR_VERSION,
         "taxonomy_version": VERSION,
         "ruleset_version": RULESET_VERSION,
+        # v0.2（D28）：知识放在哪里——结构信号，不属于九类中的任何一类。
+        # 只有指向，没有存在性判断（抽不到被指向的文件），存在性在 CLI refs 里现查。
+        # 这四个字段是为了让文档里的口径**可从数据集复算**（D28 立的规矩）：
+        #   imperative_route = 祈使转引（"read / 详见 X.md"）——FINDINGS 16 的 49%
+        #   hard_route       = 指向知识库/规则目录——FINDINGS 16 的 15%
+        #   routes_outward   = 两者任一（54%）；缺了 imperative_route，49% 那个数只能
+        #                      靠 work/external_ref_scan.py + data/raw 才算得出。
+        "_refs": find_refs(text),
     }
+    _r = record.pop("_refs")
+    record["routes_outward"] = _r["routes_outward"]
+    record["imperative_route"] = _r["imperative"]
+    record["hard_route"] = _r["hard"]
+    record["ref_targets"] = len(_r["targets"])
     return record
 
 
@@ -117,7 +143,8 @@ def analyze_file(path: str | Path, meta: dict | None = None) -> dict:
     return analyze_text(text, m)
 
 
-_DATA = Path(__file__).parent / "data" / "agent-charters-v0.1.parquet"
+_DATA = (Path(__file__).parent / "data"
+         / f"agent-charters-{DATASET_VERSION}.parquet")
 
 
 def load_corpus(path: str | Path | None = None) -> pd.DataFrame:

@@ -18,7 +18,7 @@ from pathlib import Path
 import pandas as pd
 
 RAW = Path("data/raw/full")
-PARQUET = "data/processed/agent-charters-v0.1.parquet"
+PARQUET = "data/processed/agent-charters-v0.2.parquet"
 
 # —— 已否决的口径（留档，别再用）——
 REJECTED = re.compile(r"[\w\-./]*[\w\-]+\.(?:md|mdc|txt)\b", re.I)

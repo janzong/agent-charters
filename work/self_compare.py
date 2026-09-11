@@ -42,7 +42,7 @@ def analyze(path: str) -> dict:
 
 def main() -> None:
     pairs = [a.split("=", 1) for a in sys.argv[1:]]
-    df = pd.read_parquet("data/processed/agent-charters-v0.1.parquet")
+    df = pd.read_parquet("data/processed/agent-charters-v0.2.parquet")
     corpus = df[df["is_substantive"] & ~df["is_pointer"]]
     n = len(corpus)
     corpus_cov = {c: sum(1 for t in corpus["categories"] if c in t) * 100 // n

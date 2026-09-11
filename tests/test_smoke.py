@@ -32,9 +32,9 @@ def corpus():
 
 def test_corpus_shape(corpus):
     assert len(corpus) == 558
-    assert len(corpus.columns) == 26
+    assert len(corpus.columns) == 30
     sub = substantive(corpus)
-    assert len(sub) == 507
+    assert len(sub) == 511
 
 
 def test_every_row_is_traceable(corpus):
@@ -94,6 +94,93 @@ def test_known_false_positives_stay_out(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
 
 
+# U1（v0.1.2）：`is_pointer` 曾被"提到 ≥2 个 .md 文件名"命中——于是"有实质规则但引用了
+# 文档"的短章程被当成空壳剔除。11 份人工标注：真 4 / 半 2 / 误 5。
+# 下面两个是相反方向的锁：真的指针要抓得住，假的指针不许再抓。
+
+POINTER_LIKE = """# Chroma Codebase Guidelines for AI Agents
+
+See [CLAUDE.md](./CLAUDE.md) for codebase conventions (commit message format, etc.).
+"""
+
+
+def test_true_pointer_is_kept():
+    """教科书式转引："See CLAUDE.md"——正文去链接后 100B，没有实质规则。"""
+    assert analyze_text(POINTER_LIKE)["is_pointer"] is True
+
+
+# 形态取自 VoltAgent/voltagent（1200B 正文 + 4 条 docs 链接 + 命令块 + Gotchas）：
+# 曾被 U1 判成指针，而它显然承载了实质规则。
+NOT_A_POINTER = """# VoltAgent
+
+VoltAgent is an open-source TypeScript framework for building and orchestrating AI agents.
+
+## Overview
+
+- View [`docs/structure.md`](./docs/structure.md) for the repository structure
+- View [`docs/tooling.md`](./docs/tooling.md) for development tools
+- View [`docs/testing.md`](./docs/testing.md) for testing guidelines
+- View [`docs/linting.md`](./docs/linting.md) for formatting and linting
+
+## Validating Changes
+
+To validate your changes you can run the following commands:
+
+```bash
+pnpm test:all
+pnpm build:all
+pnpm lint
+```
+
+## Important Notes for AI Agents
+
+1. **Always check existing patterns** before implementing new features
+2. **Use the established registry patterns** for agent and tool management
+3. **Maintain type safety** - this is a TypeScript-first codebase
+4. **Follow the monorepo structure** - changes may impact multiple packages
+5. **Test your changes** - ensure all tests pass before committing
+
+## Gotchas
+
+- **JSON.stringify** should never be used; use the `safeStringify` helper instead.
+"""
+
+
+def test_md_mentions_alone_do_not_make_a_pointer():
+    """回归 U1：四个 .md 链接 + 正文不到 2KB，但有命令、有规则、有坑——不是空壳。"""
+    rec = analyze_text(NOT_A_POINTER)
+    assert rec["is_pointer"] is False
+    assert rec["categories"], "被判成指针会连带丢掉类别"
+
+
+def test_pointer_semantic_self_declaration():
+    """语义门：作者自陈"本文件不写规则"时，厚度不该救它。"""
+    text = ("# AGENTS.md\n\n" + "This file is a thin pointer.\n" * 20
+            + "\nAll instructions are in `.github/memories/MEMORY.md`.\n")
+    assert analyze_text(text)["is_pointer"] is True
+
+
+@pytest.mark.xfail(strict=False, reason=(
+    "已知边界（LIMITATIONS §10）：208B 正文 + 3 条具体规则仍被薄门判为指针。"
+    "修掉它这条会变 XPASS——那时请把它改成普通断言。"))
+def test_known_boundary_short_doc_with_rules():
+    text = ("# Customer docs\n\nUses **Bun**, not npm or pnpm.\n\n"
+            "- When adding a page, register it in `navigation.json`.\n"
+            "- FAQs use a `faqItems` frontmatter field. See `billing.mdoc`.\n"
+            "- Local build: `bun run build`.\n")
+    assert analyze_text(text)["is_pointer"] is False
+
+
+# U2（v0.1.2）：含「分工/职责/ownership」类标题的 33 个章节里 9 个完全没有标签，
+# 而"新代码该放哪里、谁负责哪块"正是 structure 要答的问题。
+
+def test_ownership_map_heading_is_structure():
+    text = ("# Agent Map\n\n## Code Ownership Map\n\n"
+            "- `packages/client/src` - Vue 3 client, stores, routes, i18n.\n"
+            "- `packages/server/src` - Koa API, Socket.IO, persistence.\n")
+    assert "structure" in analyze_text(text)["categories"]
+
+
 def test_strong_patterns_can_be_disabled():
     """回归对比通道：关掉强模式应回到 v0.1 基线行为。"""
     assert "boundaries" in analyze_text(ZH_CHARTER)["categories"]
@@ -141,6 +228,19 @@ def test_brief_lists_every_category_with_live_base_rates(corpus):
         assert c in out, c
         assert f"{cov[c]:>3}%" in out, f"{c} 的比例与语料库不一致"
     assert out.count("【") == len(CATEGORIES)
+
+
+def test_brief_refs_rates_are_live(corpus):
+    """外部引用的两个基准率同样必须实时算（D25）——49%/15% 曾是硬编码。"""
+    from agent_charters.brief import refs_rates, render
+    sub = substantive(corpus)
+    n = len(sub)
+    routed = round(int(sub["imperative_route"].sum()) * 100 / n)
+    hard = round(int(sub["hard_route"].sum()) * 100 / n)
+    assert refs_rates(corpus) == (routed, hard)
+    out = render([], lang="zh", df=corpus)
+    assert f"{routed}% 的章程会转引外部文件" in out
+    assert f"{hard}% 指向知识库或规则目录" in out
 
 
 def test_brief_gap_mode_only_asks_for_missing(tmp_path):
@@ -243,11 +343,11 @@ def test_jsonl_is_byte_identical_across_hash_seeds(tmp_path):
                        cwd=ROOT, env=env, check=True,
                        stdout=subprocess.DEVNULL)
         rows = [json.loads(l) for l in
-                (outdir / "agent_charters_v0.1.jsonl").read_text().splitlines()]
+                (outdir / "agent_charters_v0.2.jsonl").read_text().splitlines()]
         import pandas as pd
         buf = outdir / "x.parquet"
         pd.DataFrame(rows).to_parquet(buf, index=False, compression="zstd")
-        outs.append(((outdir / "agent_charters_v0.1.jsonl").read_bytes(),
+        outs.append(((outdir / "agent_charters_v0.2.jsonl").read_bytes(),
                      buf.read_bytes()))
     assert outs[0][0] == outs[1][0], "jsonl 不确定：同数据不同哈希种子字节不同"
     assert outs[0][1] == outs[1][1], "parquet 不确定：同数据不同哈希种子字节不同"

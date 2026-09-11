@@ -68,7 +68,7 @@ def main() -> None:
     args = ap.parse_args()
 
     import pandas as pd
-    df = pd.read_parquet("data/processed/agent-charters-v0.1.parquet")
+    df = pd.read_parquet("data/processed/agent-charters-v0.2.parquet")
     df = df[df["is_substantive"] & ~df["is_pointer"]]
     if args.sort == "stars":
         df = df.sort_values("repo_stars", ascending=False)

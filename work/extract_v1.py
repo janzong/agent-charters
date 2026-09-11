@@ -1,7 +1,7 @@
 """内容级抽取器：把 data/raw/full 的 558 份章程变成结构化数据集。
 
 用法: .venv/bin/python work/extract_v1.py
-输出: data/processed/agent_charters_v0.1.jsonl + data/processed/extract_report.md
+输出: data/processed/agent_charters_v0.2.jsonl + data/processed/extract_report.md
 
 设计：
   - 分类/切分逻辑**不在本文件**，全部委托给 agent_charters.extract.analyze_text，
@@ -61,7 +61,7 @@ def main() -> None:
                 cat_doc_count[t] += 1
                 cat_item_count[t] += rec["category_counts"][t]
 
-    out = outdir / "agent_charters_v0.1.jsonl"
+    out = outdir / "agent_charters_v0.2.jsonl"
     with out.open("w", encoding="utf-8") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")

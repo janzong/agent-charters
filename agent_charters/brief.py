@@ -66,16 +66,31 @@ GOTCHA_ANTI = (
     "Do not write generic advice (\"remember to install dependencies\", "
     "\"don't commit .env\"): 34% of the pitfalls in the corpus are not pitfalls.")
 
-# 外部引用不是一个"类别"，而是"知识放在哪里"。规则集尚未覆盖它，
-# 所以这两个基准率**不是**从随包语料库实时算的，出处是 work/external_ref_scan.py
-# （507 份实测）。等 v0.2 把该信号并入数据集后，改为实时计算（STATE.md D28）。
+# 外部引用不是一个"类别"，而是"知识放在哪里"。v0.2 起它已并入数据集
+# （imperative_route / hard_route，见 STATE.md D28），所以这里的两个基准率
+# **从随包语料库实时算**——与九类覆盖率同一条纪律（D25）。
+# 口径出处：work/external_ref_scan.py（当初手写在 brief 里，现改为数据字段）。
 REFS_BASE = {
-    "zh": "语料库实测：49% 的章程会转引外部文件，15% 指向知识库或规则目录"
-          "（来源 work/external_ref_scan.py，非实时计算）",
-    "en": "Measured on the corpus: 49% route to another file, 15% point at a "
-          "knowledge store or rules directory (source: work/external_ref_scan.py, "
-          "not computed live)",
+    "zh": "语料库实测：{routed}% 的章程会转引外部文件，{hard}% 指向知识库或规则目录"
+          "（随包语料库实时计算）",
+    "en": "Measured on the corpus: {routed}% route to another file, {hard}% point "
+          "at a knowledge store or rules directory (computed live from the "
+          "bundled corpus)",
 }
+
+
+def refs_rates(df=None) -> tuple[int, int]:
+    """外部引用的两个基准率（祈使转引 % / 知识载体 %），从语料库实时计算。
+
+    口径必须与 FINDINGS 16 一致：转引指**祈使式**（"read / 详见 X.md"），
+    不是 routes_outward（那还包含"只点名知识库、没有祈使动词"的 29 份）。
+    """
+    from .extract import load_corpus
+    sub = substantive(df if df is not None else load_corpus())
+    n = len(sub) or 1
+    return (round(int(sub["imperative_route"].sum()) * 100 / n),
+            round(int(sub["hard_route"].sum()) * 100 / n))
+
 
 REFS_ASK = (
     "知识放在哪？如果坑/模式写在别的文件里，章程要明确指过去——"
@@ -145,8 +160,9 @@ def render(files: list[str], lang: str = "en", df=None) -> str:
         out.append(f"  · {title} —— {why}")
     out.append("")
 
-    out += ["外部引用（不在九类之内，规则集尚未覆盖）", "-" * 58]
-    out.append(f"  {REFS_BASE[lang]}")
+    out += ["外部引用（结构信号，不在九类之内）", "-" * 58]
+    routed, hard = refs_rates(df)
+    out.append(f"  {REFS_BASE[lang].format(routed=routed, hard=hard)}")
     out.append(f"  该问：{REFS_ASK[OUTPUT_LANG[lang]]}")
     if files:
         for f in files:
@@ -198,7 +214,7 @@ def generator_prompt(categories: list[str] | None = None, lang: str = "en",
             "If a slot has no evidence in the repository, write that explicitly "
             "instead of guessing.",
             "For pitfalls, do not write generic advice: "
-            "34% of the pitfalls in a 507-file corpus of AGENTS.md files are not "
+            "34% of the pitfalls found in a corpus of AGENTS.md files are not "
             "pitfalls at all.",
             "If the knowledge lives in other files (pitfalls list, rules directory, "
             "decision log), say so explicitly and make sure every path you point at "
@@ -215,7 +231,7 @@ def generator_prompt(categories: list[str] | None = None, lang: str = "en",
             lines.append(f"- {c}：{ASK[c][0]}")
         lines += [
             "如果某一项在仓库里找不到依据，就明写“仓库里没有证据”，不要猜。",
-            "写坑的时候不要写通用建议：507 份章程语料库里 34% 的“坑”其实不是坑。",
+            "写坑的时候不要写通用建议：章程语料库里 34% 的“坑”其实不是坑。",
             "如果知识放在别的文件里（坑点清单、规则目录、决策记录），要明确指过去，"
             "并确保每个路径都真实存在。",
             "一切以仓库里真实存在的东西为准，不要编造找不到的命令。",

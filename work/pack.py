@@ -1,7 +1,7 @@
 """把抽取结果打成 parquet（发布格式）。
 
 用法: .venv/bin/python work/pack.py
-输出: data/processed/agent-charters-v0.1.parquet
+输出: data/processed/agent-charters-v0.2.parquet
 """
 import json
 from pathlib import Path
@@ -10,14 +10,14 @@ import pandas as pd
 
 
 def main() -> None:
-    src = Path("data/processed/agent_charters_v0.1.jsonl")
+    src = Path("data/processed/agent_charters_v0.2.jsonl")
     rows = [json.loads(l) for l in src.read_text().splitlines()]
     df = pd.DataFrame(rows)
     # list/dict 列在 parquet 里保留为列，便于下游直接展开
-    out = Path("data/processed/agent-charters-v0.1.parquet")
+    out = Path("data/processed/agent-charters-v0.2.parquet")
     df.to_parquet(out, index=False, compression="zstd")
     # 随包发布的那一份必须与仓库里的一致，否则 CLI 与数据集会对不上
-    pkg = Path("agent_charters/data/agent-charters-v0.1.parquet")
+    pkg = Path("agent_charters/data/agent-charters-v0.2.parquet")
     pkg.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(pkg, index=False, compression="zstd")
     print(f"{len(df)} 行 x {len(df.columns)} 列 -> {out}")

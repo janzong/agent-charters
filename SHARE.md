@@ -2,11 +2,11 @@
 
 > 给作者（人）用的发帖文案。**机器发帖会被当 spam，必须你自己发。**
 > 这不是数据集的组成部分，发完可以删；留着也行——下次发 v0.2 时能复用结构。
-> 文案里的每个数字都可由 `data/processed/agent-charters-v0.1.parquet` 复算。
+> 文案里的每个数字都可由 `data/processed/agent-charters-v0.2.parquet` 复算。
 
 ## 0. 发布前 checklist
 
-- [ ] 链接：`https://github.com/janzong/agent-charters`（Release `v0.1.1`）
+- [ ] 链接：`https://github.com/janzong/agent-charters`（Release `v0.2`）
 - [ ] 先自己走一遍 README 的 `compare` 例子，评论里有人问细节时要能现场回答
 - [ ] 只发你能守得住的量：一次 2 个渠道，隔 3–5 天再发下一批。
       同一天到处贴 = 看起来像推广机器人
@@ -43,13 +43,13 @@ Some things that surprised me:
 
 - "How to build/test/run" dominates: 87% of files have build/test content. That's the
   single thing people most want their agent to know.
-- Prohibitions come second (66%), ahead of architecture and style. People draw lines
+- Prohibitions come second (65%), ahead of architecture and style. People draw lines
   before they hand over autonomy.
 - "Gotchas" is the rarest category at 14% — yet it's the knowledge you can't re-derive
   by reading the code. The most useful thing is the least written.
-- 11 files contain no instructions at all, just a pointer: "see CLAUDE.md". Some teams
+- 7 files contain no instructions at all, just a pointer: "see CLAUDE.md". Some teams
   have started to split their agent rules across several files.
-- 74% of files are imperative (do/don't) rather than declarative knowledge.
+- 73% of files are imperative (do/don't) rather than declarative knowledge.
 - Only 5% are in Chinese, which seems low given GitHub's Chinese-speaking user base.
 
 There's also a small CLI in the repo. The one I actually use:
@@ -90,19 +90,19 @@ I kept writing AGENTS.md files for my own projects and wondering whether I was
 missing the obvious. So I pulled 558 of them from public GitHub repos and wrote a
 rule-based taxonomy to see what people actually put in these files.
 
-9 categories, 26 fields per row. No LLM was used to label anything — it's heading +
+9 categories, 30 fields per row. No LLM was used to label anything — it's heading +
 keyword rules, and each row records which ruleset produced it.
 
-Numbers worth a look (507 substantive files):
+Numbers worth a look (511 substantive files):
 
 | category | share |
 |---|---|
 | build/test/run commands | 87% |
 | git/PR/release workflow | 66% |
-| prohibitions & boundaries | 66% |
-| architecture & file layout | 58% |
-| code style | 57% |
-| environment & toolchain | 45% |
+| prohibitions & boundaries | 65% |
+| architecture & file layout | 59% |
+| code style | 56% |
+| environment & toolchain | 44% |
 | AI-specific behavior rules | 36% |
 | project overview | 34% |
 | pitfalls / gotchas | 14% |
@@ -111,7 +111,7 @@ The 14% is the interesting one for me. "Don't use `bun install`, it breaks the
 lockfile" is knowledge that no one can recover by reading the code, and it's the
 least written-down category.
 
-Also: 74% of files are imperative rather than explanatory, and 11 files are pure
+Also: 73% of files are imperative rather than explanatory, and 7 files are pure
 stubs ("see CLAUDE.md"), which suggests some teams are splitting agent rules across
 multiple files.
 
@@ -179,7 +179,7 @@ false positives are the ones that actually hurt.
 构建、测试、运行的命令出现在 87% 的文件里，是第二位（git/PR 流程 66%）的
 两倍多。人给 AI 写的第一件事非常朴素：告诉它怎么编译、怎么测、怎么跑。
 
-**二、禁令排在很前面（66%）**
+**二、禁令排在很前面（65%）**
 
 一个很显眼的模式：大量文件用整节写"不要做什么"——
 `NO FILE DELETION`、`DO NOT EVER`、`Never run cargo build`、
@@ -212,7 +212,7 @@ TESTING.md / TROUBLESHOOTING.md）。这说明规约开始被当成工程资产�
 
 **五、中文项目严重缺席（5%）**
 
-507 份可用于统计的文件里，中文文档只有 26 份。
+511 份可用于统计的文件里，中文文档只有 26 份。
 考虑到中文开发者在 GitHub 上的规模，这个比例低得不像话。
 可能的原因有三个：中文项目用 AGENTS.md 的比例确实低、中文规约更爱放在
 README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
@@ -264,7 +264,7 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 ```
 写 AGENTS.md 的时候总怀疑自己漏了要紧的东西，就把 GitHub 上公开的
-558 份抓下来做了一次结构化标注（9 类，26 个字段）。
+558 份抓下来做了一次结构化标注（9 类，30 个字段）。
 
 几条比较意外的：
 
@@ -302,7 +302,7 @@ https://github.com/janzong/agent-charters
 
 > 两个用途：一是看自己写章程时漏了什么（compare 命令）；
 > 二是研究用途——比如"最值钱的知识写得最少"这个现象，
-> 以前只能举例，现在有 507 份可以量化。
+> 以前只能举例，现在有 511 份可以量化。
 > 我不主张它是权威数据，它是一个有明确边界、可复算的样本。
 
 **"为什么不抓 10000 份 / 为什么只有 AGENTS.md？"**
