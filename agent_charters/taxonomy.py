@@ -145,7 +145,10 @@ HEAD_RULES: dict[str, list[str]] = {
                     "存放位置", "代码结构", "目录结构", "模块划分"],
     # v0.1.3：裸词 `make` 已删——它是普通英文动词（"Make changes"），
     # 只留 makefile 与具体目标，与 STRONG_PATTERNS 的既有口径一致。
-    "build_test":  ["build", "test", "command", "ci", "lint", "run",
+    # v0.1.8：裸词 `run` 换成"run 后必须跟空格"的 `run ` + `running`。前缀匹配会把
+    # `Runtime` / `Runbook` / `Runtimes` 一起收进来（全库 131 个标题命中 run 词首）；
+    # 收紧后只掉 2 份 build_test（「How Sessions Run」「Stack & Runtimes」），抽查两份都是假。
+    "build_test":  ["build", "test", "command", "ci", "lint", "run ", "running",
                     "makefile", "make build", "make test", "make dev", "make run",
                     "make install", "make lint", "make check", "make clean",
                     "make all", "make command", "make target", "make ci",
@@ -192,11 +195,15 @@ HEAD_RULES: dict[str, list[str]] = {
                     "注意点", "既知の問題", "トラブル", "ハマり", "落とし穴",
                     "常见错误", "易错", "坑点"],
     # v0.1.4：删掉 agent instruction / agent guidance / ai instruction（路由型标题，见 RULESET_VERSION 注释）
-    "agent_meta":  ["you are", "your role", "tone", "persona", "behavior",
-                    "behaviour", "assistant", "subagent", "sub-agent",
-                    "plan mode", "agent workflow", "agent behavior",
+    # v0.1.8：删 `agent note`（全库 11 个标题、独撑 7 份；按边际贡献算 7 份全假，
+    # 真例 hive / CodexBar 另有 agent_meta 证据 ⇒ 删词不掉它们）、删 `agent tool`（6/6 全假）；
+    # 裸词 `behavior` / `behaviour` 收成 `agent behavior` / `behavioral rules`——收紧后掉的 8 份
+    # 全是"软件行为"（Terminal behavior、Local Testnet Behavior、CLI behavior…）。
+    "agent_meta":  ["you are", "your role", "tone", "persona",
+                    "assistant", "subagent", "sub-agent",
+                    "plan mode", "agent workflow", "agent behavior", "behavioral rules",
                     "协作", "行为", "角色", "智能体", "あなた", "役割", "トーン",
-                    "agent note", "agent tool", "agent prompt",
+                    "agent prompt",
                     "multi-agent safety", "agentic plugin", "agent skill"],
 }
 
@@ -248,7 +255,9 @@ BODY_RULES: dict[str, list[str]] = {
                     r"(?<![/\w])AI(?!/[\w])[^.\n]{0,60}\b(?:must|shall|disclos|prohibit)",
                     r"\b(?:bot|autonomous)\w*\s+contributions?\b",
                     r"\bdo not (?:praise|flatter|apologize)\b",
-                    r"\bbe concise\b", r"\btone\b"],
+                    # v0.1.8：删 `\bbe concise\b`——全库 7 个命中全是假（讲文档/输出风格），
+                    # 且 lemonade 与 openai-agents-python 的 agent_meta 全靠它撑着。
+                    r"\btone\b"],
     "build_test":  [r"```(?:bash|sh|shell)?\n[^`]{0,200}\b(?:npm|yarn|pnpm|"
                     r"pytest|make|cargo|go test|mvn|gradle)\b"],
     "gotchas":     [r"\bgotcha\b", r"\bpitfall\b", r"\bwatch out\b",

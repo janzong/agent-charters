@@ -241,6 +241,32 @@ def test_known_false_positives_stay_out(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
 
 
+# O2（ruleset_v0.1.8）：删词/收紧四组，每个词都有人工核对的 precision 数据撑着。
+# 全库实测：`run ` 收紧 −2 份 build_test；`agent note` −8、`agent tool` −3、
+# `behavior` 收紧 −9、删 `be concise` −5；合计 27 份掉标签、**0 新增**，抽查全为假。
+
+@pytest.mark.parametrize("text, forbidden", [
+    ("# A\n\n## Runtime Summary\n\n- bun 运行时。\n", "build_test"),        # 裸词 run 前缀命中 Runtime
+    ("# A\n\n## Stack & Runtimes\n\n- Node 22。\n", "build_test"),
+    ("# A\n\n## Terminal behavior\n\n- 处理 ANSI 序列。\n", "agent_meta"),   # 软件行为 ≠ AI 行为
+    ("# A\n\n## Local Testnet Behavior\n\n- 起本地节点。\n", "agent_meta"),
+    ("# A\n\n## Agent Notes\n\n- 这条是给 agent 的备忘录。\n", "agent_meta"),  # agent note 已删
+    ("# A\n\n## Agent Tooling\n\n- 产品里的 agent 工具。\n", "agent_meta"),   # agent tool 已删
+    ("# A\n\n## Pull Request Guidelines\n\n- Be concise in review replies.\n", "agent_meta"),
+])
+def test_v018_removed_words(text, forbidden):
+    assert forbidden not in analyze_text(text)["categories"]
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("# A\n\n## Run Tests\n\n- 跑测试。\n", "build_test"),
+    ("# A\n\n## Running the app locally\n\n- 步骤。\n", "build_test"),
+    ("# A\n\n## Agent behavior\n\n- 不要奉承用户。\n", "agent_meta"),       # 限定式必须留下
+])
+def test_v018_kept_words(text, expected):
+    assert expected in analyze_text(text)["categories"]
+
+
 # U3（ruleset_v0.1.3）：标题通道曾是**纯子串**匹配，于是 "ci" 命中了 "De**ci**sions"、
 # "script" 命中了 "Type**Script**"。实测 511 份里 18 份文件各掉 1 个类别标签（无一例新增），
 # `build_test` 覆盖率因此从 87.9% 回到 85.7%（v0.2 的公开数字偏乐观）。
