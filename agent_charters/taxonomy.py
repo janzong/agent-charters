@@ -40,7 +40,29 @@ VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么
 #   真有行为内容的文件不掉（如 PraisonAI 靠 `body:\byou are\b` 保住）。
 #   更宽的删除口径（再删 agent tool/prompt/note/skill/behavior/workflow）实测会到 25.2%——
 #   **未采纳**：那些章节通常是内容型，等 100 份人工核对给出 precision 数据再定。
-RULESET_VERSION = "ruleset_v0.1.4"
+# v0.1.5（2026-09-12）CJK 通道修复，来自首次**中文**盲判对照（10 份，用户独立盲判）：
+#   对照结果：逐类一致率 40–70%，规则多标 14 处、漏标 23 处（`work/audit/v0.4-zh-verdicts.md`）。
+#   机制诊断：标题通道只认标题里的词表词；**正文弱信号通道 4 个类别全是英文正则**；
+#   全文通道的门是"标题通道无结果才跑"。⇒ CJK 文档实际只剩「标题词 + 命令类强模式」两条窄路。
+#   本轮三处改动：
+#   (a) 标题词表补**繁体/日文汉字形**（環境≠环境、設定≠设定、検証≠验证、構成≠构成）与
+#       中文常用标题词（目的/概要/注意点/方針/禁止事項/不可协商）；实测 LiveLog 7 个日文标题原先 0 命中。
+#   (b) 正文通道补中文模式（禁令"不允许/严禁"、坑"否则会/会导致"、环境"环境变量/venv"、
+#       概览"本项目/这是一个"、结构"目录结构/模块划分"、流程"提交信息/分支命名"、风格"命名规范"）。
+#       只收高精度形式：`必须` 太泛（"必须运行测试"是 build_test 不是禁令）、`不要` 在散文里太多，均不收。
+#   (c) `doc_language` 加假名判据：日文此前被判成 `zh`（LiveLog 假名 274 / 汉字 202）。
+# v0.1.6（2026-09-12）`split_sections` 跳过围栏代码块内的行（``` / ~~~）。
+#   此前**任何** `# 注释` 行都被当成标题。实测 129/558 份文件在代码块里有这类行
+#   （最多一份 54 行），后果：① bash 注释变成章节标题，把正文切碎；
+#   ② 往标题通道灌假信号（`# tools/…` → environment、`# Install` → build_test、
+#      `# Rules` → boundaries、`# Writing Style` → style）；③ `section_count` 失真。
+#   两条配套规矩：**围栏数为奇时最后一个标记不作数**（否则未闭合围栏会吞掉后文，
+#   tempoxyz/mpp 的 39 个章节掉到 10 个）；**一段围栏里藏着 ≥3 个 markdown 标题时
+#   不当它是代码块**（mpp 用 ```mdx 套 ```ts 的格式不良嵌套，CommonMark 会吞掉 7 个真标题）。
+#   同批落地 `TAXONOMY.md` 口径裁决 5–7（人定）：①"本文件是…入口"这类文件自身角色不算 overview；
+#   ②指向某规范的链接不算 style；③文档指针表算 structure（新增"表格型结构信号"，
+#   只认表头首列为 文档/文件/路径/目录/模块/组件/包 的表，实测 structure 59.7%→59.9%）。
+RULESET_VERSION = "ruleset_v0.1.6"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -55,16 +77,29 @@ CATEGORIES = [
 ]
 
 HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
+FENCE = re.compile(r"^\s{0,3}(?:```|~~~)")
+
+# 标题层的否决式：词表命中后，标题整体落在这些模式里就撤掉该标签。
+# 只为**多义词**而设，每条都来自一次实测误标（见 RULESET_VERSION v0.1.6 注释）。
+HEAD_VETO: dict[str, list[str]] = {
+    "style": [r"(?:提交|发布|流程|合并|分支|评审|工程)规范",
+              r"(?:提交|发布|流程|合并|分支)约定"],
+    "boundaries": [r"已知.{0,8}限制", r"限制（不是 bug"],
+}
 
 # 标题通道（强信号）
 HEAD_RULES: dict[str, list[str]] = {
+    # v0.1.5：补中日文标题词。缺的两类很典型——①中文常用标题词（目的/概要/注意点）；
+    # ②**繁体/日文汉字形**（環境≠环境、設定≠设定、検証≠验证、構成≠构成），
+    # 简体词表在繁体与日文文档上等于空转（实测 sankichi92/LiveLog：7 个日文标题 0 命中）。
     "overview":    ["overview", "purpose", "about", "introduction", "what is",
                     "what this project", "tech stack", "quick reference",
                     "quick start", "start here", "background", "key concept",
                     "概述", "简介", "背景", "一句话", "项目介绍", "说明",
                     "what this is", "project context", "product direction",
                     "project summary", "current status", "technology stack",
-                    "项目定位", "定位", "技术栈", "项目简介"],
+                    "项目定位", "定位", "技术栈", "项目简介",
+                    "目的", "概要", "介绍", "快速开始", "はじめに", "紹介"],
     "structure":   ["architecture", "structure", "layout", "organization",
                     "organisation", "directory", "module", "repository map",
                     "repo map", "file organization", "source tree", "monorepo",
@@ -74,7 +109,9 @@ HEAD_RULES: dict[str, list[str]] = {
                     "ownership", "code owner", "who owns", "responsibilit",
                     "maintainer guide", "component map", "domain map",
                     "架构", "目录", "结构", "布局", "模块", "路径", "代码组织",
-                    "分工", "职责", "归属", "负责人"],
+                    "分工", "职责", "归属", "负责人",
+                    "構成", "構造", "ディレクトリ", "ファイル構成", "モジュール",
+                    "存放位置", "代码结构", "目录结构", "模块划分"],
     # v0.1.3：裸词 `make` 已删——它是普通英文动词（"Make changes"），
     # 只留 makefile 与具体目标，与 STRONG_PATTERNS 的既有口径一致。
     "build_test":  ["build", "test", "command", "ci", "lint", "run",
@@ -84,48 +121,89 @@ HEAD_RULES: dict[str, list[str]] = {
                     "compile", "usage", "task", "script", "verification", "validation",
                     "quality check",
                     "构建", "测试", "命令", "运行", "编译", "校验",
-                    "开发指南", "常用任务", "常用命令"],
+                    "开发指南", "常用任务", "常用命令",
+                    "コマンド", "検証", "チェック", "ビルド", "テスト", "実行",
+                    "开发命令", "本地开发", "上手指南", "启动"],
     "style":       ["style", "convention", "naming", "format", "standard",
                     "best practice", "pattern", "idiom", "code quality", "type hints",
                     "error handling",
-                    "风格", "规范", "命名", "约定", "代码质量"],
+                    "风格", "规范", "命名", "约定", "代码质量",
+                    "コーディング", "命名規則", "スタイル", "規約",
+                    "代码风格", "编码规范", "注释规范"],
     "workflow":    ["workflow", "pull request", "pr ", "commit", "branch",
                     "review", "release", "version", "deploy", "merge", "contributing",
                     "changelog",
                     "流程", "提交", "发布", "分支", "合并", "发布交付",
-                    "贡献", "变更日志"],
+                    "贡献", "变更日志",
+                    "手順", "フロー", "リリース", "コミット", "ブランチ", "レビュー",
+                    "工作流", "协作流程"],
     "environment": ["environment", "tool", "dependency", "config", "cmake",
                     "requirement", "prerequisite", "setup", "install",
-                    "环境", "工具", "依赖", "配置", "安装", "工具链"],
+                    "环境", "工具", "依赖", "配置", "安装", "工具链",
+                    "環境", "設定", "依存関係", "ツール", "セットアップ", "インストール",
+                    "开发环境", "运行环境", "环境准备", "环境搭建", "前置条件"],
     "boundaries":  ["boundar", "rule", "never", "must not", "do not",
                     "prohibit", "restriction", "constraint", "hygiene",
                     "forbidden",
                     "禁止", "边界", "限制", "约束", "不要", "不得",
-                    "规则", "准则", "要求", "红线"],
+                    "规则", "准则", "要求", "红线",
+                    "方針", "ポリシー", "ガードレール", "ルール", "禁止事項", "制約", "厳禁",
+                    "铁律", "硬性规则", "不可协商", "非协商"],
     "gotchas":     ["gotcha", "pitfall", "caveat", "known issue", "warning",
                     "troubleshoot", "common issue", "footgun", "limitation",
                     "陷阱", "注意", "常见问题", "坑", "注意事项", "调试",
-                    "局限"],
+                    "局限", "限制",
+                    "注意点", "既知の問題", "トラブル", "ハマり", "落とし穴",
+                    "常见错误", "易错", "坑点"],
     # v0.1.4：删掉 agent instruction / agent guidance / ai instruction（路由型标题，见 RULESET_VERSION 注释）
     "agent_meta":  ["you are", "your role", "tone", "persona", "behavior",
                     "behaviour", "assistant", "subagent", "sub-agent",
                     "plan mode", "agent workflow", "agent behavior",
-                    "协作", "行为", "角色", "智能体",
+                    "协作", "行为", "角色", "智能体", "あなた", "役割", "トーン",
                     "agent note", "agent tool", "agent prompt",
                     "multi-agent safety", "agentic plugin", "agent skill"],
 }
 
 # 全文通道（补救）：仅当标题通道完全无结果时启用，避免过度标注。
 BODY_RULES: dict[str, list[str]] = {
+# v0.1.5 补：中文/日文正文模式。此前正文通道 4 个类别**全是英文正则**，
+# CJK 文档的正文通道等于不存在——内容在正文里（"提交信息必须包含 head+body""不允许只有单行标题"）
+# 而标题是"提交规范"，于是整节只拿到标题命中的那一个类别。
+# 只收高精度形式：`必须`太泛（"必须运行测试"是 build_test 不是禁令），`不要`在散文里太多，都不收。
+    "boundaries":  [r"(?:严禁|禁止|不允许|请勿|切勿|绝对禁止|严格禁止|不得不)",
+                    r"(?:不得|勿)[\s]{0,2}(?:提交|推送|删除|修改|执行|使用)",
+                    r"\bnever commit\b", r"\bdo not commit\b", r"\bmust not\b",
+                    r"\bnever\b.{0,40}\b(?:secret|credential|token|key)\b"],
+    # ASCII 词一律加 \b：`conda` 会命中 "se**conda**ry"（4 份），与 v0.1.3 的
+    # `ci` → "De**ci**sions" 是同一类子串 bug。裸 `.env` 不收——实测 28 份里多是
+    # "Never commit `.env`" 这类**禁令**语句，指向的是 boundaries 不是 environment。
+    "environment": [r"(?:环境变量|前置条件|本地(?:开发)?环境|需要安装|安装依赖|工具链)",
+                    r"\b(?:venv|pyenv|conda|pixi|nvm|nvmrc)\b",
+                    r"\.env\.(?:example|sample|template)\b"],
+    # 必须有判断词（是/为/旨在…）：`本仓库对 Harness Engineering 的落地清单`
+    # 是文档指针列表里的短语，不是项目概览（artemis 实测）。
+    # 排除"本文件是…入口"这类**文件自身角色**的句子（claude-tap 实测误命中）。
+    "overview":    [r"(?:本项目|该项目|本仓库|本文件|这是一个|是一款)"
+                    r"(?:是|为|旨在|主要|用于|提供)(?![^。\n]{0,12}入口)"],
+    # 裁决 7（2026-09-12）：文档指针表算 structure——"哪份文档在哪、谁读、什么放哪里"
+    # 正是该类定义里的文件布局/路径/归属。只认**表头首列**是文档/文件/路径…的表，
+    # 不认正文里出现的"文件"二字（那太泛）。
+    "structure":   [r"(?:目录结构|代码结构|模块划分|分层结构|存放位置)",
+                    r"(?m)^\s*\|\s*(?:文档|文件|路径|目录|模块|组件|包)\s*\|"],
+    "workflow":    [r"(?:提交(?:信息|规范)|分支命名|发布流程|合并前)"],
+    # 排除"分支/目录/文件命名规范"——那是 workflow/structure 的内容（Operit 实测误命中）。
+    "style":       [r"(?:代码风格|编码规范|注释规范)",
+                    r"(?<!分支)(?<!目录)(?<!文件)命名(?:规范|约定|规则)"],
     "agent_meta":  [r"\byou are\b", r"\byour role\b",
                     r"\bdo not (?:praise|flatter|apologize)\b",
                     r"\bbe concise\b", r"\btone\b"],
-    "boundaries":  [r"\bnever commit\b", r"\bdo not commit\b", r"\bmust not\b",
-                    r"\bnever\b.{0,40}\b(?:secret|credential|token|key)\b"],
     "build_test":  [r"```(?:bash|sh|shell)?\n[^`]{0,200}\b(?:npm|yarn|pnpm|"
                     r"pytest|make|cargo|go test|mvn|gradle)\b"],
     "gotchas":     [r"\bgotcha\b", r"\bpitfall\b", r"\bwatch out\b",
-                    r"\bnote that\b.{0,60}\b(fail|break|error)\b"],
+                    r"\bnote that\b.{0,60}\b(fail|break|error)\b",
+                    r"(?:否则(?:会|将)|会导致|会造成|容易出错|踩(?:过|到)坑|避坑|已知问题)",
+                    # "注意事项：" 这种引导句（不带 ## 的正文小标题）——syc 实测漏标
+                    r"注意(?:事项|点)[：:]"],
 }
 
 FULLTEXT_RULES: dict[str, list[str]] = {
@@ -218,7 +296,8 @@ STRONG_PATTERNS: dict[str, list[str]] = {
     ],
     "gotchas": [
         # 只收"这类知识本身"的词；"失败原因""注意事项"太泛（记录失败原因≠坑）
-        r"中毒|踩坑|事故|风控|已知问题|经验教训|避坑",
+        # "踩坑" 单收太泛：命中过"有高频易踩坑，询问用户是否沉淀为 Skill"（不是坑知识）
+        r"中毒|踩过坑|踩坑记录|事故|风控|已知问题|经验教训|避坑",
         r"Content Exists Risk",
     ],
     "agent_meta": [
@@ -228,12 +307,36 @@ STRONG_PATTERNS: dict[str, list[str]] = {
 
 
 def split_sections(text: str) -> list[tuple[str, str]]:
-    """按标题切分，返回 [(heading, body), ...]；开头无标题部分 heading 为 ''。"""
+    """按标题切分，返回 [(heading, body), ...]；开头无标题部分 heading 为 ''。
+
+    v0.1.6：跳过围栏代码块（``` / ~~~）内的行。此前**任何** `# 注释` 行都被当成标题，
+    实测 129/558 份文件在代码块里有这类行（最多一份 54 行），后果有三：
+      ① bash 注释变成"章节标题"，把正文切碎；
+      ② 往标题通道灌假信号（`# tools/get-winflexbison.sh …` → environment、
+         `# 安装依赖` → build_test、`# Build` → build_test）；
+      ③ `section_count` 这一列随之失真（它是发布出去的字段）。
+    """
+    lines = text.splitlines()
+    fence_at = [i for i, ln in enumerate(lines) if FENCE.match(ln)]
+    # 围栏数为奇 ⇒ 有一个没闭合。**把最后一个围栏标记当普通文本**，
+    # 否则它后面的真标题会被整段吞掉（tempoxyz/mpp：39 个章节掉到 10 个）。
+    if len(fence_at) % 2:
+        fence_at = fence_at[:-1]
+    code_lines = set()
+    for a, b in zip(fence_at[0::2], fence_at[1::2]):
+        # 护栏：一段围栏里若藏着 ≥3 个 markdown 标题，它多半不是代码块，而是
+        # **格式不良的嵌套围栏**（tempoxyz/mpp 用 ```mdx 套 ```ts，作者没升到四反引号，
+        # 于是 CommonMark 会把后文 7 个真标题吞进代码块）。真代码块里极少出现
+        # "## 标题"这种行，所以按标题密度反证。
+        if sum(1 for i in range(a, b + 1) if HEADING.match(lines[i])) >= 3:
+            continue
+        code_lines.update(range(a, b + 1))
+
     sections: list[tuple[str, str]] = []
     cur_head = ""
     buf: list[str] = []
-    for line in text.splitlines():
-        m = HEADING.match(line)
+    for i, line in enumerate(lines):
+        m = None if i in code_lines else HEADING.match(line)
         if m:
             if buf or cur_head:
                 sections.append((cur_head, "\n".join(buf)))
@@ -269,13 +372,21 @@ def heading_keyword_hits(low_head: str, kw: str) -> bool:
 
 
 def classify(heading: str, body: str) -> tuple[set[str], dict[str, list[str]]]:
-    """双通道分类：标题强信号 + 正文弱信号。"""
+    """双通道分类：标题强信号 + 正文弱信号。
+
+    v0.1.6 加 `HEAD_VETO`：标题命中后，若整个标题落在某条否决式里，就撤掉该标签。
+    起因是**多义词**：`规范` 命中"提交规范/发布规范"（那是流程）、`约定` 命中
+    "代码与提交流程约定"、`限制` 命中"已知文法/语义限制（不是 bug）"（那是坑）。
+    词表本身没法区分，只有在标题层做否决。
+    """
     tags: set[str] = set()
     evidence: dict[str, list[str]] = {}
     low_head = heading.lower()
     for cat, keys in HEAD_RULES.items():
         for k in keys:
             if heading_keyword_hits(low_head, k):
+                if any(re.search(p, low_head) for p in HEAD_VETO.get(cat, [])):
+                    break
                 tags.add(cat)
                 evidence.setdefault(cat, []).append(f"heading:{k}")
                 break

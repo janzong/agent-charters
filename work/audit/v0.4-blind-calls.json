@@ -1,53 +1,260 @@
 {
-  "_note": "我对 v0.4 盲判组（20 份）的独立判定：只看原文、未看规则输出。borderline=我判得犹豫的类别。分两批完成：前 10 份（小文件）已判，后 10 份待判。",
+  "_note": "我对 v0.4 盲判组（20 份）的独立判定：只看原文、未看规则输出。borderline=我判得犹豫的类别。已判 17/20，余 nacos / camel / plannotator 待判。",
   "Hilbert-beinghappy/seektty": {
-    "call": ["build_test", "boundaries", "environment", "structure"],
-    "borderline": ["structure", "environment", "workflow"],
+    "call": [
+      "build_test",
+      "boundaries",
+      "environment",
+      "structure"
+    ],
+    "borderline": [
+      "structure",
+      "environment",
+      "workflow"
+    ],
     "why": "Test install/boot/remove=构建测试；must not/never commit=禁令；DSH_HOME 与依赖约束=环境(犹豫)；'Harness 是唯一 owner'=归属(犹豫)"
   },
   "SawyerHood/dev-browser": {
-    "call": ["build_test", "environment", "boundaries"],
-    "borderline": ["overview"],
+    "call": [
+      "build_test",
+      "environment",
+      "boundaries"
+    ],
+    "borderline": [
+      "overview"
+    ],
     "why": "bun install/tsc/build/test=构建测试；Use Bun 不用 pnpm=环境；Never point tests at real state=禁令"
   },
   "DietrichGebert/ponytail": {
-    "call": ["agent_meta", "style", "boundaries", "build_test"],
-    "borderline": ["build_test", "gotchas"],
+    "call": [
+      "agent_meta",
+      "style",
+      "boundaries",
+      "build_test"
+    ],
+    "borderline": [
+      "build_test",
+      "gotchas"
+    ],
     "why": "You are a lazy senior developer=AI行为；No abstractions/Boring over clever=风格；No new dependency/No boilerplate=禁令；留一个 runnable check=构建测试(犹豫)"
   },
   "Gentleman-Programming/gentle-ai": {
-    "call": ["structure", "agent_meta", "style"],
-    "borderline": ["structure", "agent_meta", "workflow"],
+    "call": [
+      "structure",
+      "agent_meta",
+      "style"
+    ],
+    "borderline": [
+      "structure",
+      "agent_meta",
+      "workflow"
+    ],
     "why": "技能索引=where to look(架构,犹豫)；load skills BEFORE writing code=AI行为(犹豫)；命名约定=风格；表里提及 PR/commit 但正文未写规则=流程(犹豫)"
   },
   "AtomFlow-AI/MoleCode": {
-    "call": ["overview", "structure", "build_test", "environment", "style", "boundaries", "agent_meta"],
-    "borderline": ["agent_meta", "boundaries"],
+    "call": [
+      "overview",
+      "structure",
+      "build_test",
+      "environment",
+      "style",
+      "boundaries",
+      "agent_meta"
+    ],
+    "borderline": [
+      "agent_meta",
+      "boundaries"
+    ],
     "why": "What this repo is=概览；lib/docs/examples 布局=架构；CLI quick start + Setup=构建测试；pip install 依赖=环境；Conventions=风格；Do not install without asking=禁令；Use the skill/graph level=AI行为(犹豫)"
   },
   "docling-project/docling": {
-    "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
-    "borderline": ["workflow", "environment", "agent_meta"],
+    "call": [
+      "overview",
+      "structure",
+      "build_test",
+      "style",
+      "workflow",
+      "environment",
+      "boundaries",
+      "agent_meta"
+    ],
+    "borderline": [
+      "workflow",
+      "environment",
+      "agent_meta"
+    ],
     "why": "Project overview=概览；Project structure 树=架构；Key commands(make test/check/validate)=构建测试；Code standards=风格；When making changes + Before finishing=流程(犹豫)；uv add/依赖=环境(犹豫)；Avoid hasattr/Do not add trivial tests=禁令；skills for agents + 'agent's own code changes'=AI行为(犹豫)"
   },
   "OthmanAdi/planning-with-files": {
-    "call": ["workflow", "boundaries", "build_test", "style", "structure", "agent_meta"],
-    "borderline": ["build_test", "style", "structure", "environment"],
+    "call": [
+      "workflow",
+      "boundaries",
+      "build_test",
+      "style",
+      "structure",
+      "agent_meta"
+    ],
+    "borderline": [
+      "build_test",
+      "style",
+      "structure",
+      "environment"
+    ],
     "why": "Authorship/Release flow 全套=流程；Never squash/No --no-verify/不得直接改 task_plan=禁令；pytest 必须绿=构建测试(犹豫)；'no em-dashes, no Great report!'=风格(犹豫)；orchestrator 架构 + task_plan/progress/findings 归属=架构(犹豫)；agents never edit them directly=AI行为"
   },
   "ComposioHQ/composio": {
-    "call": ["structure", "build_test", "workflow", "boundaries", "environment", "agent_meta", "overview"],
-    "borderline": ["overview", "agent_meta"],
+    "call": [
+      "structure",
+      "build_test",
+      "workflow",
+      "boundaries",
+      "environment",
+      "agent_meta",
+      "overview"
+    ],
+    "borderline": [
+      "overview",
+      "agent_meta"
+    ],
     "why": "Scope/Repository Map/Local Guidance Files=架构；Common Commands=构建测试；branch from next/Changesets/Release notes=流程；Do not edit generated/Do not revert=禁令；mise/pnpm/lockfiles=环境；First Steps 读最近 AGENTS.md + Skill Routing=AI行为；'Composio SDK v3 monorepo'=概览(犹豫)"
   },
   "addyosmani/agent-skills": {
-    "call": ["agent_meta", "structure", "workflow", "overview"],
-    "borderline": ["workflow", "style"],
+    "call": [
+      "agent_meta",
+      "structure",
+      "workflow",
+      "overview"
+    ],
+    "borderline": [
+      "workflow",
+      "style"
+    ],
     "why": "Core Rules(MUST invoke skill)/Anti-Rationalization/Lifecycle=AI行为(强)；Skills/Personas/Commands 三层架构=架构；Creating a New Skill 的 pre-flight 流程=流程(犹豫)；Repository Overview=概览"
   },
   "ModelEngine-Group/nexent": {
-    "call": ["overview", "structure", "build_test", "environment", "style", "boundaries", "agent_meta"],
-    "borderline": ["gotchas", "agent_meta", "workflow"],
+    "call": [
+      "overview",
+      "structure",
+      "build_test",
+      "environment",
+      "style",
+      "boundaries",
+      "agent_meta"
+    ],
+    "borderline": [
+      "gotchas",
+      "agent_meta",
+      "workflow"
+    ],
     "why": "Project Overview=概览；Architecture/Key Files 表=架构；Developer Commands=构建测试；env var 单一事实源/uv/Docker 兼容=环境；Code Style=风格；NO direct os.getenv/SQL 不可改=禁令；skills_system 表 + Reference Files=AI行为(犹豫)"
+  },
+  "Gitlawb/openclaude": {
+    "call": [
+      "build_test",
+      "workflow",
+      "boundaries",
+      "structure",
+      "overview",
+      "environment"
+    ],
+    "borderline": [
+      "style",
+      "agent_meta",
+      "gotchas"
+    ],
+    "why": "Validation 段整块 bun install/build/test=构建测试；PR 分支同步/rebase/pre-push 契约=流程；Things To Avoid 全是否定式=禁令；Repository Map=架构；Project Snapshot=概览；Node>=22/Bun/lockfile=环境。犹豫：Stack And Conventions 偏技术栈非风格；'先读本文件'与 CodeRabbit 反馈属流程还是 AI行为不清；scanner 的 origin/main 不适用 fork 属坑"
+  },
+  "OleksandrChekhovskyi/hax": {
+    "call": [
+      "build_test",
+      "structure",
+      "style",
+      "environment",
+      "workflow",
+      "boundaries",
+      "gotchas"
+    ],
+    "borderline": [
+      "agent_meta",
+      "overview"
+    ],
+    "why": "Build test lint 段 make/check.sh=构建测试；Architecture 段模块边界与 seams=架构；Code style and conventions(C11/snake_case/SPDX)=风格；BUILD_DIR presets + HAX_* 调试开关 + Dependencies=环境；Git conventions/CHANGELOG=流程；多条 Never/Do not(不改 git 历史、no pkill hax、不替换表示)=禁令；'agent 可能自己跑在 hax/tmux 里，误杀会带走用户会话'=坑。犹豫：开头声称给 AI agents / before reporting done 算不算 AI行为；'hax is a single-binary REPL' 算不算概览"
+  },
+  "apache/doris": {
+    "call": [
+      "build_test",
+      "style",
+      "workflow",
+      "boundaries",
+      "environment",
+      "gotchas"
+    ],
+    "borderline": [
+      "structure",
+      "agent_meta"
+    ],
+    "why": "Build and Run / Testing Standards + 三个 run-*.sh=构建测试；Coding Standards + Code Style Enforcement(clang-format/checkstyle)=风格；Commit Standards + PR 模板 + title-checker=流程；大量 MUST NOT/不得 git add/never defensive coding=禁令；worktree 初始化脚本、端口偏移、priority_networks、jdbcUrl=环境；'集群启动慢至少等 30s'、'首次要手工加 BE'、worktree 端口冲突=坑。犹豫：只提到 be/fe/regression-test 目录名，无架构叙述；skill 引用算不算 AI行为"
+  },
+  "Hmbown/Codewhale": {
+    "call": [
+      "build_test",
+      "structure",
+      "workflow",
+      "boundaries",
+      "agent_meta",
+      "gotchas"
+    ],
+    "borderline": [
+      "overview",
+      "style",
+      "environment"
+    ],
+    "why": "Useful commands(cargo fmt/test/build + nextest)=构建测试；Current contracts 的模块归属与唯一 turn loop=架构；Landing others' work / Merging under a gate / contributor credit=流程；Never rewrite history/force-push、Do not add a second loop=禁令；'never write tests first, this overrides superpowers TDD' 与 Claiming a test passed=AI行为(强)；'被反复误判为死代码的模块'、'crates/tui/src/core 不是 crates/core'、冲突不能两侧都留=坑。犹豫：开篇 one-line 定位算不算概览；无命名/格式规则；ENVIRONMENTS.md 只被提及未展开"
+  },
+  "GlitterKill/sdl-mcp": {
+    "call": [
+      "build_test",
+      "structure",
+      "style",
+      "environment",
+      "boundaries",
+      "agent_meta",
+      "gotchas"
+    ],
+    "borderline": [
+      "workflow",
+      "overview"
+    ],
+    "why": "COMMANDS 段 npm run build:all/typecheck/lint/test=构建测试；STRUCTURE 目录树 + ARCHITECTURE 六边形分层 + WHERE TO LOOK=架构；CONVENTIONS 命名(kebab-case/PascalCase/SCREAMING_SNAKE)与 import 顺序=风格；ENVIRONMENT 变量表(SDL_*) + CI 矩阵 Node24/ubuntu/windows=环境；RULES 四条 + 'No bundler/No vitest/No npm install in CI' + index.refresh 未授权不得调用=禁令；'ALWAYS USE SDL-MCP TOOLS'与 subagent/root agent 权限=AI行为；双入口、schema 版本不匹配报错、LadybugDB 同时只允许一个写事务、slice.ts 与 slice/ 并存=坑。犹豫：只有 index refresh 授权流程沾流程边；无项目概览"
+  },
+  "junhoyeo/tokscale": {
+    "call": [
+      "agent_meta",
+      "workflow",
+      "boundaries",
+      "gotchas",
+      "build_test"
+    ],
+    "borderline": [
+      "style",
+      "structure"
+    ],
+    "why": "开头即 'Guidelines for AI agents' + 'Maintaining AGENTS.md Files' 五条 + 'Agent Command Execution 必带 --no-spinner'=AI行为；PR/merge 纪律 + commit 规范 + migration journal 流程 + Release&Deployment 全流程=流程；大量 DON'T/NEVER(不许 worker 身份提交、不许手改 _journal、不许改已应用迁移的 SQL)=禁令；rg 那节(空结果与写错的命令输出一样、-r 是 --replace、--include 不存在、正则被 ${ 破坏)=典型坑；Deployment Checklist 里 cargo test + bunx smoke=构建测试(弱)。犹豫：Release Notes Style 属文档风格非代码风格；只提到 crates/ 未给架构"
+  },
+  "dyad-sh/dyad": {
+    "call": [
+      "agent_meta",
+      "build_test",
+      "environment",
+      "gotchas",
+      "boundaries",
+      "workflow",
+      "structure"
+    ],
+    "borderline": [
+      "style",
+      "overview"
+    ],
+    "why": "Rules index 开头 'BEFORE writing any code you MUST read the relevant rule files' + 沙箱 hook 限制(python 只能放 .claude/) + /dyad:debug-with-playwright skill=AI行为(强)；init-precommit/fmt/lint/ts/npm test/E2E build=构建测试；worktree 内 npm install、node_modules 稀疏、npm rebuild electron/better-sqlite3、DYAD_DEV_USER_DATA_DIR=环境；sparse node_modules、gyp 失败、dugite 缺失、oxfmt 与 prettier 打架、npx 下最新版重写全仓、--runInBand/--repeat 不支持、行尾与 stage-0 合并夹具=坑(全篇最重)；禁止直接 npx eslint/tsc/oxlint --fix、Never embed GitHub tokens、只用 Base UI 禁 Radix=禁令；origin(fork)→upstream 的 PR 流程、跳过自动评审=流程；Project context 的 IPC 边界/TanStack Router=架构。犹豫：只有一句命名建议算不算风格；'这是 Electron 应用'算不算项目概览"
   }
 }

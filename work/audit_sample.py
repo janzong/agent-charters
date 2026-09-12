@@ -7,7 +7,7 @@
 - 中文只有 26 份且是已知弱点，单独抽一组**只报分组结果**，不并入主样本估计。
 
 产物：
-- work/audit/v0.2-sample.json     抽样记录（seed + file_sha 列表，保证可复现）
+- work/audit/v0.2-sample.json     抽样记录（seed + file_sha 列表 + identity 身份表，保证可复现）
 - work/audit/v0.2-worksheet.md    人工核对工作表（每份附：分配类别 + 命中证据 + 原文摘录 + 判定栏）
 
 用法：
@@ -98,6 +98,12 @@ def main() -> int:
     blind_idx = sorted(main_idx[: a.blind]) if a.blind else []
 
     outdir = pathlib.Path(a.out); outdir.mkdir(parents=True, exist_ok=True)
+    # 身份表：file_sha 是**内容哈希**，空壳文件 30 个仓库共用一个 sha（9 字节空文件），
+    # 只存 sha 会丢身份、下游 join 会张冠李戴（2026-09-12 踩过）。故并列存 repo/path。
+    def ident(idx, src):
+        return [{"sha": src.at[i, "file_sha"], "repo": src.at[i, "repo_full_name"],
+                 "file_path": src.at[i, "file_path"]} for i in idx]
+
     rec = {"seed": a.seed, "version": a.version,
            "counts": {"main": len(main_idx), "zh_census": len(zh_idx),
                       "edge": len(edge_idx), "rare_boost": len(rare_idx), "blind": len(blind_idx)},
@@ -105,7 +111,10 @@ def main() -> int:
            "zh_census": [df.at[i, "file_sha"] for i in zh_idx],
            "edge": [allrows.at[i, "file_sha"] for i in edge_idx],
            "rare_boost": [df.at[i, "file_sha"] for i in rare_idx],
-           "blind20": [df.at[i, "file_sha"] for i in blind_idx]}
+           "blind20": [df.at[i, "file_sha"] for i in blind_idx],
+           "identity": {"main": ident(main_idx, df), "zh_census": ident(zh_idx, df),
+                        "edge": ident(edge_idx, allrows), "rare_boost": ident(rare_idx, df),
+                        "blind20": ident(blind_idx, df)}}
     (outdir / f"{a.version}-sample.json").write_text(
         json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
 

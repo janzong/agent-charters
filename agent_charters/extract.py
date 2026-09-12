@@ -23,9 +23,20 @@ DATASET_VERSION = "v0.4"
 
 
 def doc_language(text: str) -> str:
-    """粗判文档语言：en / zh / mixed。"""
+    """粗判文档语言：en / zh / ja / mixed。
+
+    v0.1.5：加假名判据。此前只有汉字占比（`cjk*12 > letters` → zh），
+    于是**日文被算成中文**——sankichi92/LiveLog（假名 274 / 汉字 202）标成 `zh`，
+    把"中文样本 5%（26/511）"这个口径悄悄掺进了一份日语文件。
+    """
     cjk = sum(1 for ch in text if "\u4e00" <= ch <= "\u9fff")
+    kana = sum(1 for ch in text
+               if "\u3040" <= ch <= "\u309f" or "\u30a0" <= ch <= "\u30ff")
     letters = sum(1 for ch in text if ch.isascii() and ch.isalpha())
+    # 语料库实测无歧义：标 zh 的 26 份里只有 1 份含假名，且占 CJK 的 57.6%
+    # （LiveLog 274/202）。门槛取"假名 ≥10 且占 CJK 超过 25%"，中文里夹一句日语引文不会误判。
+    if kana >= 10 and kana * 4 > cjk:
+        return "ja"
     if cjk == 0:
         return "en"
     return "zh" if cjk * 12 > letters else "mixed"
@@ -50,9 +61,14 @@ def analyze_text(text: str, meta: dict | None = None, *,
         for t in tags:
             tag_counts[t] += 1
 
-    # 无标题文件的补救：章节分类落空时启用全文级规则
+    # 无标题文件的补救：章节分类落空时启用全文级规则。
+    # v0.1.5 补第二个条件：**本来就没有真正的标题结构**（≤1 个标题，即整篇是
+    # 一个标题加一段散文）时也跑全文通道。原先只看"标签是否为空"，于是
+    # 一篇没有小标题的散文只要正文弱信号撞上一个词，就把全文通道整条关掉，
+    # 反而比它完全不撞词时**拿到更少的标签**（pi-vim / topocm_content 实测掉标签）。
     used_fulltext = False
-    if not tag_counts:
+    heading_count = sum(1 for head, _ in sections if head.strip())
+    if not tag_counts or heading_count <= 1:
         ft_tags, _ = classify_fulltext(text)
         if ft_tags:
             used_fulltext = True

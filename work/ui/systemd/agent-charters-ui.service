@@ -1,0 +1,17 @@
+# agent-charters 审计工作台的本地静态服务（只绑回环，页面内嵌原文全文，不得外露）
+# 安装：cp 到 ~/.config/systemd/user/ && systemctl --user daemon-reload &&
+#       systemctl --user enable --now agent-charters-ui.service
+# 需要 systemctl --user 在重启后仍生效：sudo loginctl enable-linger $USER
+[Unit]
+Description=agent-charters audit workbench (local static server, loopback only)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/workspace/agent-charters/work/ui
+ExecStart=%h/workspace/agent-charters/.venv/bin/python -m http.server 8791 --bind 127.0.0.1 --directory %h/workspace/agent-charters/work/ui
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

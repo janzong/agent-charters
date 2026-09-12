@@ -6,7 +6,8 @@
     "zh_census": 26,
     "edge": 10,
     "rare_boost": 9,
-    "blind": 20
+    "blind": 20,
+    "blind_zh": 10
   },
   "main": [
     "ed8031de904d200267ec6e2206f79592a30bf7ff",
@@ -137,5 +138,681 @@
     "85e9a67657be945707eb90dedf95e5145e597b46",
     "7f1ca26588ffde98d71fb5dcde2bad431d3ac668",
     "0da17ab25c9cd8640a0e7130ba613bc6ec3f33cb"
+  ],
+  "identity": {
+    "main": [
+      {
+        "sha": "ed8031de904d200267ec6e2206f79592a30bf7ff",
+        "repo": "AtomFlow-AI/MoleCode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c1261094572664788e76e6c3e78dd6706770ae4a",
+        "repo": "ComposioHQ/composio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bc3595d1a07cff2b135139cadfa4c17ec412667b",
+        "repo": "DietrichGebert/ponytail",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fac195f0fba0756eafa0e270218a394280839464",
+        "repo": "Gentleman-Programming/gentle-ai",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bcdd5aaded7c460777281a1cc6b7a01a8762a1b4",
+        "repo": "Gitlawb/openclaude",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "2097c597b54c4cecc8b9cdc19fe39c2922c444d6",
+        "repo": "GlitterKill/sdl-mcp",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "95a888601328090d8bab46dae5a07cc5477cda64",
+        "repo": "Hilbert-beinghappy/seektty",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e4ef6265f2258b9de3099bc6b2577b3780446857",
+        "repo": "Hmbown/Codewhale",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "3d8f3fb856bcceef8b7bd823df88702d7a6a59db",
+        "repo": "ModelEngine-Group/nexent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f54208a2ec65bb9b7db0c86684ee88af2a9f93cd",
+        "repo": "OleksandrChekhovskyi/hax",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "58ed41e5a1e6bca4e06b7ec519df9ceb23952b4f",
+        "repo": "OthmanAdi/planning-with-files",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b364e326c1013c088e1b87fcb6f670bad6b420c1",
+        "repo": "SawyerHood/dev-browser",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e97670ed868e90b73753fafbe305cdabc7f55ad3",
+        "repo": "addyosmani/agent-skills",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1638e1a3ed8602fa5119dabbed8e4423d124b447",
+        "repo": "alibaba/nacos",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e0426a118a34ceb78737830b70b04e3c04e2ff9a",
+        "repo": "apache/camel",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5d551bb1c3e9cb04e000f5a4204270a3118e6504",
+        "repo": "apache/doris",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a57ffc30346b2c2accdb0c5833feeb17a16c43a1",
+        "repo": "backnotprop/plannotator",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "85e9a67657be945707eb90dedf95e5145e597b46",
+        "repo": "docling-project/docling",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7f1ca26588ffde98d71fb5dcde2bad431d3ac668",
+        "repo": "dyad-sh/dyad",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0da17ab25c9cd8640a0e7130ba613bc6ec3f33cb",
+        "repo": "junhoyeo/tokscale",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e501601e75e8885ada670d3de310e9f22b1346f7",
+        "repo": "kungfu-systems/kungfu",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fd9fa9998d64c0c0948694ffe33feab074fb21a1",
+        "repo": "langchain-ai/deepagents",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5e5f0c00bf74a0b6997f94e4772fba25408bfd3f",
+        "repo": "langchain-ai/langgraph",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "23d056f82f442b1c9d0a80fe1a7b27ef379953aa",
+        "repo": "lobehub/lobehub",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e5f81c35c2119f521ba9d570491094290e773714",
+        "repo": "localstack/localstack",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "ba1b72f4795de66914cca9e413cc7b9266f14761",
+        "repo": "mem0ai/mem0",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "70674f28d22acb3e12a77a9a0cee8a94afad050d",
+        "repo": "microsoft/agent-governance-toolkit",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a42c9669d174aa06f9f8f6532404f16cd99f5da1",
+        "repo": "modelcontextprotocol/inspector",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9c773014f38623efcace9cb4b0bc206c53da8a31",
+        "repo": "netdata/netdata",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b2444695f728178a334b7f22bc99d11bb64cbefb",
+        "repo": "omnigent-ai/omnigent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "eb3b913e1daeb74174d3ee8de82892757d498092",
+        "repo": "onyx-dot-app/onyx",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "ecd43dfd5fbd586e34d82c37df4126e61113d9d8",
+        "repo": "openai/openai-agents-python",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "23673294b6ae0909597e8402f01457caf2444d03",
+        "repo": "patriceckhart/zot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "41dc591dec3924e843f95b714034d4ce88cc3840",
+        "repo": "prevalentWare/opencode-goal-plugin",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "dc08f431cae08e640cd91b7a050ac4c915309010",
+        "repo": "rohitg00/agentmemory",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "921da326ad37992ca279eafcec6e819bef93df98",
+        "repo": "stagewise-io/stagewise",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "65e00df648b6f93d5f5c96397d78f1a392321ced",
+        "repo": "tastyeffectco/sandboxd",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "09abb8ba2616920524f65f21d65aa408730e1e8b",
+        "repo": "tech-leads-club/agent-skills",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "29fba69a2161cf283e9e311a753c3a2340243f06",
+        "repo": "tinyhumansai/openhuman",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "96d9371739b5f266b31a307394fe727480029580",
+        "repo": "tirth8205/code-review-graph",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "54192c1240188ab1ec0d928a12e24b8bcee0eb4a",
+        "repo": "topoteretes/cognee",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5c18ebf53fee06ca01d01d8fc1f6cb8aa232d96f",
+        "repo": "trycua/cua",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5344052394c5222e95e9048a0bebd967f1514f1d",
+        "repo": "Kevandrew/sophia",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e26b0ca6d08e5cea91d2b921ce85023f18e6643f",
+        "repo": "Weaverse/.agents",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "aee3b1c2e3aa6a90958b951235fa12d72ee3b321",
+        "repo": "baimard/gestion",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "72f2abe0f0621fec538fa753b0b5e3f69a706ec0",
+        "repo": "google/benchmark",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9525e831ed9df9b4e18f14506e344c6a9fc03a9a",
+        "repo": "ijry/uview-plus",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "ad920c38703ddd713e5d0406eac57ff05eff4e1a",
+        "repo": "lisa/bash-llm",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f7190b7bedbd0ba0ea6e78821a7478a37cfa32ec",
+        "repo": "opendlt/accumulate_studio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b44678a0c9cc74d1363347d18c3ea288d7ede8bd",
+        "repo": "schwehr/noaadata",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a018dad832e0f8e76d05c0594864e307a393a2a0",
+        "repo": "shibanet0/datamitsu-config",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "45e1f723d288a389f08b1b57d88dc1f32a650c73",
+        "repo": "vcz-Gray/loophaus",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6b954665b2855ccfa75522536d4e9191f0a5db79",
+        "repo": "voxgig/build",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b2d3e838e21b580018ad233f3703f990485da61b",
+        "repo": "yanyiwu/nodejieba",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5051386d871a7daca27c6e3cf14fe48b4d42bfae",
+        "repo": "yuanyuekejiJN/AivoClaw",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "zh_census": [
+      {
+        "sha": "0e3377060b210fdd72906713fbf754d9d2c7da6b",
+        "repo": "AAswordman/Operit",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f2857b19a377d2488d310b1372c51bce9a3d00d5",
+        "repo": "ConardLi/easy-dataset",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "113140203ea36fcd21d54030bf550da4403f670e",
+        "repo": "DSH-APP/DSHA",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5301f659f76c3e90e4b3872ceebafa501f6e4a07",
+        "repo": "Mai-with-u/MaiBot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bbbba87b205dd92e4bd7439eda737316a7bb3381",
+        "repo": "Tencent/AI-Infra-Guard",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6c90718d4aec85e4763f009ce46dc4f654cd16e2",
+        "repo": "ZhuLinsen/daily_stock_analysis",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "335ef20fe3d30d654acf0abbfc9fe97e36efac91",
+        "repo": "alibaba/arthas",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "aa8d731da35ae2235e5cbb3b98aba17dfa9abac4",
+        "repo": "ayuayue/PiDeck",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "35a25b1ddbd24a11d68d3f122616718ee68127a1",
+        "repo": "ccch1mneyyy/dsh-TUI",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b2bc1e58bb0fed1f0158ab66bc3c7737dcc90b9c",
+        "repo": "cnfjlhj/ai-collab-playbook",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1852345b14d2c8e27767b550c02a571369971e88",
+        "repo": "coze-dev/coze-loop",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "4bbc8d65c4414c00d5c6512d4d149c2b7d692214",
+        "repo": "doocs/md",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a8b861b43d600c666a4e61a2ccd18fd59ecb8c3c",
+        "repo": "huiliyi37/Tianshu-harness",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7a3c339eab1c22a0353a44320224e60086e55833",
+        "repo": "labring/FastGPT",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "80b33f168f3c412a89f8c84f78e121af059a5bdc",
+        "repo": "liaohch3/claude-tap",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "740274466840a0dd247547e59bc5eddd0a1b15f2",
+        "repo": "op7418/CodePilot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "d9b2f0accca0668feb78d29b3b3bcf941e6800e1",
+        "repo": "rullerzhou-afk/clawd-on-desk",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e8e4a9f785da9da69cbbb5f3c3b496ccf011182b",
+        "repo": "xerrors/Yuxi",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "90aee5885616c9e79c0da493dc4f17d78df3667d",
+        "repo": "aotemiao/artemis",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "897be6815c7e3410c16242740f299c71820ffa85",
+        "repo": "fancy1108/Clutch",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "dadc7df5bc33169e7bb9030c4c449bafc266fdd2",
+        "repo": "gqcn/agentbox",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9525e831ed9df9b4e18f14506e344c6a9fc03a9a",
+        "repo": "ijry/uview-plus",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bb1230d0064f16faa82cddf9b1223c3ab7a642c5",
+        "repo": "linaproai/linapro",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b88aa2d2f48c80c8e5926e9ad8064d6f6d72a84b",
+        "repo": "linaproai/linapro-site",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "023597059f6e5cae6fbb194de0ce91ad7887a7ac",
+        "repo": "nzh63/syc",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c0dac21778af01eb827953e4786c110e63030395",
+        "repo": "sankichi92/LiveLog",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "edge": [
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "MemPalace/mempalace",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "agno-agi/agno",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "e2b-dev/E2B",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b28461c924a4217b9478062bea99d2306d7d4d05",
+        "repo": "huggingface/peft",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "max-sixty/worktrunk",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "onnx/onnx",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "4f3a9801f4c9b67b7862abe338c9dd01627b5841",
+        "repo": "yamadashy/repomix",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "Miyamura80/DaySurface",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "Miyamura80/MCP-Template",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9cc7126a8954ef2d8f7b9c778d6cd360e98bf096",
+        "repo": "supabase/pg-toolbelt",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "rare_boost": [
+      {
+        "sha": "3309e0b398946a503d69422771d96814fc3ee73f",
+        "repo": "HKUDS/LightRAG",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "63adfad5141b07f688664a8518a2cfcf902fdf43",
+        "repo": "Human-Agent-Society/CORAL",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "cd3e7dfc53a4fb9626bc65e99d27a6f7aef15d4d",
+        "repo": "foss42/apidash",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "236be48698684e1c9bcbecee7a26f2d98e06b62b",
+        "repo": "superagent-ai/grok-cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "d6120607c60919bccbd598c3bc8f6a9e37eef1ad",
+        "repo": "JCodesMore/ai-website-cloner-template",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "16261c26803f1e8a7775af611fb15430a83f058f",
+        "repo": "can1357/oh-my-pi",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "cff91a4bd5fc6c793591d5eb9dba317a0ba7221b",
+        "repo": "lemonade-sdk/lemonade",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f7bc662f2d63d3c61972a568de690b4194fbcf70",
+        "repo": "minmaxflow/mini-kode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e19c20d378c650fa164afef873091a50cc9094e2",
+        "repo": "bekker/qvopenapi-rs",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "blind20": [
+      {
+        "sha": "ed8031de904d200267ec6e2206f79592a30bf7ff",
+        "repo": "AtomFlow-AI/MoleCode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c1261094572664788e76e6c3e78dd6706770ae4a",
+        "repo": "ComposioHQ/composio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bc3595d1a07cff2b135139cadfa4c17ec412667b",
+        "repo": "DietrichGebert/ponytail",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fac195f0fba0756eafa0e270218a394280839464",
+        "repo": "Gentleman-Programming/gentle-ai",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bcdd5aaded7c460777281a1cc6b7a01a8762a1b4",
+        "repo": "Gitlawb/openclaude",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "2097c597b54c4cecc8b9cdc19fe39c2922c444d6",
+        "repo": "GlitterKill/sdl-mcp",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "95a888601328090d8bab46dae5a07cc5477cda64",
+        "repo": "Hilbert-beinghappy/seektty",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e4ef6265f2258b9de3099bc6b2577b3780446857",
+        "repo": "Hmbown/Codewhale",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "3d8f3fb856bcceef8b7bd823df88702d7a6a59db",
+        "repo": "ModelEngine-Group/nexent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f54208a2ec65bb9b7db0c86684ee88af2a9f93cd",
+        "repo": "OleksandrChekhovskyi/hax",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "58ed41e5a1e6bca4e06b7ec519df9ceb23952b4f",
+        "repo": "OthmanAdi/planning-with-files",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b364e326c1013c088e1b87fcb6f670bad6b420c1",
+        "repo": "SawyerHood/dev-browser",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e97670ed868e90b73753fafbe305cdabc7f55ad3",
+        "repo": "addyosmani/agent-skills",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1638e1a3ed8602fa5119dabbed8e4423d124b447",
+        "repo": "alibaba/nacos",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e0426a118a34ceb78737830b70b04e3c04e2ff9a",
+        "repo": "apache/camel",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5d551bb1c3e9cb04e000f5a4204270a3118e6504",
+        "repo": "apache/doris",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a57ffc30346b2c2accdb0c5833feeb17a16c43a1",
+        "repo": "backnotprop/plannotator",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "85e9a67657be945707eb90dedf95e5145e597b46",
+        "repo": "docling-project/docling",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7f1ca26588ffde98d71fb5dcde2bad431d3ac668",
+        "repo": "dyad-sh/dyad",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0da17ab25c9cd8640a0e7130ba613bc6ec3f33cb",
+        "repo": "junhoyeo/tokscale",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "blind_zh": [
+      {
+        "sha": "9525e831ed9df9b4e18f14506e344c6a9fc03a9a",
+        "repo": "ijry/uview-plus",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c0dac21778af01eb827953e4786c110e63030395",
+        "repo": "sankichi92/LiveLog",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0e3377060b210fdd72906713fbf754d9d2c7da6b",
+        "repo": "AAswordman/Operit",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bbbba87b205dd92e4bd7439eda737316a7bb3381",
+        "repo": "Tencent/AI-Infra-Guard",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f2857b19a377d2488d310b1372c51bce9a3d00d5",
+        "repo": "ConardLi/easy-dataset",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "897be6815c7e3410c16242740f299c71820ffa85",
+        "repo": "fancy1108/Clutch",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "90aee5885616c9e79c0da493dc4f17d78df3667d",
+        "repo": "aotemiao/artemis",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "80b33f168f3c412a89f8c84f78e121af059a5bdc",
+        "repo": "liaohch3/claude-tap",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b2bc1e58bb0fed1f0158ab66bc3c7737dcc90b9c",
+        "repo": "cnfjlhj/ai-collab-playbook",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "023597059f6e5cae6fbb194de0ce91ad7887a7ac",
+        "repo": "nzh63/syc",
+        "file_path": "AGENTS.md"
+      }
+    ]
+  },
+  "blind_zh": [
+    "9525e831ed9df9b4e18f14506e344c6a9fc03a9a",
+    "c0dac21778af01eb827953e4786c110e63030395",
+    "0e3377060b210fdd72906713fbf754d9d2c7da6b",
+    "bbbba87b205dd92e4bd7439eda737316a7bb3381",
+    "f2857b19a377d2488d310b1372c51bce9a3d00d5",
+    "897be6815c7e3410c16242740f299c71820ffa85",
+    "90aee5885616c9e79c0da493dc4f17d78df3667d",
+    "80b33f168f3c412a89f8c84f78e121af059a5bdc",
+    "b2bc1e58bb0fed1f0158ab66bc3c7737dcc90b9c",
+    "023597059f6e5cae6fbb194de0ce91ad7887a7ac"
   ]
 }

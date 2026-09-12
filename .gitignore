@@ -22,3 +22,9 @@ tmp/
 *.egg-info/
 build/
 dist/
+
+# 审计工作台产物：内嵌 100 份原文全文 → 与「Release 不含原文全文」的口径冲突，
+# 只在本机浏览器用，绝不进版本库、绝不随 Release 发布。
+work/ui/workbench.html
+work/ui/cache/
+work/ui/build.log

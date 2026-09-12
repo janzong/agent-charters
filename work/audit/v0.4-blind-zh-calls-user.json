@@ -1,0 +1,112 @@
+{
+ "_note": "用户（第二判定者）在审计工作台上的盲判结果。来源：Mac Chrome Local Storage 键 _http://127.0.0.1:8791\u0000\u0001ac-audit-v0.4，只读拷贝 /tmp/macls-*/chrome/016131.log 后按 LevelDB 记录解析。cats 中 1=有、2=不确定；缺键=判为没有。",
+ "_retrieved_at": "2026-09-12 16:51",
+ "_judge": "user",
+ "files": {
+  "ijry/uview-plus|AGENTS.md": {
+   "cats": {
+    "boundaries": 1,
+    "environment": 1,
+    "workflow": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "sankichi92/LiveLog|AGENTS.md": {
+   "cats": {
+    "overview": 1,
+    "structure": 1,
+    "boundaries": 1,
+    "environment": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "AAswordman/Operit|AGENTS.md": {
+   "cats": {
+    "overview": 1,
+    "boundaries": 1,
+    "workflow": 1,
+    "gotchas": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "Tencent/AI-Infra-Guard|AGENTS.md": {
+   "cats": {
+    "agent_meta": 1,
+    "workflow": 1,
+    "structure": 1,
+    "overview": 1,
+    "build_test": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "ConardLi/easy-dataset|AGENTS.md": {
+   "cats": {
+    "overview": 1,
+    "structure": 1,
+    "agent_meta": 1,
+    "workflow": 1,
+    "environment": 1,
+    "build_test": 1,
+    "style": 1,
+    "gotchas": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "fancy1108/Clutch|AGENTS.md": {
+   "cats": {
+    "structure": 1,
+    "agent_meta": 1,
+    "style": 1,
+    "environment": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "aotemiao/artemis|AGENTS.md": {
+   "cats": {
+    "overview": 1,
+    "workflow": 1,
+    "environment": 1,
+    "style": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "liaohch3/claude-tap|AGENTS.md": {
+   "cats": {
+    "environment": 1,
+    "structure": 1,
+    "boundaries": 1,
+    "agent_meta": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "cnfjlhj/ai-collab-playbook|AGENTS.md": {
+   "cats": {
+    "agent_meta": 1,
+    "workflow": 1,
+    "structure": 1,
+    "boundaries": 1
+   },
+   "note": "",
+   "done": true
+  },
+  "nzh63/syc|AGENTS.md": {
+   "cats": {
+    "structure": 1,
+    "style": 1,
+    "gotchas": 1,
+    "overview": 1,
+    "build_test": 1
+   },
+   "note": "",
+   "done": true
+  }
+ }
+}

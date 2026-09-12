@@ -86,6 +86,130 @@ def test_non_substantive_marker():
     assert not analyze_text("AGENTS.md").get("is_substantive")
 
 
+# --- v0.1.5：CJK 通道（首次中文盲判对照暴露的机制缺陷）------------------
+# 依据 work/audit/v0.4-zh-verdicts.md：正文通道原先 4 个类别全是英文正则，
+# CJK 文档的内容写在正文里、标题只有"提交规范"这种词，于是整节丢标签。
+
+ZH_BODY_RULES = """# AGENTS
+
+## 提交规范
+
+- `git commit` 信息必须使用中文。
+- 提交信息必须包含 `head + body` 两部分，不允许只有单行标题。
+- 发布新版本时，必须参考 `docs/release.md` 执行。
+"""
+
+
+def test_chinese_prohibition_in_body_is_boundaries():
+    """回归：`不允许…`写在正文里（标题是"提交规范"）曾整节漏标。"""
+    cats = analyze_text(ZH_BODY_RULES)["categories"]
+    assert "boundaries" in cats, cats
+
+
+def test_chinese_body_environment_and_gotchas():
+    text = ("# AGENTS\n\n## 说明\n\n如果运行 python，项目用的是 venv（将迁移到 pixi）。\n\n"
+            "严禁使用 powershell 编辑代码文件，否则会出现严重的编码错误和损坏。\n")
+    cats = analyze_text(text)["categories"]
+    assert "environment" in cats, cats
+    assert "gotchas" in cats, cats
+
+
+def test_traditional_and_japanese_heading_forms():
+    """繁体/日文汉字形：環境≠环境、設定≠设定、検証≠验证、構成≠构成。"""
+    text = ("# AGENTS.md\n\n## 環境構築\n\n- Node 24 を使う。\n\n"
+            "## 構成\n\n- `src/` に実装、`tests/` にテスト。\n\n"
+            "## 方針\n\n- 本番反映は人手承認を必須とする。\n")
+    cats = analyze_text(text)["categories"]
+    for c in ("environment", "structure", "boundaries"):
+        assert c in cats, (c, cats)
+    assert analyze_text(text)["doc_language"] == "ja"
+
+
+def test_japanese_purpose_heading_is_overview():
+    assert "overview" in analyze_text("# A\n\n## 目的\n\n- 安全に変更する。\n")["categories"]
+
+
+# --- 口径裁决 5–7（2026-09-12）：内容 vs 指针的边界 -------------------
+
+def test_doc_pointer_table_is_structure():
+    """裁决 7：文档指针表算 structure（Clutch 实测）。"""
+    text = ("# AGENTS\n\n| 文档 | 读者 | 用途 |\n|---|---|---|\n"
+            "| `CLAUDE.md` | 全体开发者 | 唯一权威 |\n")
+    assert "structure" in analyze_text(text)["categories"]
+
+
+def test_file_role_sentence_is_not_overview():
+    """裁决 5：只说"本文件是入口"不算 overview；描述仓库的才算。"""
+    role = "# A\n\n本文件是贡献者规则的入口。详细策略见 `.agents/docs/`。\n"
+    assert "overview" not in analyze_text(role)["categories"]
+    about = ("# A\n\n本文件为 AI 编码代理提供本仓库的构建、测试与架构要点。\n"
+            "syc 是一个教学用编译器。\n")
+    assert "overview" in analyze_text(about)["categories"]
+
+
+def test_link_to_style_doc_is_not_style():
+    """裁决 6：指向某规范的链接不算 style，类别只收内容本身。"""
+    text = ("# AGENTS\n\n| 文档 | 读者 | 用途 |\n|---|---|---|\n"
+            "| `docs/UI_UX_GUIDELINES.md` | 前端 | React + Tailwind UI/UX 规范 |\n")
+    assert "style" not in analyze_text(text)["categories"]
+
+
+# --- v0.1.6：围栏代码块内的 `# 注释` 不是标题 ---------------------------
+
+FENCED = """# AGENTS
+
+## 构建
+
+```bash
+# Rules
+# Install
+npm ci
+```
+
+## 测试
+
+```bash
+# Writing Style
+npm test
+```
+"""
+
+
+def test_code_comment_is_not_a_heading():
+    """回归：bash 注释曾被当成章节标题，往标题通道灌假信号。
+
+    实测 129/558 份文件在代码块里有这类行（最多一份 54 行）。
+    `# Rules` 曾把 boundaries、`# Writing Style` 曾把 style 标进语料库。
+    """
+    rec = analyze_text(FENCED)
+    assert "boundaries" not in rec["categories"], rec["categories"]
+    assert "style" not in rec["categories"], rec["categories"]
+    assert rec["section_count"] == 3, rec["section_count"]   # AGENTS / 构建 / 测试
+
+
+def test_unclosed_fence_does_not_swallow_rest_of_file():
+    """围栏数为奇时最后一个标记不作数，否则后文的真标题会被整段吞掉。"""
+    text = "# A\n\n```bash\necho hi\n\n## 环境\n\n- nvm 24\n"
+    assert "environment" in analyze_text(text)["categories"]
+
+
+def test_malformed_nested_fence_with_many_headings_is_not_code():
+    """```mdx 套 ```ts 这类格式不良的嵌套围栏会把真标题吞进代码块——
+    一段围栏里藏着 ≥3 个 markdown 标题时，按标题密度反证它不是代码块。"""
+    text = ("# A\n\n```mdx\n## 一\n\ntext\n\n## 二\n\ntext\n\n## 三\n\ntext\n```\n\n"
+            "## 架构\n\n- `src/` 放实现。\n")
+    assert "structure" in analyze_text(text)["categories"]
+
+
+@pytest.mark.parametrize("text,forbidden", [
+    ("# A\n\n## Next steps\n\nReview each secondary monitor for regressions.\n", "environment"),
+    ("# A\n\n## X\n\nNever commit `.env` to the repo.\n", "environment"),
+])
+def test_environment_patterns_do_not_fire_on_substrings(text, forbidden):
+    """`conda` 会命中 se**conda**ry；裸 `.env` 多是"别提交"的禁令语句。"""
+    assert forbidden not in analyze_text(text)["categories"]
+
+
 @pytest.mark.parametrize("text, forbidden", [
     ("Please make sure to double check.", "build_test"),      # make sure ≠ make test
     ("Gradle 9.3.1 and AGP 9.1.1 are used.", "build_test"),   # 版本号 ≠ 构建命令
