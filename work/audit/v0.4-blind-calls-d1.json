@@ -1,0 +1,30 @@
+{
+  "_note": "D 稀有类组第一批（4 份，均为小文件，逐字读完）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "D-rare-1",
+  "files": {
+    "superagent-ai/grok-cli": {
+      "bytes": 2106,
+      "call": ["overview", "build_test", "environment", "gotchas"],
+      "borderline": ["agent_meta"],
+      "why": "### Overview（Grok CLI（@vibe-kit/grok-cli）是单包 TypeScript CLI 工具，无数据库/Docker/后台服务）=overview；### Quick reference 表格（bun install / bun run typecheck / build / node dist/index.js / headless 模式）=build_test；### Environment（必须装 Bun、需要 GROK_API_KEY 并设为 secret）=environment；### Known issues 两条（ESLint 用 legacy 配置在 ESLint 9 下必挂、dev 模式因 type-only import 被擦除而 SyntaxError，绕法是先 build）=gotchas。## Cursor Cloud specific instructions 是对 agent 的环境交代，agent_meta 犹豫（我倾向不算：它是环境说明而非行为规定）。无 structure/style/workflow 章节。"
+    },
+    "minmaxflow/mini-kode": {
+      "bytes": 2624,
+      "call": ["overview", "structure", "build_test", "style", "workflow"],
+      "borderline": [],
+      "why": "## Technology Stack（TS/pnpm/Bun/Ink/OpenAI SDK/Vitest/Zod/Commander）+ ## Key Features=overview（定义里『技术栈』明写属 overview）；## Architecture 与 ### Key Modules（src/tools 并发控制、src/permissions 两层权限、src/llm 流式、src/ui Ink、src/config 多层配置、src/agent 会话）=structure；## Development Commands（pnpm dev/build/test/lint/format）=build_test；## Code Style Guidelines（import 分组顺序、Prettier、注释必须英文）=style；## Release Process（改 package.json 版本 → pnpm publish → postpublish 自动打 tag 并推）=workflow。"
+    },
+    "JCodesMore/ai-website-cloner-template": {
+      "bytes": 3389,
+      "call": ["overview", "structure", "build_test", "style", "boundaries", "agent_meta"],
+      "borderline": ["gotchas"],
+      "why": "## What This Is（把任意网站逆向成 Next.js 代码库的可复用模板）+ ## Tech Stack（Next.js 16/React 19/shadcn/Tailwind v4/Vercel）=overview；## Project Structure（src/app、components、lib、types、hooks、public、docs、scripts 逐目录）=structure；## Commands（npm run dev/build/lint/typecheck/check）=build_test；## Code Style（TS strict、禁 any、命名、Tailwind 不写内联样式、2 空格）+ ## Design Principles（像素级对齐、仿真阶段不许改审美、真实内容）=style；同处禁令=boundaries；## MOST IMPORTANT NOTES（开 Claude Code agent team 时每个 teammate 必须用独立 worktree 分支、你要充当 orchestrator 角色、编辑 AGENTS.md 后必须跑 sync 脚本）=agent_meta。## 顶部 nextjs-agent-rules 注释块（『This is NOT the Next.js you know』、写码前必须先读 node_modules 里的文档）=agent_meta 或 gotchas，我归到 gotchas 犹豫。"
+    },
+    "bekker/qvopenapi-rs": {
+      "bytes": 3596,
+      "call": ["overview", "structure", "style", "environment", "boundaries", "gotchas", "agent_meta"],
+      "borderline": ["workflow", "build_test"],
+      "why": "## Project Overview（qvopenapi-rs 是韩国 NH 投资证券专有 Windows DLL wmca.dll 的 Rust 封装，含 async 库 + HTTP REST server + Wine Docker）=overview；## Repository Structure（四层 crate：sys/bindings → 主 crate → async → http + docker/scripts）与分层=structure；## Coding Conventions（错误用 QvOpenApiError 16 变体 + From、模型放 models/query/ 每个 TR 一个文件、serde_json 转换、用 warp 而非 actix）=style；## Critical Constraints（必须编译到 i686-pc-windows-gnu/msvc、非 MSVC 要 disable-unwind、故意用 new_current_thread 单线程运行时因为 Win32 消息泵必须在主线程、没有测试套件、DLL 字符串是 CP949 定宽数组）=environment；## ⚠️ MANDATORY: Read Before Any Code Operation（改码前必须先整份读 ARCHITECTURE.md）=agent_meta；同节『there is no native Linux/macOS build』『no test suite』『must happen on the window thread』=boundaries；### 坑位（non-obvious architectural constraints、common pitfalls）与 CP949/消息循环陷阱=gotchas；## When Making Changes（加新 TR 类型走 ARCHITECTURE.md 第 9 节、改 DLL 交互要看 4.3 线程模型、改 HTTP 看 routes/、改 Docker 看 entrypoint）=workflow 犹豫。build_test 犹豫（文件里没有任何构建/测试命令，只有 scripts/ 目录名）。"
+    }
+  }
+}
