@@ -10,7 +10,7 @@
 
 | 类别 | 覆盖 | 说明 |
 |---|---|---|
-| 禁令 `boundaries` | **85.7%**（442/516） | 其中 **59.9%** 是**专门开了一节**写禁令 |
+| 禁令 `boundaries` | **85.7%**（442/516） | 其中 **45.2%**（233 份）**专门开了一节**写禁令 |
 | 构建测试 `build_test` | **82.8%**（427/516） | |
 
 相差 2.9pp，**小于禁令通式约 3% 的已知假阳性幅度**（`LIMITATIONS.md` §13）——
@@ -77,7 +77,7 @@ Percentages below are over the 516 files that actually contain instructions. Of 
 Some things that surprised me:
 
 - Two things tie for first. "How to build/test/run" is in 82.8% of files. Prohibitions
-  are in 85.7% — and 59.9% have a *dedicated* "don't do this" section. People draw lines
+  are in 85.7% — and 45.2% have a *dedicated* "don't do this" section. People draw lines
   at least as often as they hand over instructions. (The 2.9pp gap is smaller than the
   ~3% known false-positive rate of the prohibition detector, so I report them as tied.)
 - "Gotchas" is the rarest category at 14% — yet it's the knowledge you can't re-derive
@@ -313,8 +313,8 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 几条比较意外的：
 
-- 两类并列第一：构建/测试/运行的命令 82.8%，"不要做什么"85.7%（其中六成文件
-  专门开了一节写禁令）——信任是从划线开始的，而且划线至少和交底一样常见
+- 两类并列第一：构建/测试/运行的命令 82.8%，"不要做什么"85.7%（其中 45.2% 的
+  文件专门开了一节写禁令）——信任是从划线开始的，而且划线至少和交底一样常见
 - 坑/pitfall 只有 13.6%，是最低的一类，但这类知识恰恰没法从代码里反推
 - 只有 2 份文件全文只有一句"见 CLAUDE.md"，纯做转发
 - 中文只有 4.8%，低得不太正常

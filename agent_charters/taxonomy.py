@@ -334,7 +334,7 @@ BODY_RULES: dict[str, list[str]] = {
                     # v0.1.8：发现 7/10/17——补英文禁令一般式。此前正文通道只认
                     # never commit / do not commit / must not / 中文模式，于是
                     # "Do not use pnpm"、"must never import node:*"、"Don't re-write it"
-                    # 这类全丢（全库 2632 处命中 / 100 份文件因此多拿到 boundaries）。
+                    # 这类全丢（v0.5 实测：全库 2632 处命中 / 102 份文件因此多拿到 boundaries）。
                     # 只用 `do not` 系——**不收裸 `never`**（"the build never fails" 多）。
                     # 排除 `do not need / hesitate / worry / forget` 四种非禁令句式
                     # （全库只有 LocalAI 一处 "don't need"，黑名单即可挡住）；
