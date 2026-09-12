@@ -1,0 +1,18 @@
+{
+  "_note": "D 稀有类组第二批（2 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。CORAL 逐字读完；apidash 用标题清点+关键章节切片。",
+  "batch": "D-rare-2",
+  "files": {
+    "Human-Agent-Society/CORAL": {
+      "bytes": 6687,
+      "call": ["overview", "workflow", "boundaries", "gotchas", "agent_meta"],
+      "borderline": ["build_test", "structure"],
+      "why": "首段（CORAL 本身就是运行自主编码 agent 的基础设施，所以完全预期贡献者用 Claude Code/Codex/Cursor 等开发；本文定基本规则）=overview；## 0 TL;DR + ## 1 Human accountability（纯 agent 撰写的 PR 不接受、人必须读懂每一行）+ ## 2 Scope discipline（agent 产出必须与实质工作捆绑、一个 PR 一个关注点、不许全库重排）+ ## 3 Duplicate-work checks（开 PR 前的 gh 命令）+ ## 4 保持 AGENTS.md 与 CLAUDE.md 同步 + ## 5 Disclosure in PR descriptions（必须声明 AI 参与、不许粘贴原始 transcript、不许编造测试结果、不许链私有会话）+ ## 7 Reviewer guidance（怎么识别未经过人审的 agent 产出）=agent_meta 与 workflow 双属（我同时标了两类）；对应禁令（No drive-by mechanical PRs、Don't reformat the world、Don't open duplicate PRs、don't hand-edit 渲染文件）=boundaries；## 6 CORAL-specific gotchas for agents 六条（.coral/private/ 对 agent 隐藏、grader 用自己的 venv、grader 输出不许写 codebase_path、Score direction 常被搞反、seed/ 里的东西 agent 可见、CORAL.md 是生成的）=gotchas。build_test 犹豫（只提『跑测试与 lint』，没有命令章节）；structure 犹豫（只出现路径名，没有仓库地图）。"
+    },
+    "foss42/apidash": {
+      "bytes": 19016,
+      "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+      "borderline": [],
+      "why": "## Mainline Feature Baseline（main 分支支持哪些能力的大表：HTTP/GraphQL/SSE/WebSocket/Dashbot/导入/代码生成/环境变量/历史）=overview；## Repository Map（逐文件职责）+ ## Package Map + ## Architecture Rules 的十个子节（状态管理 Riverpod、模型与生成文件、持久化 Hive、请求执行、环境变量、脚本与终端、UI 与设计、Imports、代码生成、AI 与 Dashbot）=structure；## Standard Commands（melos bootstrap/pub-get、dart format、melos analyze、flutter test --coverage、melos build-gen、flutter run）+ ## Testing Rules + 模板里的 ## Verification=build_test；### Imports 与 ### UI and Design=style；## Agent Workflow 八步 + ## Git and PR Workflow（分支命名 add-feature-/resolve-issue-/add-test-、PR 范围、AI 政策）+ ## Completion Checklist + ## Documentation Maintenance Contract=workflow；### Environment Variables + 命令里的工具链=dota environment；## First Rules 七条（先看 git status 保住用户改动、先读后改、优先既有架构、保持根文档最新、生成文件是构建产物不许手改、测试默认离线）=boundaries；## Common Pitfalls=gotchas；首段（这是给 agent 的操作指南，当成工作契约）+ ## Local Agent Notes and Subagent Logs（详细日志放 doc/agent_notes/、subagent 产出要主 agent 复核）=agent_meta。**这是我判过的第一份九类全覆盖的文件**。"
+    }
+  }
+}
