@@ -45,6 +45,7 @@ SECTIONS = [
     ("rare", "rare_boost", "稀有加成 9", "稀"),
     ("blind", "blind20", "盲判组 20", "盲"),
     ("blind_zh", "blind_zh", "盲判·中文 10", "中盲"),
+    ("blind_zh2", "blind_zh2", "盲判·中文二组 16", "中盲2"),
 ]
 
 
@@ -185,7 +186,12 @@ def dashboard_stats(df: pd.DataFrame) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sections", "--groups", dest="sections", default="main,zh,edge,rare,blind,blind_zh")
+    ap.add_argument(
+        "--sections",
+        "--groups",
+        dest="sections",
+        default="main,zh,edge,rare,blind,blind_zh,blind_zh2",
+    )
     ap.add_argument("--out", default=str(ROOT / "work/ui/workbench.html"))
     ap.add_argument("--no-translate", action="store_true")
     args = ap.parse_args()

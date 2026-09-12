@@ -8,6 +8,7 @@
     "rare_boost": 9,
     "blind": 20,
     "blind_zh": 10,
+    "blind_zh2": 16,
     "edge_ptr": 7
   },
   "main": [
@@ -803,6 +804,88 @@
         "file_path": "AGENTS.md"
       }
     ],
+    "blind_zh2": [
+      {
+        "sha": "113140203ea36fcd21d54030bf550da4403f670e",
+        "repo": "DSH-APP/DSHA",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5301f659f76c3e90e4b3872ceebafa501f6e4a07",
+        "repo": "Mai-with-u/MaiBot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6c90718d4aec85e4763f009ce46dc4f654cd16e2",
+        "repo": "ZhuLinsen/daily_stock_analysis",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "335ef20fe3d30d654acf0abbfc9fe97e36efac91",
+        "repo": "alibaba/arthas",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "aa8d731da35ae2235e5cbb3b98aba17dfa9abac4",
+        "repo": "ayuayue/PiDeck",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "35a25b1ddbd24a11d68d3f122616718ee68127a1",
+        "repo": "ccch1mneyyy/dsh-TUI",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1852345b14d2c8e27767b550c02a571369971e88",
+        "repo": "coze-dev/coze-loop",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "4bbc8d65c4414c00d5c6512d4d149c2b7d692214",
+        "repo": "doocs/md",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a8b861b43d600c666a4e61a2ccd18fd59ecb8c3c",
+        "repo": "huiliyi37/Tianshu-harness",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7a3c339eab1c22a0353a44320224e60086e55833",
+        "repo": "labring/FastGPT",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "740274466840a0dd247547e59bc5eddd0a1b15f2",
+        "repo": "op7418/CodePilot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "d9b2f0accca0668feb78d29b3b3bcf941e6800e1",
+        "repo": "rullerzhou-afk/clawd-on-desk",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e8e4a9f785da9da69cbbb5f3c3b496ccf011182b",
+        "repo": "xerrors/Yuxi",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "dadc7df5bc33169e7bb9030c4c449bafc266fdd2",
+        "repo": "gqcn/agentbox",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "bb1230d0064f16faa82cddf9b1223c3ab7a642c5",
+        "repo": "linaproai/linapro",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b88aa2d2f48c80c8e5926e9ad8064d6f6d72a84b",
+        "repo": "linaproai/linapro-site",
+        "file_path": "AGENTS.md"
+      }
+    ],
     "edge_ptr": [
       {
         "sha": "85943d4d4f945860183d2674b17b05a7941064e7",
@@ -867,6 +950,24 @@
     "b2bc1e58bb0fed1f0158ab66bc3c7737dcc90b9c",
     "023597059f6e5cae6fbb194de0ce91ad7887a7ac"
   ],
+  "blind_zh2": [
+    "113140203ea36fcd21d54030bf550da4403f670e",
+    "5301f659f76c3e90e4b3872ceebafa501f6e4a07",
+    "6c90718d4aec85e4763f009ce46dc4f654cd16e2",
+    "335ef20fe3d30d654acf0abbfc9fe97e36efac91",
+    "aa8d731da35ae2235e5cbb3b98aba17dfa9abac4",
+    "35a25b1ddbd24a11d68d3f122616718ee68127a1",
+    "1852345b14d2c8e27767b550c02a571369971e88",
+    "4bbc8d65c4414c00d5c6512d4d149c2b7d692214",
+    "a8b861b43d600c666a4e61a2ccd18fd59ecb8c3c",
+    "7a3c339eab1c22a0353a44320224e60086e55833",
+    "740274466840a0dd247547e59bc5eddd0a1b15f2",
+    "d9b2f0accca0668feb78d29b3b3bcf941e6800e1",
+    "e8e4a9f785da9da69cbbb5f3c3b496ccf011182b",
+    "dadc7df5bc33169e7bb9030c4c449bafc266fdd2",
+    "bb1230d0064f16faa82cddf9b1223c3ab7a642c5",
+    "b88aa2d2f48c80c8e5926e9ad8064d6f6d72a84b"
+  ],
   "edge_ptr": [
     "85943d4d4f945860183d2674b17b05a7941064e7",
     "64349851a89fcdc93aeed9fb13d821c930b53426",
@@ -878,6 +979,7 @@
   ],
   "_notes": {
     "edge_ptr": "原 C 组（edge）只抽到 10 份空壳：audit_sample.py 的指针池从已过滤的 511 基座里取，恒为空。这 7 份是补审结果（work/audit/v0.4-edge-verdicts.md）：7 份里 2 份排除正确、4 份误排除、1 份口径不清。样本已冻结（中文 10 份与英文 17 份已判），故另开一组而不重生成。",
-    "zh_census_26va25": "中文普查 26 份是**抽取时**的 doc_language 口径（v0.1.5）。v0.1.6 加假名判据后 sankichi92/LiveLog 被判成 ja，511 基座里的中文实为 **25 份（4.9%）**。普查 26 份照旧全部判完（LiveLog 也判），但对外口径要用 25/511，不是 26/511。"
+    "zh_census_26va25": "中文普查 26 份是**抽取时**的 doc_language 口径（v0.1.5）。v0.1.6 加假名判据后 sankichi92/LiveLog 被判成 ja，511 基座里的中文实为 **25 份（4.9%）**。普查 26 份照旧全部判完（LiveLog 也判），但对外口径要用 25/511，不是 26/511。",
+    "blind_zh2": "中文普查 26 份中未进第一组（盲判·中文 10）的 16 份，2026-09-13 开第二组补判。第一组结论见 work/audit/v0.4-zh-verdicts.md。"
   }
 }
