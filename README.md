@@ -1,7 +1,7 @@
 # agent-charters ｜ 智能体章程语料库
 
 > **人写给 AI 智能体的书面规约**的结构化语料库。
-> 数据集 **v0.4** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
+> 数据集 **v0.5** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
 
 ## 这是什么
 
@@ -18,33 +18,36 @@
 
 | 项 | 值 |
 |---|---|
-| 文件数 | 558（实质内容 518，其中可用于分类统计 511） |
+| 文件数 | 558（实质内容 518，其中可用于分类统计 516） |
 | 仓库数 | 558（已排除 fork） |
 | 采集时间 | 2026-09-10 |
-| 总字节 | 5.5 MB |
-| 每份平均标签数 | 4.6（九类中全中的有 5 份） |
+| 总字节 | 5.3 MB |
+| 每份平均标签数 | 4.7（九类全中的有 8 份） |
 | 许可 | 代码 MIT ｜ 数据 CC-BY-4.0 |
 
 > 为什么有两个口径：`is_substantive` 只排掉空壳文件，`is_pointer` 还要排掉
-> "正文只是指向别的文件"的转引用文件（**7 份**，v0.1.1 时是 11 份）。后者
-> `categories` 为空**是正确结果**，不该算进分母。所有类别覆盖率都按 **511** 计算。
+> "正文只是指向别的文件"的转引用文件（**2 份**，v0.4 时是 7 份）。后者
+> `categories` 为空**是正确结果**，不该算进分母。所有类别覆盖率都按 **516** 计算。
 >
 > ⚠️ **版本间覆盖率不可直接比**：v0.2 收紧了 `is_pointer` 口径（分母 507→511，见
 > [`LIMITATIONS.md`](LIMITATIONS.md) §10）；v0.3 修掉了标题通道的子串误命中
-> （`build_test` 87.9% → **85.7%**，见 §11）。同一批文件、不同规则，数字不可混用。
+> （`build_test` 87.9% → 85.7%，见 §11）；**v0.5** 修掉了"代码块里的 `# 注释` 被当成标题"
+> （`build_test` 85.9% → **82.8%**，同一批文件里 `section_count` 从 146 降到 92 这种变化都是它）
+> 并把 5 份被误判为指针的短章程收回统计口径（分母 511→516，见 §14）。同一批文件、不同规则，
+> 数字不可混用。
 
 **不含原文全文**——只发布衍生标注与统计特征。原文版权归各仓库作者。
 
 > **国内访问**：主仓在 GitHub；国内镜像 <https://gitee.com/janzong/agent-charters>（含
-> [Release `v0.3`](https://gitee.com/janzong/agent-charters/releases/tag/v0.3)）。数据集也可从
-> [GitHub Release `v0.3`](https://github.com/janzong/agent-charters/releases/tag/v0.3) 直接下载（parquet + jsonl）。
+> [Release `v0.5`](https://gitee.com/janzong/agent-charters/releases/tag/v0.5)）。数据集也可从
+> [GitHub Release `v0.5`](https://github.com/janzong/agent-charters/releases/tag/v0.5) 直接下载（parquet + jsonl）。
 
 ## 快速开始
 
 ```python
 import pandas as pd
 
-df = pd.read_parquet("data/processed/agent-charters-v0.4.parquet")
+df = pd.read_parquet("data/processed/agent-charters-v0.5.parquet")
 
 # 最常出现的主题
 from collections import Counter
@@ -56,19 +59,24 @@ sub = df[df["is_substantive"] & ~df["is_pointer"]]
 print(len(sub))
 ```
 
-## 类别分布（511 份实质文件，数据集 v0.4 / `ruleset_v0.1.4`）
+## 类别分布（516 份实质文件，数据集 v0.5 / `ruleset_v0.1.8`）
 
 | 类别 | 覆盖 | 含义 |
 |---|---|---|
-| `build_test` | 85.7% | 构建 / 测试 / 运行命令 |
-| `workflow` | 65.9% | 分支、提交、PR、发布 |
-| `boundaries` | 65.6% | 禁令、边界、不可做的事 |
-| `structure` | 59.7% | 架构、目录与文件组织 |
-| `style` | 56.8% | 代码风格、命名、约定 |
-| `environment` | 44.4% | 环境、工具链、依赖 |
-| `agent_meta` | 29.5% | 关于 AI 自身行为的规定 |
-| `overview` | 34.8% | 项目概览、技术栈、目的（v0.4 起高于 `agent_meta`） |
-| `gotchas` | 14.1% | 坑、陷阱、已知问题 |
+| `boundaries` | **85.7%** | 禁令、边界、不可做的事（**59.9%** 是**整节**在写禁令） |
+| `build_test` | **82.8%** | 构建 / 测试 / 运行命令 |
+| `workflow` | 67.1% | 分支、提交、PR、发布 |
+| `structure` | 59.1% | 架构、目录与文件组织 |
+| `style` | 54.5% | 代码风格、命名、约定 |
+| `environment` | 45.0% | 环境、工具链、依赖 |
+| `overview` | 32.2% | 项目概览、技术栈、目的 |
+| `agent_meta` | 25.8% | 关于 AI 自身行为的规定 |
+| `gotchas` | 13.6% | 坑、陷阱、已知问题 |
+
+> 两类并列第一，差距 2.9pp **小于 `boundaries` 的已知假阳性幅度**（正文通式约 3%），
+> 不宜宣称严格领先。另外 `boundaries` 有两个口径：**有专门的禁令章节** 59.9%（标题通道），
+> **全文任意一处出现禁令语句** 85.7%（含正文的 `Do not …` 通式）。两个数都对，问法不同。
+> 详见 [`FINDINGS.md`](FINDINGS.md) §1。
 
 ## 命令行工具
 
@@ -101,7 +109,7 @@ agent-charters refs path/to/AGENTS.md
 提示词不点名"协作流程"，11/11 份都没写；点名后 3/3 立刻写出。
 
 `refs` 量的是九类之外的另一个维度：**知识放在哪里**。
-实测 511 份里，**49%** 的章程会转引别的文件（祈使式"read / 详见 X.md"）、
+实测 516 份里，**49%** 的章程会转引别的文件（祈使式"read / 详见 X.md"）、
 **15%** 直接指向知识库或规则目录、两者合起来 **54%**——
 也就是"一份 `AGENTS.md` 承载全部规约"这个假设，对近一半样本不成立。
 v0.2 起这三个数已是数据集字段（`imperative_route` / `hard_route` / `routes_outward`），
@@ -131,7 +139,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python work/fetch_full.py work/repos_topics.txt  # 抓取
 .venv/bin/python work/extract_v1.py           # 抽取
 .venv/bin/python work/pack.py                 # 打包（同时更新随包的 parquet）
-.venv/bin/pytest -q                           # 冒烟测试（34 项）
+.venv/bin/pytest -q                           # 冒烟测试（138 项）
 ```
 
 **纵向基线**：`data/processed/baseline-2026-09-10.tsv` 固化了本快照每个仓库的
@@ -149,7 +157,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## 许可与版权
 
 - **代码**（`agent_charters/`、`work/`）：MIT，见 [`LICENSE`](LICENSE)
-- **数据**（`data/processed/` 下的标注与统计）：CC-BY-4.0，署名 `agent-charters v0.4`
+- **数据**（`data/processed/` 下的标注与统计）：CC-BY-4.0，署名 `agent-charters v0.5`
 - **原文**：本仓库**不含任何 `AGENTS.md` 原文全文**（`data/raw/` 已在 `.gitignore` 中）。
   数据集只含衍生标注、统计特征与极短引用，原文版权归各仓库作者。
 
@@ -159,12 +167,12 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ## 引用
 
 ```
-agent-charters v0.4 (2026). 智能体章程语料库.
+agent-charters v0.5 (2026). 智能体章程语料库.
 https://github.com/janzong/agent-charters
 ```
 
 ## 已知局限
 
 **请不要在不读 [`LIMITATIONS.md`](LIMITATIONS.md) 的情况下使用本数据。**
-最关键的三条：分类基于规则而非人工逐份标注；中文样本仅 5%；
+最关键的三条：分类基于规则而非人工逐份标注；中文样本仅 4.8%；
 抓取池偏向 AI/agent 话题仓库，不代表 GitHub 全体。

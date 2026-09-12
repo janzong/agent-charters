@@ -35,7 +35,7 @@ def test_corpus_shape(corpus):
     assert len(corpus) == 558
     assert len(corpus.columns) == 30
     sub = substantive(corpus)
-    assert len(sub) == 511
+    assert len(sub) == 516          # v0.1.8：指针反证闸补回 5 份被误排除的短章程
 
 
 def test_every_row_is_traceable(corpus):
@@ -474,15 +474,43 @@ def test_pointer_semantic_self_declaration():
     assert analyze_text(text)["is_pointer"] is True
 
 
-@pytest.mark.xfail(strict=False, reason=(
-    "已知边界（LIMITATIONS §10）：208B 正文 + 3 条具体规则仍被薄门判为指针。"
-    "修掉它这条会变 XPASS——那时请把它改成普通断言。"))
 def test_known_boundary_short_doc_with_rules():
+    """v0.1.8 修复（原为 xfail，LIMITATIONS §10）：208B 正文 + 3 条具体规则曾被薄门判成指针。
+
+    上面那条合成文本用的是 `billing.mdoc`（`.mdoc` 不匹配 `POINTER_PAT`），所以它其实
+    **盖不住真实案例**——真实 `buttondown/docs` 写的是 `See \\`billing.md\\``。教训：
+    闸门类回归必须直接喂真实文件正文，合成近似会把 bug 藏起来。
+    """
     text = ("# Customer docs\n\nUses **Bun**, not npm or pnpm.\n\n"
             "- When adding a page, register it in `navigation.json`.\n"
             "- FAQs use a `faqItems` frontmatter field. See `billing.mdoc`.\n"
             "- Local build: `bun run build`.\n")
     assert analyze_text(text)["is_pointer"] is False
+    if not RAW.exists():
+        pytest.skip("data/raw 不在仓库里（发布包精简版）")
+    real = (RAW / "buttondown__docs.md").read_text(encoding="utf-8", errors="replace")
+    assert analyze_text(real)["is_pointer"] is False
+
+
+@pytest.mark.parametrize("name", [
+    "buttondown__docs", "voxel51__fiftyone", "calesthio__OpenMontage",
+    "JuliusBrussee__caveman", "MadsLorentzen__ai-job-search",
+])
+def test_pointer_gate_lets_rule_bearing_short_docs_through(name):
+    """U1/C 组回归：短文件只要**自带规则/约束/命令**就不是指针（558 份里 5 份误排除已归位）。"""
+    if not RAW.exists():
+        pytest.skip("data/raw 不在仓库里（发布包精简版）")
+    rec = analyze_text((RAW / f"{name}.md").read_text(encoding="utf-8", errors="replace"))
+    assert rec["is_pointer"] is False
+
+
+@pytest.mark.parametrize("name", ["chroma-core__chroma", "plotly__dash"])
+def test_pointer_gate_keeps_real_pointers(name):
+    """反方向：真的指针（一句 "See X for …" / 纯链接索引页）仍然算指针。"""
+    if not RAW.exists():
+        pytest.skip("data/raw 不在仓库里（发布包精简版）")
+    rec = analyze_text((RAW / f"{name}.md").read_text(encoding="utf-8", errors="replace"))
+    assert rec["is_pointer"] is True
 
 
 # U2（v0.1.2）：含「分工/职责/ownership」类标题的 33 个章节里 9 个完全没有标签，

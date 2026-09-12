@@ -10,16 +10,16 @@ import pandas as pd
 import re as _re
 
 from .refs import find_refs
-from .taxonomy import (CATEGORIES, IMPERATIVE_PAT, MD_LINK_PAT, POINTER_PAT,
-                       POINTER_SEMANTIC, RULESET_VERSION, STRONG_PATTERNS,
-                       VERSION, classify, classify_fulltext, content_bytes,
-                       split_sections)
+from .taxonomy import (CATEGORIES, IMPERATIVE_PAT, MD_LINK_PAT, OWN_RULES_PAT,
+                       POINTER_PAT, POINTER_SEMANTIC, RULESET_VERSION,
+                       STRONG_PATTERNS, VERSION, classify, classify_fulltext,
+                       content_bytes, split_sections)
 
 EXTRACTOR_VERSION = "extract_v1"
 
 # 数据集版本：决定发布文件名里的版本位（agent-charters-<DS>.parquet）。
 # 与工具版本解耦（D24）——工具在迭代，数据没变时不该跟着升。
-DATASET_VERSION = "v0.4"
+DATASET_VERSION = "v0.5"
 
 
 def doc_language(text: str) -> str:
@@ -94,8 +94,13 @@ def analyze_text(text: str, meta: dict | None = None, *,
     # 或作者自陈"本文件只是路由"。
     thin = content_bytes(text) < 400
     routey = bool(POINTER_PAT.search(text)) or md_links >= 2
-    is_pointer = size < 2000 and (bool(POINTER_SEMANTIC.search(text))
-                                  or (thin and routey))
+    # v0.1.8（C 组复审）：加**反证闸**。薄门 + 路由信号只描述形态，分不清
+    # 「短但写了规则」与「短且只指向别处」；实测 7 份被判指针的短文件里 5 份是误排除。
+    # 只要文件里有它自己的规则/约束/可执行命令（见 OWN_RULES_PAT），就不是指针。
+    own_rules = bool(OWN_RULES_PAT.search(text))
+    is_pointer = (size < 2000 and not own_rules
+                  and (bool(POINTER_SEMANTIC.search(text))
+                       or (thin and routey)))
     rule_signals = len(IMPERATIVE_PAT.findall(text))
     mode = ("rule" if rule_signals >= 5 else
             "knowledge" if rule_signals <= 1 else "mixed")

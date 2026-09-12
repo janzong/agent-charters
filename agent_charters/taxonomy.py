@@ -62,7 +62,22 @@ VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么
 #   同批落地 `TAXONOMY.md` 口径裁决 5–7（人定）：①"本文件是…入口"这类文件自身角色不算 overview；
 #   ②指向某规范的链接不算 style；③文档指针表算 structure（新增"表格型结构信号"，
 #   只认表头首列为 文档/文件/路径/目录/模块/组件/包 的表，实测 structure 59.7%→59.9%）。
-RULESET_VERSION = "ruleset_v0.1.7"
+# v0.1.7（2026-09-12）三处来自 100 份人工核对的修正（详见 work/audit/v0.1.8-changelist.md）：
+#   (a) 撤掉容器型标题词 `start here` / `quick start` / `quick reference`——它们本身不含类别信息
+#       （独撑的 7+3+10 份里绝大多数是阅读顺序/命令块/规则表，只有 1 份真是技术栈）；
+#   (b) 裸词 `module` / `usage` 收成具体形态（`Module Naming` 是 style、`Module scope freezes…` 是 gotchas）；
+#   (c) `dependency` 的拓扑义（direction/map/graph/role）改判 structure，不再算 environment。
+# v0.1.8（2026-09-13）100 份人工核对的落地版，共四块：
+#   ① 围栏守卫加**语言标记门**（只有 ```bash/```ts 这类带语言标记的围栏才做密度反证）→ 15 份各掉 1 假标签；
+#   ② 删词与收紧：`agent note` / `agent tool` / `be concise` 删；`run`→`run `+`running`；
+#      `behavior`→`agent behavior`/`behavioral rules` → 27 份掉标签（agent_meta −25、build_test −2），0 新增；
+#   ③ 补词：英文禁令一般式 `DO NOT <动词>`（排除 need/hesitate/worry/forget）、`trap`、`e2e`、
+#      复数形态（Directories/Dependencies）、`product intent`/`project intent` → 净增 119 / 净掉 2；
+#   ④ 收紧：task/requirement/process/要求 换限定式；tool/warning/style/version/standard/rule/边界/
+#      process/what is/import organization/permitted commands 加**共现否决** → 净增 1 / 净掉 36
+#      （逐份核对全为审计点名的假阳性；唯一新增 localstack 的「## Development Process」是真修复）。
+#      同批：`is_pointer` 加**反证闸**（文件自带规则/命令就不算指针，5 份误排除归位，基座 511→516）。
+RULESET_VERSION = "ruleset_v0.1.8"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -421,10 +436,27 @@ _STRIP_DECOR = re.compile(r"[-*`#>|=|]")
 # 语义门：这些话说等于作者自陈"本文件只是路由"，与厚度无关。
 # 只用**精确自陈**的短语。"single source of truth" 这类口语化的不算——实测它在 34 份
 # 文件里出现，其中大多是几万字节的大文件，拿它当判据会大面积误伤。
+# v0.1.8：删 `thin[- ]pointer`。它命中不了"本文件没有内容"的自陈，而是被
+# **文件描述自己的设计**触发——ai-job-search 写的是 "this workspace uses a unified
+# thin-pointer design"（主语是 workspace 的设计，不是"指向的文件"），据此把它踢出统计
+# 恰恰藏起了规则的漏标。现在这类文件由 OWN_RULES_PAT 反向兜住。
 POINTER_SEMANTIC = re.compile(
-    r"(?i)no instructions in this file|all instructions are in|thin[- ]pointer"
+    r"(?i)no instructions in this file|all instructions are in"
     r"|contains? routing rules|for guidance .{0,30}?see"
     r"|本文不写规则|全部规则在")
+
+# v0.1.8（C 组复审）：**指针闸门的反证**。薄门 + 路由信号是形态判据，它分辨不了
+# 「短但写了规则」与「短且只指向别处」——实测 7 份被判指针的短文件里 5 份是误排除
+# （buttondown/docs / voxel51/fiftyone / calesthio/OpenMontage / JuliusBrussee/caveman /
+# MadsLorentzen/ai-job-search），它们各自都带着自己的约束（`do not add Material UI`、
+# `Binding routing`、`MANDATORY`、`` `bun run build` ``…）。
+# 判据：**文件里只要有它自己的规则/约束/可执行命令，就不是指针**——无论多薄、路由信号多强。
+# 反向也要成立：chroma（129B，全文一句 "See CLAUDE.md for …"）与 dash（纯链接索引页）
+# 没有这类信号，仍然判为指针。
+OWN_RULES_PAT = re.compile(
+    r"(?i)\b(?:do not|don't|never|must|should|always|avoid|required|binding|mandatory)\b"
+    r"|`[^`\n]*\b(?:npm|pnpm|yarn|bun|cargo|go|make|python|pip|pytest|gradle|mvn|"
+    r"dotnet|uv|poetry)\b[^`\n]*`")
 
 
 def content_bytes(text: str) -> int:

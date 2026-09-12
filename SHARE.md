@@ -4,26 +4,35 @@
 > 这不是数据集的组成部分，发完可以删；留着也行——下次发版时能复用结构。
 > 文案里的每个数字都可由 `data/processed/agent-charters-v0.3.parquet` 复算。
 
-## 数字口径（当前，2026-09-12）
+## 数字口径（当前，2026-09-13）
 
-**对外一律用 `build_test` = 85.7%（438/511），数据集 v0.3 / `ruleset_v0.1.3`。**
+**对外一律用数据集 v0.5 / `ruleset_v0.1.8`，分母 516。两个头条数字并列：**
 
-这个数字改过两次，原因和留痕都在 `LIMITATIONS.md` §11：
+| 类别 | 覆盖 | 说明 |
+|---|---|---|
+| 禁令 `boundaries` | **85.7%**（442/516） | 其中 **59.9%** 是**专门开了一节**写禁令 |
+| 构建测试 `build_test` | **82.8%**（427/516） | |
+
+相差 2.9pp，**小于禁令通式约 3% 的已知假阳性幅度**（`LIMITATIONS.md` §13）——
+所以对外说**并列第一**，不要说"禁令压倒了构建测试"。
+
+`build_test` 这个数字改过三次，原因和留痕都在 `LIMITATIONS.md` §11 / §13 / §15：
 
 | 版本 | 数字 | 怎么来的 |
 |---|---|---|
 | v0.2（错误） | 87.9% (449) | 标题通道子串匹配，`ci` 命中了 `Deci\|sions` 这类词 |
 | 09-12 我口头给的更正 | 84.7% (433) | **推算错误**：拿"误命中组合数 16"当"会掉标签的份数" |
-| v0.3（实测） | **85.7% (438)** | 修好后逐份比对两份数据集，真正掉标签的是 11 份 |
+| v0.3（实测） | 85.7% (438/511) | 修好后逐份比对，真正掉标签的是 11 份 |
+| **v0.5（实测，现行）** | **82.8% (427/516)** | 100 份人工核对落地：修掉"代码块里的 `# 注释` 被当标题"（−）、5 份误判指针收回（分母 511→516） |
 
 **已按 87% 发布**：知乎（§3）、开源中国（§4.5）。
 **已按 84.7% 发布**：掘金（§4.6）。
-三站的更正话术见 §7；**未发布的渠道（HN / Reddit / V2EX）直接用 85.7%。**
+**三站都只需要贴一次最终更正**（§7，2026-09-13 版）——**不要**再按中间那版 85.7% 贴一轮，
+省得同一件事更正三次。**未发布的渠道（HN / Reddit / V2EX）直接用 v0.5 的数字。**
 
 **v0.4 追加（2026-09-12）**：四条**口径裁决**落地（人定，见 `TAXONOMY.md`「口径裁决」），
-其中一条改动了数字——`agent_meta`（"AI 行为规定"）**36.4% → 29.5%**：
+其中一条改动了数字——`agent_meta`（"AI 行为规定"）**36.4% → 25.8%**：
 标题里出现 agent/instructions 不再算数（那多是文件自己的名字）。
-**这条只影响未发布渠道的表格**；已发的三篇都没引用过 36% 这个数，所以不需要再更正。
 
 ## 0. 发布前 checklist
 
@@ -62,21 +71,21 @@ taxonomy for them (9 categories), then published the annotations. No model was u
 to label anything; it's keyword/heading rules, so you can read exactly why any file
 got any tag.
 
-Percentages below are over the 511 files that actually contain instructions. Of the
-558 collected, 40 are near-empty (<40 bytes) and 7 are pure pointers ("see CLAUDE.md").
+Percentages below are over the 516 files that actually contain instructions. Of the
+558 collected, 40 are near-empty (<40 bytes) and 2 are pure pointers ("see CLAUDE.md").
 
 Some things that surprised me:
 
-- "How to build/test/run" dominates: 85.7% of files have build/test content. That's the
-  single thing people most want their agent to know.
-- Prohibitions come second (65.9%), ahead of architecture and style. People draw lines
-  before they hand over autonomy.
+- Two things tie for first. "How to build/test/run" is in 82.8% of files. Prohibitions
+  are in 85.7% — and 59.9% have a *dedicated* "don't do this" section. People draw lines
+  at least as often as they hand over instructions. (The 2.9pp gap is smaller than the
+  ~3% known false-positive rate of the prohibition detector, so I report them as tied.)
 - "Gotchas" is the rarest category at 14% — yet it's the knowledge you can't re-derive
   by reading the code. The most useful thing is the least written.
-- 7 files contain no instructions at all, just a pointer: "see CLAUDE.md". Some teams
-  have started to split their agent rules across several files.
-- 73% of files are imperative (do/don't) rather than declarative knowledge.
-- Only 5% are in Chinese, which seems low given GitHub's Chinese-speaking user base.
+- Only 2 files contain no instructions at all, just a pointer: "see CLAUDE.md". Some
+  teams have started to split their agent rules across several files.
+- 72% of files are imperative (do/don't) rather than declarative knowledge.
+- Only 4.8% are in Chinese, which seems low given GitHub's Chinese-speaking user base.
 
 There's also a small CLI in the repo. The one I actually use:
 
@@ -104,7 +113,7 @@ versions. Happy to hear what categories I got wrong — that's the most useful f
 **标题**
 
 ```
-[OC] I annotated 558 AGENTS.md files from public repos — 86% document build/test commands, only 14% warn about pitfalls
+[OC] I annotated 558 AGENTS.md files from public repos — 83% document build/test commands, 86% say what NOT to do, only 14% warn about pitfalls
 ```
 
 **正文**
@@ -119,31 +128,31 @@ rule-based taxonomy to see what people actually put in these files.
 9 categories, 30 fields per row. No LLM was used to label anything — it's heading +
 keyword rules, and each row records which ruleset produced it.
 
-Numbers worth a look (511 substantive files):
+Numbers worth a look (516 substantive files):
 
 | category | share |
 |---|---|
-| build/test/run commands | 85.7% |
-| git/PR/release workflow | 65.9% |
-| prohibitions & boundaries | 65.6% |
-| architecture & file layout | 59.7% |
-| code style | 56.8% |
-| environment & toolchain | 44.4% |
-| AI-specific behavior rules | 29.5% |
-| project overview | 34.8% |
-| pitfalls / gotchas | 14.1% |
+| prohibitions & boundaries | 85.7% |
+| build/test/run commands | 82.8% |
+| git/PR/release workflow | 67.1% |
+| architecture & file layout | 59.1% |
+| code style | 54.5% |
+| environment & toolchain | 45.0% |
+| project overview | 32.2% |
+| AI-specific behavior rules | 25.8% |
+| pitfalls / gotchas | 13.6% |
 
 The 14% is the interesting one for me. "Don't use `bun install`, it breaks the
 lockfile" is knowledge that no one can recover by reading the code, and it's the
 least written-down category.
 
-Also: 73% of files are imperative rather than explanatory, and 7 files are pure
-stubs ("see CLAUDE.md"), which suggests some teams are splitting agent rules across
-multiple files.
+Also: 72% of files are imperative rather than explanatory, and only 2 files are pure
+stubs ("see CLAUDE.md") — though 54% point outward to other files, which suggests many
+teams are splitting agent rules across several files.
 
 Caveats, because they matter: classification is rule-based, not hand-verified per
 file, so treat the percentages as lower bounds. The corpus skews to AI/agent repos.
-It's English-heavy (91%); Chinese is 5%, which is a real weakness of the dataset.
+It's English-heavy (91%); Chinese is 4.8%, which is a real weakness of the dataset.
 
 There's a CLI included — this is the part I use daily:
 
@@ -167,8 +176,8 @@ false positives are the ones that actually hurt.
 ## 3. 知乎（中文长文）
 
 > **状态：已发布 2026-09-11**（<https://zhuanlan.zhihu.com/p/2081788025013539447>）。
-> 正文里的 87% / 2.6 倍是当时的数字；**引用请用 §7 的 85.7%**。下面保留原文不改，
-> 目的是留档"当时到底发了什么"。评论区更正见 §7。
+> 正文里的 87% / 2.6 倍是当时的数字；**引用请用 §7 的 v0.5 定稿数字（82.8% / 85.7% 并列）**。
+> 下面保留原文不改，目的是留档"当时到底发了什么"。该站的更正评论已写好，见 §7.1。
 
 **标题**
 
@@ -304,11 +313,11 @@ README/CONTRIBUTING 里、或者中文项目更倾向私有仓库。
 
 几条比较意外的：
 
-- 85.7% 的文件写了构建/测试/运行的命令，比第二位（git 流程 65.9%）高出一截
-- "不要做什么"排在很前面（65.6%）——信任是从划线开始的
-- 坑/pitfall 只有 14.1%，是最低的一类，但这类知识恰恰没法从代码里反推
-- 有 7 份文件全文只有一句"见 CLAUDE.md"，纯做转发
-- 中文只有 5%，低得不太正常
+- 两类并列第一：构建/测试/运行的命令 82.8%，"不要做什么"85.7%（其中六成文件
+  专门开了一节写禁令）——信任是从划线开始的，而且划线至少和交底一样常见
+- 坑/pitfall 只有 13.6%，是最低的一类，但这类知识恰恰没法从代码里反推
+- 只有 2 份文件全文只有一句"见 CLAUDE.md"，纯做转发
+- 中文只有 4.8%，低得不太正常
 
 标注没有用大模型，是关键词+标题规则，每一行都带 file_sha 和规则集版本，
 可以复现。代价就是漏标多、覆盖率都是下界，这点我在文档里写清楚了。
@@ -330,7 +339,8 @@ https://github.com/janzong/agent-charters
 ## 4.5 开源中国（中文，项目介绍体）
 
 > **状态：已发布 2026-09-12**（<https://my.oschina.net/u/9764589/blog/19758304>）。
-> 正文数字是当时的 87%；评论区已贴更正（84.7%，事后看也偏低），**正确值 85.7%，见 §7**。
+> 正文数字是当时的 87%；评论区已贴过一轮更正（84.7%，事后看也偏低）。
+> **不要再贴 85.7% 那一轮**——直接贴 §7.2 的 v0.5 定稿版（82.8% / 85.7% 并列），一次到位。
 
 **为什么单独一版**：OSC 的读者是开源/开发者，打开就想知道"这是什么项目、能干嘛、怎么装"。
 知乎那种"我发现了一个现象"的悬念开头在这里会显得绕——所以这一版是**项目介绍体**：
@@ -415,16 +425,18 @@ file_sha、采集日期、抽取器版本和规则集版本，任何人都能复
 ## 4.6 掘金（中文长文，Markdown 原生）
 
 > **状态：已发布 2026-09-12**（<https://juejin.cn/post/7684156210712166442>）。
-> 正文用的是**修正后**的 84.7% —— 事后实测应为 **85.7%**（84.7% 是我推算错的那一版，
-> 见 `LIMITATIONS.md` §11.4）。**下面保留已发布的原文不改**，更正话术见 §7。
+> 正文用的是**修正后**的 84.7% —— 事后实测应为 **82.8% / 禁令 85.7% 并列**（84.7% 是我推算错的那一版，
+> 见 `LIMITATIONS.md` §11.4；82.8% 是 v0.5 重算，见 §13/§15）。
+> **下面保留已发布的原文不改**，更正话术见 §7.3。
 
 **为什么单独一版**：掘金编辑器原生吃 Markdown——**切到「Markdown 模式」直接粘源码即可**，
 标题、代码块、链接都不会被吃掉（OSC 那种"编辑器吃 Markdown"的问题在这里不存在，见 `STATE.md` §2 末列的遗留）。
 所以这一版的正文是**真 Markdown**，生成时用 `--raw`（不剥标记、不合并段落），正文里的代码块原样保留。
 
-**数字口径（重要）**：这一版发布时用的是 84.7%（**那是推算值，事后实测为 85.7%**）。
-87% 是标题子串误命中的高估值（`LIMITATIONS.md` §11）；84.7% 是把"误命中组合数"当
-"会掉标签的份数"推算出来的，同样不对。**未发布的渠道一律用 85.7%。**
+**数字口径（重要）**：这一版发布时用的是 84.7%（**推算值，不对**）。87% 是标题子串误命中的
+高估值（`LIMITATIONS.md` §11）；84.7% 是把"误命中组合数"当"会掉标签的份数"推算出来的。
+**v0.5 定稿值：`build_test` 82.8% 与 `boundaries` 85.7% 并列第一**（分母 516，§13/§15）。
+**未发布的渠道一律用 v0.5 的数字。**
 
 **发在哪**：<https://juejin.cn> → 写文章 → 切「Markdown 模式」。
 分类建议 **后端**（或「人工智能」）；标签最多 5 个：`AGENTS.md`、`AI`、`开源`、`数据集`、`效率工具`。
@@ -611,66 +623,83 @@ agent-charters compare 你的AGENTS.md
 
 ---
 
-## 7. 数字更正话术（三站，2026-09-12 起）
+## 7. 数字更正话术（三站，2026-09-13 定稿）
 
-**背景一句话**：`build_test` 的正确值是 **85.7%（438/511）**，不是我先前说的 87%，
-也不是我推算的 84.7%。两处都错了，原因不同，都写在 `LIMITATIONS.md` §11。
+**背景一句话**：`build_test` 的现行正确值是 **82.8%（427/516）**，不是我先前说的 87%、
+也不是我推算的 84.7%；同时 `boundaries`（禁令）以 **85.7%** 与它并列第一。
+三处数字都错过，原因各不相同，全过程在 `LIMITATIONS.md` §11 / §13 / §15。
+
+**贴法**：三站都只贴**一次**（下面 §7.1–7.3 各自按平台），不要再补一轮 85.7% 的中间版。
 
 ### 7.1 知乎（追加在首发那条更正评论下面）
 
 ```
-再更正一次，这次是我自己的推算错。
+再更正一次，这次是 100 份人工核对全部落地后的重算，数字有变动，先说结论：
 
-上次我说"87% 偏乐观，正确值 84.7%（433/511）"——84.7% 这个数错了，
-正确值是 85.7%（438/511）。
+构建/测试/运行命令：82.8%（427/516），不是 85.7%，也不是 87%。
+禁令（不要做什么）：85.7%（442/516）——两类并列第一，差距 2.9pp 小于禁令通道
+约 3% 的已知假阳性，所以我不说"禁令压倒构建测试"。
 
-原因：我拿审计脚本打印的"误命中组合数（构建测试 16 处）"直接相减，
-当成"会掉标签的文件数"。但修好之后逐份比对两份数据集，真正掉标签的是 11 份
-（其余 5 处被正文规则或强模式通道兜住，标签仍成立，只是证据列变干净）。
-449 − 11 = 438。
+分母也变了：511 → 516。
 
-这个数现在是跑出来的，不是估的：仓库里有 work/substring_audit.py（对出错的那版
-快照跑）和 work/dataset_diff.py（两份数据集逐行比差集），任何人都能复算。
-教训写在 LIMITATIONS.md §11.4：推算出来的幅度，不许直接进对外文案。
+两个原因，都是修错，不是内容变了：
+1）我在切章节时把代码块里的 `# 注释` 当成了标题——`# 3. Build`、`# Run tests`
+   这些是 shell 注释。129/558 份文件有这种情况（最多一份 54 行）。
+   修掉后 diffblue/cbmc 的章节数从 146 掉到 92，构建测试从 51 次证据掉到 22 次。
+2）有 5 份短文件被我误判成"只是转发指针"而剔出了统计（比如 buttondown/docs：
+   314 字节，写了"用 Bun 不用 npm"加三条具体规则）。收回来后分母 511 → 516。
 
-数据集 v0.3（ruleset_v0.1.3）已随修正发布，工具打印的也是 85.7% 了。
+这一轮是拿 100 份人工判读结果逐条改规则（改动清单在仓库 work/audit/v0.1.8-changelist.md），
+不是我又拍脑袋估数。复算：agent-charters compare/stats，数据集 v0.5 / ruleset_v0.1.8。
 ```
 
 ### 7.2 开源中国（追加评论，≤500 字）
 
 ```
-再更正一次：上次那条评论里我说"正确值 84.7%（433/511）"，这个数是我推算的，错了。
-正确值是 85.7%（438/511）。
+再更正一次，这次是 100 份人工核对全部落地后的重算，分母也变了（511 → 516）：
 
-为什么错：我拿"误命中组合数"（构建测试 16 处）直接当"会掉标签的文件数"来减。
-实际修完逐份比对两份数据集，真正掉标签的是 11 份——另外 5 处的标签被正文规则或
-强模式通道兜住了，类别仍成立，只是证据列从"ci@Decisions"这种变成干净证据。
-449 − 11 = 438。
+构建/测试/运行命令 82.8%（427/516），不是我上条说的 85.7%；
+禁令 85.7%（442/516）——两类并列第一（差 2.9pp，小于禁令通道约 3% 的已知假阳性）。
 
-所以完整链条是：87.9%（v0.2，含子串误命中）→ 84.7%（我推算错）→ 85.7%（实测）。
-数据集 v0.3 / ruleset_v0.1.3 已发布，仓库里 work/substring_audit.py 与
-work/dataset_diff.py 可复算，LIMITATIONS.md §11 记了全过程和教训。
+两处修错，都不是内容变了：
+① 切章节时把代码块里的 `# 注释` 当标题，`# 3. Build`、`# Run tests` 这类 shell 注释
+   变成了章节；129/558 份文件有这种情况，修掉后 cbmc 章节数 146→92；
+② 5 份短文件被误判成"只是转发指针"剔出了统计（如 buttondown/docs 314 字节，
+   写了"用 Bun 不用 npm"和三条规则），收回后分母 511→516。
+
+完整链条：87.9%（v0.2，含子串误命中）→ 84.7%（我推算错）→ 85.7%（v0.3 实测）
+→ 82.8%（v0.5 定稿）。改动清单 work/audit/v0.1.8-changelist.md，LIMITATIONS.md §11/§13/§15。
 ```
 
 ### 7.3 掘金（追加评论）
 
 ```
-补一处更正：文中"84.7%（433/511）"是我推算的值，错了，正确值是 85.7%（438/511）。
+补一处更正：文中"87%""84.7%"两处都作废，现行正确值（数据集 v0.5 / ruleset_v0.1.8）：
 
-文中那处说明"工具当前版本仍打印 87%"也已经不成立——规则修正已随数据集
-v0.3 / ruleset_v0.1.3 发布，工具现在打印的就是 85.7%。
+构建/测试/运行命令 82.8%（427/516）；禁令 85.7%（442/516）——两类并列第一
+（差 2.9pp，小于禁令通道约 3% 的已知假阳性，所以不说"压倒"）。
 
-错在哪：我拿审计脚本打印的"误命中组合数"（构建测试 16 处）直接减，
-当成"会掉标签的文件数"。修完逐份比对两份数据集，真正掉标签的是 11 份
-（另 5 处被正文/强模式通道兜住，标签仍成立、只是证据变干净）。449 − 11 = 438。
+分母也从 511 变成 516。两处修错：
+① 代码块里的 `# 注释` 被当成了标题（`# 3. Build`、`# Run tests` 是 shell 注释），
+   129/558 份文件受影响，修掉后 cbmc 的章节数 146→92、构建测试证据 51→22 次；
+② 5 份短文件被误判成"只是转发指针"（如 buttondown/docs，314 字节但有四条真规则），
+   收回后分母 +5。
 
-全过程、复算脚本和教训都在仓库 LIMITATIONS.md §11 与 work/ 下。
+这一轮是 100 份人工核对的结果，改动清单在 work/audit/v0.1.8-changelist.md，
+复算脚本与教训在 LIMITATIONS.md §11 / §13 / §14 / §15。
 ```
 
 ### 7.4 若有人追问"那 87% 到底错在哪"
 
-- 标题通道曾是纯子串：`ci` 命中 `Deci|sions`、`script` 命中 `Type|Script`、
-  `build` 命中 `allow|Builds`；另有裸词 `make` 把 `Make changes` 算成构建。
-- 修法：命中点必须落在词首（保留词首前缀），并删掉裸词 `make`。
-- 影响：511 份里 23 处 (文件, 类别) 组合的标签只靠误命中撑着 → 18 处掉标签（无一例新增）。
-- 复算：`work/substring_audit.py`（对 v0.2 快照跑）+ `work/dataset_diff.py`。
+- **87.9% → 85.7%（v0.3）**：标题通道曾是纯子串——`ci` 命中 `Deci|sions`、`script` 命中
+  `Type|Script`、`build` 命中 `allow|Builds`；另有裸词 `make` 把 `Make changes` 算成构建。
+  修法：命中点必须落在词首（保留词首前缀），并删掉裸词 `make`。511 份里 23 处
+  (文件, 类别) 组合的标签只靠误命中撑着 → 18 处掉标签（无一例新增）。
+- **85.7% → 82.8%（v0.5）**：代码块里的 `# 注释` 被当成标题（129/558 份受影响），
+  以及 5 份误判指针收回（分母 511 → 516）。
+- **禁令 85.7% 哪来的**：v0.5 补了正文的 `Do not …` 通式（此前只认 `never commit` /
+  `must not` / 中文模式）。它有约 3% 的已知假阳性（`workflows do not initialize submodules`
+  这种描述句），**故意没收窄**——收紧会让召回塌掉（试过"只认行首"，全库只命中 26 处，
+  而句中 2606 处里抽查 12/14 是真禁令）。详见 `LIMITATIONS.md` §13。
+- 复算：`work/substring_audit.py`、`work/dataset_diff.py`、`work/audit/v0.1.8-changelist.md`。
+
