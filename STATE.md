@@ -48,7 +48,7 @@
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | GitHub **1 star＝作者自己**（`gh api .../stargazers` 实查）、0 fork、0 外部事件；掘金 **阅读 3 / 粉丝 0**；OSC 阅读 1。**判据 6「非作者的外部使用者」仍未闭环** |
 | 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |
-| 分类准确率 | v0.1 抽样 12 份：准确 9 / 漏标 3 / **错标 0**；**v0.5 起 100 份人工核对已闭环**，改动全部落地（清单 `work/audit/v0.1.8-changelist.md`）。⚠️ 新一批 100 份的"规则 vs 人工"逐类对照尚未重跑（重生成后待做） |
+| 分类准确率 | ✅ **有实测值了**（`work/audit/v0.5-human-vs-rule.md` / `LIMITATIONS.md` §16）：微平均 precision A 90% / B 80% / D 92%，recall A 75% / B 79% / D 84%（B 组＝用户独立盲判）。⚠️ **in-sample 上界**；最弱 `gotchas` recall 38%、中文组 `build_test` precision 61%。v0.1 那轮自述口径（12 份：准确 9 / 漏标 3 / 错标 0）已被取代 |
 | 无标签率 | 1.6%（8 / 516，v0.1 时为 2.1% = 11 / 518） |
 
 **当前最真实的问题：发出去了，但还没被看见。** 首站知乎已发（2026-09-11），
