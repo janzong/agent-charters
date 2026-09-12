@@ -1,0 +1,18 @@
+{
+  "_note": "A 主样本第十一批（2 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-11",
+  "files": {
+    "apache/camel": {
+      "bytes": 33986,
+      "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+      "borderline": ["environment", "gotchas"],
+      "why": "## Project Info（Apache Camel 是支持 Java/XML/YAML DSL 路由规则的集成框架 + 版本/JDK/Maven）=overview；## Structure（顶层目录树）+ ## Component Layout（camel-<name> 的标准目录骨架）+ ## Adding Components（新增组件的两条放置规则）=structure；## Build（mvn clean install/-Dquickly/-pl -am/formatter/impsort/sourcecheck）+ ## Testing（mvn test / mvn verify -Pit + Testcontainers 的 KafkaServiceFactory 用法）+ ## Adding Integration tests with new container image=build_test；## Conventions（类命名 *Component/*Endpoint/*Producer/*Consumer、包名、弃用三件套）+ ### Assertions: Use AssertJ + ### Asynchronous Testing: Use Awaitility + ### Documentation Conventions（xref: 而非外链）=style；### PR Volume、### Git branch、### JIRA Ticket Ownership、### PR Description Maintenance、### PR Reviewers、### Backport PRs、### Merge Requirements/Procedure、## Commits=workflow；## Security Model（信任假设、in/out of scope、运维加固清单、committer 复核清单）+ 同节里的 NEVER/MUST NOT（不许推别人的分支、不许抢已分配的 JIRA、不许把新特性写进升级指南）=boundaries；## AI Agent Rules of Engagement 整节 + ### Attribution（AI 生成内容必须标注、Co-authored-by 预告、不许猜 operator 名字）+ ### Knowledge Cutoff Awareness + ### Issue Investigation（先查证再动手、先向 operator 汇报）=agent_meta。Java 17+/Maven 3.9.12+=environment 犹豫（只在 Project Info 里一行）；### Issue Investigation 的『代码看着不对但往往有原因』=gotchas 犹豫。"
+    },
+    "openai/openai-agents-python": {
+      "bytes": 34658,
+      "call": ["structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+      "borderline": ["overview"],
+      "why": "无 overview（### Overview 在 Project Structure Guide 之下，讲仓库结构不是产品概览）。## Project Structure Guide（### Repo Structure & Important Files + ### Agents Core Runtime Guidelines）+ 各节的路径约定=structure；### Testing & Automated Checks（ScriptedModel/ScriptedRealtimeModel/scripted_sandbox_session 的选择、tests/README.md + Makefile、$code-change-verification 命令序列）+ ### Prerequisites（uv sync / make）=build_test；### Platform, Docs, and Security Review 的文档规则（术语表、examples 导入路径、不许硬折行、`tool` 优于 `function_tool`）=style；### Git Worktree and Branch Safety + ### Documentation Release Timing + ### Pull Request & Commit Guidelines + ### ExecPlan=workflow；一大堆禁令（Never push/open a PR/otherwise mutate GitHub、不得让 sandbox manifest 自行豁免边界、脱敏要考虑 traceback 与 exception chaining、Do not claim a grant applies 除非实现真的查它）=boundaries；本文件主体其实是 agent_meta：### Mandatory Skill Usage（五个仓库 skill 的授权与路由）、### Work Status Reporting（RUNNING/COMPLETE/NEEDS_DECISION 三态与不许讨 generic continue）、## Code Review Rules 四节（这是写给 AI 评审者的判定阈值）、### GitHub-ready Output（可粘贴产物必须单个 markdown 围栏、不许带本地路径与 Codex 专用链接）。"
+    }
+  }
+}
