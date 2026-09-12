@@ -1,0 +1,50 @@
+{
+  "_note": "A 主样本第六批（3 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-6",
+  "files": {
+    "kungfu-systems/kungfu": {
+      "bytes": 6969,
+      "call": [
+        "structure",
+        "build_test",
+        "workflow",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "gotchas"
+      ],
+      "why": "首句自陈是 router（指向权威文档、不重述），按裁决 5 不算 overview；Objective→route 路由表与『When the task changes…』路由表=structure；./shifu sync/build/check/verify 等命令=build_test；Load bounded context（先编译 Agent Task Chart）、Completion 边界的 PR/DCO/Conventional Commits=workflow；『Use ./shifu for every task. Do not invoke pnpm/node/conan/cmake directly』『Never include secrets』『Do not create official integrations that scrape private provider sessions』=boundaries；『Restate the requested outcome in one sentence』『Do not inventory the repository or preload multiple routes just in case』『Keep the person's mental model task-sized. Do not export implementation vocabulary』=对 AI 行为/沟通方式的硬规定=agent_meta。"
+    },
+    "tastyeffectco/sandboxd": {
+      "bytes": 7477,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "environment",
+        "gotchas"
+      ],
+      "borderline": [
+        "agent_meta",
+        "boundaries"
+      ],
+      "why": "## What this is（『A single-host service that creates isolated Linux dev containers…Go control plane + Traefik…』）=overview；## Core API 的端点表=structure；Install/End-to-end example/Operate/Uninstall 全是命令=build_test；## Prerequisites（Docker Engine + Compose plugin、docker 组或 sudo）=environment；## Troubleshooting 五条故障与修法=gotchas。『Running Claude Code / OpenCode inside a sandbox』讲怎么在沙箱里跑 agent（provider 连接、凭据被 scrub），偏 agent_meta/boundaries，但更像操作指南，故列为犹豫。整篇没有 git/PR/分支规则，故无 workflow。"
+    },
+    "microsoft/agent-governance-toolkit": {
+      "bytes": 7530,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "workflow",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "gotchas"
+      ],
+      "why": "## Project Overview（AGT 是多包 OSS monorepo，做 agent 运行时治理）=overview；Repository Layout Status + Where Changes Belong 的 Area/Path/Use it for 表=structure；Version Bumps 的 DO/DO NOT 与 Validation 的『run narrowest tests』『regression test that would fail without the change』=build_test；Routing Rules + OSS Contribution Expectations + Decision Escalation（哪些要先问维护者）+ PR Hygiene=workflow；## Boundaries（never commit secrets / never weaken security defaults / do not mix unrelated changes / preserve honesty）+ 版本号 DO NOT 清单=boundaries；Spam/SEO Outreach Filtering（如何识别并关闭垃圾 PR、用什么话术回复）=agent_meta。Version Bumps 里『bulk-replace 会把 package-lock 里同名传递依赖改坏』是典型坑，gotchas 犹豫。另注意：## PR Hygiene 出现了两次。"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "_note": "A 主样本第七批（3 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-7",
+  "files": {
+    "localstack/localstack": {
+      "bytes": 7534,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "boundaries",
+        "style",
+        "workflow"
+      ],
+      "borderline": [
+        "environment",
+        "gotchas"
+      ],
+      "why": "首段（LocalStack 是本地 AWS 云栈模拟器，跑在 Docker 里，提供本地 AWS API）=overview；Project Structure 目录树 + Implementing AWS Operations 的参考实现指引 + Moto fallback 说明=structure；Commands（pytest/make lint/format）与 Writing Parity Tests 全套（markers/fixtures/transformers）=build_test；Critical Hard Constraints 的七条 NEVER（别手改 snapshot、别硬编码 account/region、别 git push…）=boundaries；Key Conventions（类型/异常/ID/ARN/日志）+ Best Practices 的 Always/Avoid=style；Development Process 六步（先写失败测试…）=workflow。Docker 运行时与 AWS_PROFILE/TEST_TARGET 等环境变量=environment 犹豫；Moto 的『状态留在 Moto 里、升级可能弄坏实现』与 snapshot 相关坑=gotchas 犹豫。"
+    },
+    "schwehr/noaadata": {
+      "bytes": 7703,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "workflow",
+        "boundaries",
+        "style",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "顶部 IMPORTANT CONTINUOUS UPDATE MANDATE：要求『you must continuously update all sections of AGENTS.md』=对 AI 行为的硬规定=agent_meta；§1 Project Overview（noaadata 是什么 Python 库、做什么）=overview；§2 Repository Layout 逐目录逐文件=structure；§3 Build & Test Commands（uv sync/pytest/ruff/pre-commit/mypy/mkdocs/build）=build_test；§4 版本控制规则（Conventional Commits 的 type/scope/subject、禁止 TAG=/CONV= 尾注、提交前必须跑 pre-commit）=workflow+boundaries；§5 Style & Documentation Standards（Google docstring、88/80 列、PEP 585/604、不许含糊 Any）=style。"
+    },
+    "topoteretes/cognee": {
+      "bytes": 7858,
+      "call": [
+        "structure",
+        "build_test",
+        "environment",
+        "workflow",
+        "style",
+        "gotchas",
+        "boundaries"
+      ],
+      "borderline": [
+        "overview"
+      ],
+      "why": "Project Structure & Module Organization 逐目录=structure；Build/Test/Development Commands（uv sync、CLI 示例、pytest、ruff、ty、MCP server、docker、前端 npm）=build_test；Python >=3.10,<3.14 + uv/npm=environment；Coding Style & Naming Conventions + Testing Guidelines 的命名与放置=style；Commit & Pull Request Guidelines（约定式提交、DCO、PR 描述）+ CI Mirrors Local Commands=workflow；Runtime Flags Worth Knowing（三个开关各自关掉什么：CACHING 关掉会让 remember 抛错、AUTO_FEEDBACK 关掉省一次 LLM 调用、DATASET_QUEUE 关掉有文件锁泄漏风险）+ Multi-Tenancy 的『不支持的后端是硬错误不是回退』=gotchas；『Never benchmark cognee with this off』=boundaries。整篇没说 cognee 本身是什么（只有文件名与仓库名），故 overview 只在犹豫层。"
+    }
+  }
+}
