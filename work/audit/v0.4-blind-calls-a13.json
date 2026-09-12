@@ -1,0 +1,20 @@
+{
+  "_note": "A 主样本第十三批（2 份，最后两份大文件）：按约定用「标题清点 + 关键章节切片」读，未逐行通读。只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-13",
+  "files": {
+    "tinyhumansai/openhuman": {
+      "bytes": 134305,
+      "read_mode": "sections",
+      "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas"],
+      "borderline": ["agent_meta"],
+      "why": "h1 副标题（AI assistant for communities — React + Tauri v2 桌面应用 + 内嵌 Rust core）=overview；## Repository layout（路径→职责表）+ ## Runtime scope（进程内 tokio、RPC 端口与 bearer）+ ## iOS client + ## Frontend/## Tauri shell/## Rust core 三大目录逐节=structure；## Commands (from repo root)（pnpm dev/dev:app/build…）+ ## Testing=build_test；## Configuration=environment；## Design & patterns（视觉 token、文件 ≤500 行、禁动态 import、i18n 纪律、Tauri guard、生成文档不许手改）+ ## Coding philosophy=style；## Feature design workflow（Specify→Rust→RPC→UI→test 五步）+ ## Git workflow（fork、never write code on main、--head 参数）=workflow；同节禁令 + ## Debug logging 的 Never log secrets、## Design & patterns 的 never check window.__TAURI__=boundaries；## Platform notes（vendored CEF tauri-cli、macOS/Windows deep links、core standalone 调试）=gotchas。agent_meta 犹豫：## Debug logging (must follow) 的『Changes lacking logging are incomplete』像是对 agent 的硬规定，但通篇没有 you are/AI 之类词。"
+    },
+    "backnotprop/plannotator": {
+      "bytes": 154006,
+      "read_mode": "sections",
+      "call": ["overview", "structure", "build_test", "environment", "boundaries", "gotchas"],
+      "borderline": ["style", "workflow"],
+      "why": "开头段（A plan review UI for Claude Code，拦截 ExitPlanMode，同时提供 code review 与任意 markdown 标注）=overview；## Project Structure 超长目录树（apps/ 十一个子应用 + packages/ + 各文件职责）+ ## Server Runtimes + ## Server API + ## Data Types + ## Markdown Parser + ## Annotation System=structure（本文件主体是架构/接口参考）；## Installation + ## Development + ## Testing Rules + ## Build + ## Test plugin locally=build_test；## Environment Variables + ## Requirements=environment；顶部 blockquote 的禁令（先读 packages/ui/README.md、不要重建 packages/document-ui、never delete working code until a human confirms parity、不许从零重实现）=boundaries；同一 blockquote 的『A prior from-scratch reimplementation broke the app and was reverted』=gotchas。style/workflow 犹豫：通篇没看到代码风格章节（可能被 553 行以后的大段内容盖住），流程性内容（Plan Review Flow/Code Review Flow 等）是**功能流程**而非协作流程，我倾向不标 workflow。"
+    }
+  }
+}
