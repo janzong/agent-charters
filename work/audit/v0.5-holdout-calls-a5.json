@@ -1,0 +1,65 @@
+{
+  "_note": "留出集主样本第五批：13.0–15.7KB 四份，全部读全文（rorkai 中段被截断，分两次补齐）。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。",
+  "batch": "holdout-A-5",
+  "files": {
+    "prolific-oss/cli": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas"
+      ],
+      "borderline": [],
+      "why": "Project Overview 明说是什么（Prolific 平台的 Go CLI）+ 技术栈=概览；Architecture 目录树逐目录职责=架构；make build/test/lint/test-gen-mock + Testing 一节（gomock 表驱动、canonical 模式、改接口后必须重生成 mock）=构建测试；Code Patterns（两级命令结构、签名、Options struct、文件命名、RunE 错误格式）+ Code Style & Linting（gofmt/goimports/golangci）=风格；Commit Messages（conventional commits 及类型表）+ Releasing + Adding a New Command=流程；Go 1.26、module 路径、配置一节、API Client Defaults=环境；Boundaries 整节 + 『Never edit mock_client 手工』=禁令；Common Gotchas 整节=坑。九类里去掉了 AI 行为规定（虽然开头说是写给 AI 的，但正文没有角色/语气/汇报规定）。"
+    },
+    "rorkai/App-Store-Connect-CLI": {
+      "call": [
+        "overview",
+        "build_test",
+        "workflow",
+        "environment",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "structure",
+        "style",
+        "gotchas"
+      ],
+      "why": "首句定义 CLI 是什么=概览；Build and validation（make build/format/check-docs/lint + ASC_BYPASS_KEYCHAIN=1 make test + 变更帮助文档要提交 docs/COMMANDS.md）=构建测试；Development workflow + GitHub and issue guardrails（线程级 review 状态、required checks、禁 admin merge、merge commit 不 squash）=流程；API key 来源与环境/配置态隔离、keychain 旁路=环境；Authentication『must never be committed』+『Do not weaken CI』+『Do not delete stable behavior』+权限矩阵（只读 vs 需授权写）=禁令；Authority and follow-through（哪些动作需授权、何时该问）+ Skills 使用规则 + Handoff contract（汇报四要素）=AI行为。Implementation invariants 里的『实现放 internal/cli/<domain>、注册点在哪』=架构/代码布局，但埋在规则里→犹豫；同节还有 stderr 断言与 usage 约定=风格犹豫；『flat comments 不能证明线程已解决』『不要为刷新基线而 rebase』=坑犹豫。"
+    },
+    "vastsa/PI-Desktop": {
+      "call": [
+        "agent_meta",
+        "workflow",
+        "boundaries",
+        "build_test",
+        "gotchas",
+        "style"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "开篇『Mandatory rules for AI coding agents』+ Issue/PR 处理闸门（先核实再动手、按原文语言回帖）+ Multi-Agent Isolation + Completion Checklist + Final Report 格式=AI行为；GitHub Issue/PR 流程、Commit Format、Stable Release Rule、Mandatory Isolated Development（worktree/branch 纪律）=流程；Immutable Rules 五条 + 『不要评论无关 issue』『不要合并 draft』『AI 生成页面不得有冗余文案』『no secrets』=禁令；Development Workflow + 验证/preflight/E2E 与 check:release-docs=构建测试；Marketplace and Update Diagnosis Gate（症状像陈旧 UI 也要先分层定位、不许用不完整发布掩盖坏目录）=坑；Language 一节（代码/注释/提交用英文）+ AI 生成文案的写法要求=风格。版本面（pnpm/Cargo/APP_VERSION 四处对齐）=环境，但本质是发布清单→犹豫。"
+    },
+    "bytedance/deer-flow": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "What is DeerFlow 明确介绍系统与架构层次=概览；Service Topology（四服务端口表）+ Repository Map=架构；Commands: Root vs Module（make 全家桶、backend/frontend 各自命令、跑单个测试、日志）=构建测试；Cross-Cutting Conventions（TDD、format 门禁、skill 文本 UTF-8、文档同步规则）=风格；版本四处对齐 + CI 校验 + tag 触发发布 + RELEASING/CHANGELOG 路由=流程；Prerequisites、make setup/config/doctor、pnpm 运行器、端口与绑定=环境；『never commit config.yaml/extensions_config.json』『Don't edit CLAUDE.md』=禁令；『make dev 不生成配置文件，缺 config.yaml 服务起不来』『裸 ${PORT}:2026 会绑 0.0.0.0 与部署模型不符』=坑；开头声明这是给 AI agent 的指南、按模块路由到 backend/frontend AGENTS.md=AI行为。九类齐全。"
+    }
+  }
+}

@@ -381,3 +381,45 @@ v0.5 文档（`FINDINGS.md` §1/§2、`README.md`、`SHARE.md`）里曾写
 复算：`.venv/bin/python work/audit_sample.py --main 55 --edge 4 --rare 9 --blind 55 \
 --seed 20260913 --version v0.5-holdout --exclude work/audit/v0.4-sample.json`
 （脚本 2026-09-13 加了 `--exclude` / `--note` 两个参数；不加 `--exclude` 时行为与旧版一致）。
+
+## 19. 留出集实测：precision 92% / recall 70%（2026-09-13，55 份盲判）
+
+§16 那 100 份是 **in-sample**（正是驱动 v0.5 改规则的样本），§18 抽出了真正的留出集。
+现在把**盲判做完了**：55 份主样本，逐份只看原文、不看规则输出，判完才打开规则结果对照。
+
+口径与结果（完整表 `work/audit/v0.5-holdout-vs-rule.md`，可复算）：
+
+- **主口径**：只算盲判确认的类别；判「犹豫」的类别单列，不计漏标/错标（同 §16）。
+- 55 份中文件级完全一致 **7 份（12.7%）**；漏标 **93** 处、错标 **19** 处。
+- **微平均 precision 92%｜recall 70%**（TP 221 / FP 19 / FN 93）。
+- 逐类 recall：`build_test` 95% / `boundaries` 88% / `structure` 78% / `workflow` 78% /
+  `style` 79% / `environment` 57% / `agent_meta` 45% / `overview` 40% / `gotchas` **32%**。
+- 逐类 precision：`structure` 100% / `gotchas` 100% / `style` 97% / `workflow` 97% /
+  `agent_meta` 93% / `overview` 92% / `build_test` 89% / `boundaries` 88% / `environment` 77%。
+
+**与 in-sample 对照（同一规则、同一标注者，只换样本）**：
+
+| 指标 | in-sample A 组 55 份（§16） | 留出集 55 份（本节） |
+|---|---|---|
+| 微平均 precision | 90% | **92%** |
+| 微平均 recall | 75% | **70%** |
+| 漏标 / 错标 | 79 / 25 | **93 / 19** |
+
+**结论：v0.5 的规则改动没有明显过拟合。** 两组只差 3–5pp 且方向一致（precision 略升、
+recall 略降），说明 §16 的 in-sample 数字**没有**被显著高估，可以在说明口径后引用。
+逐类看，留出集上 `build_test`、`style` 比 in-sample 好；`environment`（57% vs 77%）
+和 `boundaries`（88% vs 98%）明显更差，值得下一轮单独看分歧清单。
+
+**这个数字的边界（别过度引用）**：
+
+- **单一标注者**：55 份的盲判是本智能体做的，没有第二人独立复判；§16 的 B 组（用户判）
+  已证明换人判数字会移动，所以 92%/70% 只对「本标注者 + 本分类定义」成立。
+- **没有中文、没有指针文件、没有非实质空壳**：这三类在留出集里都是 0（§18），
+  中文的 precision/recall 仍然没有留出验证。
+- **「完全一致」很低是正常的**：9 个类别任取子集，两份判断逐类全中才算完全一致；
+  这个数是严格口径，不代表 87% 的分歧都严重——多数分歧是 1–2 个类别。
+- **漏标仍是主要短板**（93 vs 19），且集中在 `gotchas`/`overview`/`agent_meta`/
+  `environment` 四类——与 §16 同向：它们都散落在正文里、没有专门章节，是标题通道的盲区。
+
+复算：`.venv/bin/python work/audit/holdout_vs_rule_v0.5.py`
+（盲判原文 `work/audit/v0.5-holdout-calls-a1..a7.json`，抽样 `work/audit/v0.5-holdout-sample.json`）。

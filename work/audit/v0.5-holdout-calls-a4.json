@@ -1,0 +1,97 @@
+{
+  "_note": "留出集主样本第四批：8–10.8KB 六份，全部读全文。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。",
+  "batch": "holdout-A-4",
+  "files": {
+    "graphframes/graphframes": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries"
+      ],
+      "borderline": [
+        "agent_meta"
+      ],
+      "why": "Architecture Overview 首句给了是什么（Spark DataFrames 上的图处理库）+ 三组件=概览；Core Structure/Key Design Patterns 逐文件逐目录=架构；Build and Development Commands（sbt compile/test/scalafmt/scalafix、多 Spark 版本、Pre-PR 清单）=构建测试；Multi-Language Support 里 Scala 编码约定/JavaBean 约定、Development Workflow 的 Code Quality（scalafmt/black/isort/flake8）=风格；Contribution Requirements + Release Process（Maven Central/PyPI）=流程；sbt 1.11.0、Spark 3.5/4.0/4.1、Scala 2.12/2.13、Python 组件位置、pre-commit=环境；🚨 Legacy 一节全是 NEVER/NO/ALWAYS（禁 breaking change、禁改公共 API、禁 cowboy refactor）＋测试结构=禁令。'When in Doubt: ask before changing' 是对 agent 行为的要求，同段又和禁令混在一起=AI行为犹豫。无坑清单（Performance Considerations 是设计说明不是踩雷）。"
+    },
+    "infiniflow/ragflow": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "style"
+      ],
+      "why": "Current stack 给了技术栈=概览；Code Layout to Expect 把 api/rag/deepdoc/agent/cmd/internal/* 逐个列职责=架构；Commands（后端 uv/pytest/ruff、前端 npm、Go build.sh）+ Go Test Tiers 表 + Validation Preference=构建测试；Working Rules 里的 PR 署名规则（维护者接管社区 PR 的 Co-authored-by）+ Default review checklist 的评审要求=流程；Python 3.13+/uv/docker/MySQL-Redis-MinIO-ES、Go 原生静态库与 lld=环境；Core Stance『把 legacy 当负债、优先删除、不留 shim』+『Do not add new compatibility wording』+ Go-Specific Rules=禁令；『raw go test/go build 常漏 CGO flags 与 native libs』『常见环境问题是缺 native deps 和 lld』=坑；Working Rules 整节（改动前先查归属代码路径、评审要一次性报全）=AI行为。Go-Specific Rules 偏规范但没到命名/格式层面=风格犹豫。"
+    },
+    "angristan/netclode": {
+      "call": [
+        "structure",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas"
+      ],
+      "borderline": [
+        "overview",
+        "build_test",
+        "style"
+      ],
+      "why": "Architecture 一节列出 control-plane/agent/auth-proxy/secret-proxy/github-bot 五个组件及各干什么=架构；Rollout after CI（gh run watch → make rollout-*）+ Rules 里的 push 纪律=流程；.env 的 DEPLOY_HOST、Ansible、Tailscale、k3s/kubectl、GPU+Ollama 全套装法=环境；Rules 整节（push 前必须问、绝不手工改服务器、配置改动立刻回写 Ansible）=禁令；Secure Boot 要物理到场刷 MOK、显存 14b=16GB/32b≥24GB=坑。全文没有『Netclode 是什么』的介绍，靠架构组件反推=概览犹豫；命令全是部署/运维/kubectl 调试，没有构建与自动化测试=构建测试犹豫；『Prefer breaking changes over backwards compatibility』一条属约定但很轻=风格犹豫。"
+    },
+    "CopilotKit/CopilotKit": {
+      "call": [
+        "overview",
+        "structure",
+        "workflow",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "build_test",
+        "style",
+        "environment",
+        "gotchas"
+      ],
+      "why": "标题下的三层框架图（Frontend→Runtime→Agent，AG-UI 协议）=概览；flat package structure + packages/ 作用域 + v1-deprecated/v2 布局 + 文档目录树=架构；worktree 工作流 + 'commit as you go' + conventional-commit 驱动发布 + PR 文档=流程；Essentials 里一串 never/必须（never create .changeset、never recreate docs/content/docs、never 直接用底层工具、必须 fetch origin main）=禁令；Private Agent Instructions（读取并服从 private-agents.md）+ Internal Skills + MCP 工具用法 + 'this should be your default mindset'=AI行为。构建/测试只说『走 nx』没给命令=构建测试犹豫；'prefer the simplest correct solution'=风格犹豫；Nx MCP/node_modules/@nx 插件=环境犹豫；『local main 可能任意陈旧、不能当 affected base』是踩雷式警告=坑犹豫。"
+    },
+    "deanpeters/Product-Manager-Skills": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "Operating Philosophy 讲清这个库是什么、为谁服务（PM 技能库，教学优先）=概览；Project Structure 逐目录=架构；Build, Test, and Development Commands + Testing Guidelines（无自动化测试，靠脚本校验）=构建测试；Coding Style & Naming Conventions（SKILL.md 必备小节、frontmatter 字段与长度、kebab-case）=风格；Commit & Pull Request Guidelines + Release Checklist=流程；Commercial Neutrality and Provider Boundaries、Cross-Repo Boundary、Claude 兼容性里的『Do not delete marketplace.json』『Do not rename skills』=禁令；Codex Skill Guidance + 'how you work in this repo as an agent' + Dogfood First=AI行为。没有环境/安装要求一节（Streamlit 属于命令）=环境犹豫。"
+    },
+    "microsoft/ai-agents-for-beginners": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas"
+      ],
+      "borderline": [],
+      "why": "Project Overview 明说仓库是什么（18 课教学课程）+ Key Technologies=概览；Architecture 的课程目录结构 + Special Directories=架构；Setup Commands + Testing Instructions（手工验证、smoke-test 工作流）+ Development Workflow=构建测试；Code Style（PEP 8、notebook 约定）=风格；Pull Request Guidelines（PR 标题格式、Required Checks）=流程；Prerequisites/Python 3.12+/requirements.txt/.env 变量清单/devcontainer/Azure CLI=环境；'Avoid committing .env'『Don't commit venv/』『Remove temporary files』=禁令；Common Gotchas 整节（Python 版本、env、包冲突、区域限制）=坑。九类齐全，唯一没有独立的 AI 行为规定。"
+    }
+  }
+}

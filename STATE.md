@@ -48,7 +48,7 @@
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | GitHub **1 star＝作者自己**（`gh api .../stargazers` 实查）、0 fork、0 外部事件；掘金 **阅读 3 / 粉丝 0**；OSC 阅读 1。**判据 6「非作者的外部使用者」仍未闭环** |
 | 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |
-| 分类准确率 | ✅ **有实测值了**（`work/audit/v0.5-human-vs-rule.md` / `LIMITATIONS.md` §16）：微平均 precision A 90% / B 80% / D 92%，recall A 75% / B 79% / D 84%（B 组＝用户独立盲判）。⚠️ **in-sample 上界**；最弱 `gotchas` recall 38%、中文组 `build_test` precision 61%。v0.1 那轮自述口径（12 份：准确 9 / 漏标 3 / 错标 0）已被取代 |
+| 分类准确率 | ✅ **留出集已出**（2026-09-13，55 份盲判，`work/audit/v0.5-holdout-vs-rule.md` / `LIMITATIONS.md` §19）：微平均 **precision 92% / recall 70%**（TP 221 / FP 19 / FN 93）。in-sample 100 份为 precision A 90% / B 80% / D 92%、recall A 75% / B 79% / D 84%（`v0.5-human-vs-rule.md` / §16，**上界**）。两组差 3–5pp、方向一致 ⇒ v0.5 未过拟合。最弱 `gotchas` recall 32–38%、留出集 `environment` 57%；中文组 `build_test` precision 61% 仍只有 in-sample。v0.1 自述口径已被取代 |
 | 无标签率 | 1.6%（8 / 516，v0.1 时为 2.1% = 11 / 518） |
 
 **当前最真实的问题：发出去了，但还没被看见。** 首站知乎已发（2026-09-11），
@@ -140,9 +140,10 @@ agent-charters compare <你的AGENTS.md>
 - ~~中文关键词补全~~ → v0.1.1 / v0.1.5 已补两批（含繁体与日文汉字形），仍是关键词法，长尾未清
 - ~~人工校验 100 份~~ ✅ **已闭环**（发现 1–56，四块改动全部落地）
 - ~~新一批 100 份的"规则 vs 人工"逐类对照~~ ✅ **已出**（`work/audit/v0.5-human-vs-rule.md`，脚本 `human_vs_rule_v0.5.py`；微平均 precision 80–92% / recall 75–84%，in-sample 上界，见 `LIMITATIONS.md` §16），并已写进 v0.5 Release 说明
-- ⏳ **留出集估计**：抽样已出（`work/audit/v0.5-holdout-*`，seed 20260913；排除上一轮 106 份后
-  可用池 422，主样本 55 均匀随机、零重叠）→ **待盲判**。⚠️ 中文留出集为 0（25 份全用掉了），
-  中文准确率只能靠新采集，见 `LIMITATIONS.md` §18
+- ~~留出集估计~~ ✅ **已闭环**（2026-09-13）：55 份盲判全部完成（只看原文、不看规则输出），
+  逐类对照 `work/audit/v0.5-holdout-vs-rule.md`，脚本 `holdout_vs_rule_v0.5.py`；
+  结论 precision 92% / recall 70%，与 in-sample 差 3–5pp ⇒ 未过拟合，见 `LIMITATIONS.md` §19。
+  ⚠️ 中文留出集仍为 0（25 份全用掉了），中文准确率只能靠新采集，见 §18
 - ⏳ 扩展文件类型（`CLAUDE.md` / `.cursorrules` / `copilot-instructions.md`）
 - ⏳ 留 v0.1.9 的两项（实测后否决，数字见 `work/audit/v0.1.8-changelist.md` §A/B.3）：
   h1 守卫、模块名型标题守卫；以及"全文兜底门放宽"（会让 8 份补标签）

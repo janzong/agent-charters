@@ -388,5 +388,11 @@ v0.1 那句"抽 12 份：准确 9 / 漏标 3 / 错标 0"是自述、样本小、
 动词在中文散文里被当成构建证据）。
 
 ⚠️ **这是 in-sample 上界**：这 100 份正是驱动 v0.5 规则改动的那批样本。
-真正的留出集估计需要新一轮未参与改规则的样本——这是下一步最该做的事。
-详见 `work/audit/v0.5-human-vs-rule.md`（逐类表 + 逐份分歧）与 `LIMITATIONS.md` §16。
+
+**留出集已经补上了**（2026-09-13，55 份盲判，先排除上一轮 106 份）：微平均
+**precision 92% / recall 70%**（TP 221 / FP 19 / FN 93）。与 in-sample 只差 3–5pp、
+方向一致 ⇒ **v0.5 的改动没有明显过拟合，§16 的数字没有被显著高估**。
+逐类看，留出集上 `build_test` 95% / `style` 79% 更好，`environment` 57%（in-sample 77%）
+与 `boundaries` 88%（in-sample 98%）更差。局限：单一标注者、留出集无中文。
+
+详见 `work/audit/v0.5-holdout-vs-rule.md` 与 `LIMITATIONS.md` §19。

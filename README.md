@@ -176,9 +176,10 @@ https://github.com/janzong/agent-charters
 **请不要在不读 [`LIMITATIONS.md`](LIMITATIONS.md) 的情况下使用本数据。**
 最关键的四条：
 
-- 分类基于规则而非逐份人工标注。**实测准确率**（100 份核对，见 `LIMITATIONS.md` §16）：
-  微平均 precision **80–92%**、recall **75–84%**；最弱的是 `gotchas`（recall 38%）与
-  中文样本上的 `build_test`（precision 61%）。⚠️ 该数字是 **in-sample 上界**。
+- 分类基于规则而非逐份人工标注。**实测准确率**：留出集 55 份（未参与改规则）微平均
+  precision **92%** / recall **70%**（`LIMITATIONS.md` §19）；in-sample 100 份为
+  precision 80–92% / recall 75–84%（§16，上界）。最弱的是 `gotchas`（recall 32–38%）
+  与中文样本上的 `build_test`（precision 61%，仅 in-sample）。
 - 中文样本仅 4.8%（25/516），任何按语言做的对比都缺统计效力。
 - 抓取池偏向 AI/agent 话题仓库，不代表 GitHub 全体。
 - `boundaries` 的正文 `Do not …` 通式有约 3% 已知假阳性，它决定了头条排序（§13）。

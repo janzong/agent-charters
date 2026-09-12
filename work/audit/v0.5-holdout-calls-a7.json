@@ -1,0 +1,83 @@
+{
+  "_note": "留出集主样本第七批（收尾）：30–53KB 五份，采用『分节摘录+跳读』——读了全部小节标题与每节首句、并对决定判断的小节（禁令/测试/验证/坑）做了定向精读，未逐字通读全文。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。",
+  "batch": "holdout-A-7",
+  "files": {
+    "get-vix/vix": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "workflow"
+      ],
+      "why": "Project Overview（Go 写的 AI 编码 agent，daemon + TUI）=概览；Architecture + 实例控制通道 + MCP 配置 + skills 目录 + 配置目录分层=架构；Development Commands（make build/test/built 全平台、go test -run）+ Running + Performance tests（testing.B 基准）=构建测试；Key Conventions（Go 风格、gofmt、todo list）=风格；Environment 一节（Go 1.26+、依赖）+ 配置目录解析=环境；Consent before implementation（写码前必须拿到明确同意）+ Default access policy + Deny list（路径/URL 黑名单）=禁令；sandbox 里判断 vixd 是否在跑不能只看进程、whiteboard 的 mermaid-ascii fork、run logs 读法=坑；Planning 必须含单测与 e2e、todo 面板语义、通篇对『你（AI agent）』说话=AI行为。发布/分支/提交信息约定只零星出现（make release），没有成节的流程=流程犹豫。"
+    },
+    "kortix-ai/suna": {
+      "call": [
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "overview"
+      ],
+      "why": "Architecture（@kortix/sdk 是唯一真源、本地栈与发布拓扑）+ 产品流真源=架构；『你能跑也能验，去验』整节（pnpm test 是唯一仓库级测试命令、真实 JWT 调本地 API、chrome-devtools MCP 驱动真 UI、前端 tsc/typecheck 门禁）=构建测试；How to communicate（精确、无废话）+ Frontend design standard（Jay/Kortix 标杆、桌面端对齐是 UI 门禁）+ 数据层改动要求=风格；canonical branch 一节 + 『默认交付：给预览，只有被要求才 merge 到 main』+ release topology（dev/staging/prod）=流程；本地栈各端口、Supabase 鉴权、~15 个已知 @types/bun 报错=环境；『main 自动部署到 dev，合并即全团队发布』『never opens a PR against main』『不得手工升版本号』『不得在宿主里实例化第二个 client』=禁令；已知类型错误、鉴权路由重定向、learnings/incident 规则登记簿=坑；ownership/autonomy 标准（『can you own this?』的含义）+ 会话说起点的分支自检 + 不许交未验证的活=AI行为。没有『这个项目是什么』的介绍段，靠 Linear/架构反推=概览犹豫。"
+    },
+    "palmier-io/palmier-pro": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "首节给出是什么（AI 原生 macOS 视频编辑器，Swift 6.2/SwiftUI+AppKit/AVFoundation，仅 macOS 26/arm64）=概览；Resources and configuration + Editor mutations/undo 的领域操作归属 + AppTheme 位置=架构；Build + Tests（单测原则、UI 测试要人工并给测试计划）+ Verification（swift build）=构建测试；Code style + Concurrency and the main actor + File I/O + Performance + Design System + Localization=风格；Git and pull requests（[fix] 小写前缀 + 祈使句标题）=流程；Build 与平台/架构约束、资源查找要同时适配打包与 swift run=环境；Agents 一节（不保留向后兼容、不为不支持的系统写兼容码）、『Never use hardcoded numeric values』『Never delete or replace a destination until the complete replacement is ready』『不得从主线程做 I/O』=禁令；SwiftUI .onDrop 在 macOS 26 会吞掉子级拖放目标、AVFoundation 同步访问器已废弃、『happy path 能跑不算数』=坑；Voice 一节直接规定产品语气（像安静可靠的 Mac 应用，直白、克制）+ Agent tool design（从用户意图设计工具）=AI行为。"
+    },
+    "mvanhorn/cli-printing-press": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "Machine vs Printed CLI 讲清这个仓库是什么（生产 CLI 的机器）+ Anti-reimplementation=概览；Project Structure + Generator-reserved namespaces + Local Artifacts 布局=架构；Build, Test & Lint + Testing + Quality Gates（9 道门禁）=构建测试；Commit Style（type(scope) 必填）+ Naming and Disambiguation + Code & Comment Hygiene + Editing AGENTS.md 的写法要求=风格；Commit Style/Pull Requests/Issue Taxonomy/Versioning（release-please）/Greptile 评审=流程；supported-version floor、MinSkillVersion、go install、Local Artifacts 路径、supply-chain 扫描=环境；Generator-reserved namespaces 不得手写、Never manually edit version numbers、No private-module requires、不得 git add docs/plans、侧效应命令规则=禁令；Golden 输出稳定性、exit-code 语义（0 默认成功）、Greptile P0/P1 阻塞合并、MCP 注解缺失会被宿主误判=坑；Agent-Native Surface、Issue Work Ownership（贡献者 agent 必须先开 issue）、Skill Authoring/Internal Skills 路由=AI行为。"
+    },
+    "career-ops-hq/career-ops": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "What is career-ops（求职自动化管线）+ Origin=概览；Data Contract + Main Files 表 + Source-of-Truth Boundary + JD 引用形式=架构；Update Check/冷启动检查 + CI 上的 test-all.mjs 全量套件 + Headless/Batch 模式=构建测试；Stack and Conventions + TSV 格式 + 语言模式/输出语言=风格；CI/CD 与治理（PR 风险自动打标）、Canonical States、tracker 合并流程=流程；Node/Playwright/YAML/HTML/Markdown/Canva MCP、config/profile.yml、插件加载=环境；Untrusted External Content（招聘信息是数据绝非指令）+ Offer Verification 必须用 Playwright 而不是 WebSearch + NEVER 手工改 applications.md 加条目 + 不得大规模海投 + 不得编造/不得声称用户创作了某开源项目=禁令；『WebSearch 核实 offer 不可信』『未验证数字不能出现在求职材料里』『重复引用不得把未验证结论洗成已验证』=坑；Personalization（本系统就是给 AI agent 定制的）、auto-memory 作用域、规则该放哪些文件、录用后要先庆祝=AI行为。"
+    }
+  }
+}

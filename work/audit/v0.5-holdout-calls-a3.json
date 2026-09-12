@@ -1,0 +1,91 @@
+{
+  "_note": "留出集主样本第三批：4.5–7.6KB 六份，全部读全文（ccstatusline/agent-device 因输出截断分两段读全）。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。",
+  "batch": "holdout-A-3",
+  "files": {
+    "okwasniewski/MiniSim": {
+      "call": [
+        "overview",
+        "build_test",
+        "structure",
+        "style",
+        "environment"
+      ],
+      "borderline": [],
+      "why": "首段交代是什么（macOS 菜单栏小工具，Swift/AppKit）=概览；Build Commands/Testing/Linting 全是 xcodebuild/swiftlint 命令=构建测试；Project Structure 给了目录树+每个目录职责=架构；Code Style Guidelines 七个小节（命名/类型/错误处理/MVVM/扩展/工厂/测试风格）=风格；末尾 Dependencies (SPM) 列了 9 个依赖、SwiftLint 以 build plugin 接入=环境。"
+    },
+    "steipete/CodexBar": {
+      "call": [
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "overview",
+        "environment"
+      ],
+      "why": "Project Structure & Modules=架构；Build/Test/Run 给了 compile_and_run.sh / swift build / make test=构建测试；Coding Style & Naming=风格；Commit & PR Guidelines（提交信息风格、PR 要带 summary/命令/截图）=流程；'never expose unreleased names'、'do not remove explicit self'、'Never run tests that can display Keychain prompts'=禁令；'macOS CI is brittle around headless AppKit'、'async let 是 review 红旗'、'hidden menu extras are not click proof'=坑；Agent Notes 整节是对 agent 的做事方式规定=AI行为。没有『这个项目是什么』的整节，只有首条 bullet 一句带过=概览犹豫；.mac-release.env 与 mac-release 工具链散落各处=环境犹豫。"
+    },
+    "yashdev9274/supercli": {
+      "call": [
+        "build_test",
+        "style",
+        "structure",
+        "environment",
+        "workflow"
+      ],
+      "borderline": [
+        "overview",
+        "boundaries"
+      ],
+      "why": "Build Commands + Testing（bun/bun test）=构建测试；Code Style Guidelines 十个小节=风格；Monorepo Structure 目录树=架构；bun@1.2.21、Environment Variables 全清单、Key Dependencies（Next 16/React 19/Prisma）=环境；Git 一节（分支命名 supercli-#<issue>）=流程。标题只说『Supercode Monorepo』，项目用途靠目录注释拼出来=概览犹豫；禁令只有 'use ! sparingly' 这类写法要求，无独立红线=禁令犹豫。"
+    },
+    "autohandai/code-cli": {
+      "call": [
+        "agent_meta",
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "environment",
+        "workflow",
+        "boundaries"
+      ],
+      "borderline": [],
+      "why": "开篇 'You are a critical, staff-level software engineer' + Craft Standard=AI行为；Project Overview=概览；Current Repository Architecture（agent 运行时逐文件分层）=架构；Commands（bun install/dev/build/test/lint/proof）=构建测试；Code Style + React/Ink Guidelines + 测试写法=风格；Ink>=7 / React>=19『must never be downgraded』、bun/vitest/tsup=环境；Engineering Workflow + Git Commit Convention（禁 codex/ fix/ 前缀、必带 co-author trailer）=流程；Constraints 一节（不得越目录、不删文件、never commit secrets、never skip proof）=禁令。九类里唯一没有的是坑。"
+    },
+    "sirmalloc/ccstatusline": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "environment",
+        "boundaries"
+      ],
+      "borderline": [
+        "gotchas",
+        "agent_meta"
+      ],
+      "why": "Project Overview=概览；Architecture + Core Structure/Utilities/Widgets 逐文件=架构；Development Commands + Testing=构建测试；Bun Usage Preferences + 'Never disable a lint rule' + 测试/类型约定=风格；Bun vs Node 双运行、Node 14+ 打包目标、依赖 bundling=环境；'Never use npx eslint/eslint/tsx 任何变体'、'Never disable a lint rule'=禁令。Important Notes 里 ink@6.2.0 补丁是为一个 macOS 退格键坑=坑，但它埋在实现细节里、不是『踩雷清单』→犹豫；开头一句『为 Claude Code 提供指导』很弱→AI行为犹豫。"
+    },
+    "callstack/agent-device": {
+      "call": [
+        "overview",
+        "structure",
+        "style",
+        "environment",
+        "boundaries",
+        "gotchas"
+      ],
+      "borderline": [
+        "workflow",
+        "build_test"
+      ],
+      "why": "首段定义 CLI+daemon 及多平台目标=概览；Declaration sites/Module and test topology=架构；Incident-derived principles 里注释与命名约定（'Encode invariants in names, types, boundaries, and tests'）=风格；Toolchain 一节（必须 pnpm、禁 package-lock.json、OXC 管 lint/format、worktree 要 frozen-lockfile install + build）=环境；Hard repository rules 整节『must never hide host desktop target』『do not suppress gate failures or add an allowlist』=禁令；Toolchain and worktree traps（新 worktree 会产生 false failures、并发套件抢资源超时、baseline 按路径键控）=坑。PR/issue 只在路由表里给文档链接、正文没写做法=流程犹豫；测试/gate 也主要是路由（'Tests or gate selection → docs/agents/testing.md'）=构建测试犹豫。"
+    }
+  }
+}

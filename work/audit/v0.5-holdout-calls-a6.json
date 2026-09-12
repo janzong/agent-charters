@@ -1,0 +1,68 @@
+{
+  "_note": "留出集主样本第六批：15.9–18.9KB 四份，全部读全文（pydantic-ai/siyuan/Chat2DB 有截断，均按小节补齐）。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。",
+  "batch": "holdout-A-6",
+  "files": {
+    "pydantic/pydantic-ai": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "开头一段介绍是什么 + Philosophy 讲库的定位=概览；Repository structure 逐个包讲职责=架构；Development workflow（uv/make install/lint/format/typecheck/test、pytest+vcr 录制）+ When to verify（改前不跑全量、单文件定向检查）=构建测试；Requirements of all contributions（现代惯用 Python、端到端类型安全、API 设计品味）+ Coding Guidelines 指向 agent_docs=风格；Pushing changes（推完要盯 CI 绿、无未解决评论）+ PR 评审纪律=流程；uv workspace、Python 3.10–3.13、pre-commit/ruff/pyright/logfire=环境；贡献要求里的‘改动必须窄、不得顺手扩大范围、hunch 不算证据’+『Never report an operation as blocked based on metadata』=禁令；『Avoid make typecheck/make test between edits（太慢）』『maintainerCanModify:false 不代表你不能推 fork』=坑；通篇是给 agent 的角色与工作方式规定（你是项目与用户的第一责任人、channel your inner Samuel Colvin、先收集上下文、任务没准备好就别写代码）=AI行为。九类齐全。"
+    },
+    "siyuan-note/siyuan": {
+      "call": [
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "overview"
+      ],
+      "why": "Repository layout + kernel 包表 + 前端目录表 + 关联仓库清单=架构；Verification and prohibited operations（改完跑 pnpm run lint、Go 改完 gofmt）+ Required toolchain=构建测试；Coding conventions（注释用中文并 120 列、标点、UI 路径用连字符分隔、Markdown 不硬换行、TS 分号、禁 CSS :has）=风格；Git 一节（未经明确要求绝不 commit/push）+ changelog/release 打包脚本=流程；Required toolchain 表（Go/Node/pnpm 版本来源）=环境；Non-negotiable constraints（Do not hand-edit 清单、禁 pnpm build、禁重启内核、加密笔记本不得绕过认证）+ i18n 一堆 do not/never=禁令；加密笔记本兼容性陷阱（不得重建 MasterSalt、不得为绕过不兼容丢密钥）+『pnpm build 会与开发者手跑的 pnpm dev 冲突产生坏包』=坑；Response style（跟随用户语言、不混语言）=AI行为。开头只有一行自我描述（仓库指南/模块路径/许可证），没有项目介绍一节=概览犹豫。"
+    },
+    "coleam00/Archon": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "首段定义是什么（可自托管的受治理 agent 自动化引擎）=概览；Architecture and ownership（包边界、依赖归属、schema 是唯一真源）=架构；Tests and validation（bun run lint/validate、测试工具函数、PostgreSQL 升级检查、破坏性验证只能用 scratch 库）=构建测试；Engineering taste（KISS/YAGNI、让类型承载不变量、失败要清晰、为下一个维护者写）=风格；Git and workspace safety（main/dev 分支纪律）+ Pull requests 一节=流程；Data and compatibility『Never rename/retype/drop shipped table』+ Product boundaries + 禁 git clean -fd/禁 force-push main/禁按进程名杀进程=禁令；Bun 模块 mock 污染进程缓存、别在仓库根跑 bun test、删环境变量会被 .env 重新加载、worktree 不是安全沙箱=坑；Read before changing code（提问是只读的、别停在编辑、别加 AI 署名）+ 顶部『canonical guidance for coding agents』=AI行为。环境只在包脚本/Bun 层面零散出现（SQLite/PostgreSQL 属数据契约讨论）→犹豫。"
+    },
+    "OtterMind/Chat2DB": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "gotchas",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "Context 交代是什么（Java 17/Spring Boot/Maven/React/Umi 的社区版应用）=概览；Repository map + Backend/Frontend boundaries（控制器要薄、Maven 模块方向、方言行为留在插件）=架构；Baseline commands + Verification matrix（前端 yarn lint/build:web:community，后端 Maven 要显式开测试并压过过期的 Surefire include）=构建测试；前后端 boundaries 里的写法约定（沿用 Spring/MyBatis/Lombok 与既有组件、i18n 位置）=风格；Git and external-action rules（未明确要求不得 commit/push/tag/发布）+ Output Format 的评审报告格式=流程；Baseline commands 的工具版本（Java 17、Maven 3.8+、Node 18+、yarn.lock）+ 端口 10825/8889 与 loopback 绑定 + Tool and environment boundaries=环境；Product invariants（不得把 Enterprise/Local/Electron 路径带回社区版）+ Configuration and generated files（绝不提交凭据/生成物）+ 不得从 jar 名推断运行模式=禁令；『过期 Surefire include 与忽略失败的行为必须覆盖』『隐藏前端 UI 不等于后端隔离』『别的 checkout 的进程不能推翻源码事实』=坑；Request 分类（只读 vs 可改 vs 需授权）+ Checkpoint + 交接要求=AI行为。九类齐全。"
+    }
+  }
+}

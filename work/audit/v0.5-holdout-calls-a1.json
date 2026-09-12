@@ -1,0 +1,252 @@
+{
+  "_note": "留出集主样本第一批：最小的 21 份（274B–3.8KB，全部读到全文）。只读原文、未看规则输出。call=我判该文件确实包含的类别；borderline=我判得犹豫的类别（单独统计，不计漏标/错标）。（hermes-studio 为补录，同批次。）",
+  "batch": "holdout-A-1",
+  "files": {
+    "dwebagents/AgentPipe": {
+      "call": [
+        "agent_meta"
+      ],
+      "borderline": [
+        "workflow"
+      ],
+      "why": "整篇在给 agent 定人设与开场白（100x developer、每条 issue/PR 评论以 'Yes chef' 开头），并指派'挑一个 open issue 开 PR'。人设与汇报格式=agent_meta；'挑 issue 开 PR'勉强算流程，犹豫。"
+    },
+    "ollama/ollama": {
+      "call": [
+        "build_test"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "Building 一节给了 cmake/go build + serve 命令（构建与运行）。prerequisites/GPU backends 只以 docs 链接出现，正文没写=环境算犹豫。"
+    },
+    "Graphify-Labs/graphify": {
+      "call": [
+        "agent_meta"
+      ],
+      "borderline": [
+        "workflow",
+        "build_test"
+      ],
+      "why": "'Rules'：回答架构问题前先读 GRAPH_REPORT.md、有 wiki 就导航 wiki 而不是读原始文件——是在规定 agent 的工作方式=agent_meta。'改完代码跑 graphify update' 是工具命令（非构建/测试）且属工作流，两者都犹豫。"
+    },
+    "audacity/audacity.github.io": {
+      "call": [
+        "workflow",
+        "boundaries",
+        "build_test",
+        "environment"
+      ],
+      "borderline": [
+        "style"
+      ],
+      "why": "Conventional Commits=流程；'Don't add npm-specific lockfile or workflow changes'=禁令；bun install/run + Playwright MCP 校验=构建测试；'Use Bun by default'=工具链/环境。'keep changes minimal'、'implementation-agnostic phrasing' 是行文约定，算风格犹豫。"
+    },
+    "meilisearch/meilisearch": {
+      "call": [
+        "boundaries"
+      ],
+      "borderline": [
+        "agent_meta"
+      ],
+      "why": "通篇禁令：不许改仓库内容、不许用 forge 功能、不许训练，且明说这是给 agent 的第一指令。禁令=boundaries；'your compliance is a matter of respect' 带 AI 行为色彩，犹豫。"
+    },
+    "htdt/godogen": {
+      "call": [
+        "structure",
+        "boundaries"
+      ],
+      "borderline": [
+        "build_test"
+      ],
+      "why": "Source Layout 列目录职责=架构；Editing Rules 是禁令（不许建 .claude/skills/、不许给显而易见的基础指导）=禁令。publish.sh --engine 用法像命令，但只在描述渲染流程，算构建测试犹豫。"
+    },
+    "ag-ui-protocol/ag-ui": {
+      "call": [
+        "agent_meta",
+        "build_test"
+      ],
+      "borderline": [
+        "workflow",
+        "structure"
+      ],
+      "why": "通篇是怎么用工具干活的约定（用 nx 跑任务、优先用 nx MCP 工具、先 nx_workspace 了解架构）=agent_meta；明确点名 build/lint/test/e2e 要走 nx=构建测试。属于流程/架构的部分只是顺带，犹豫。"
+    },
+    "VoltAgent/voltagent": {
+      "call": [
+        "overview",
+        "build_test",
+        "agent_meta",
+        "gotchas"
+      ],
+      "borderline": [
+        "structure"
+      ],
+      "why": "What is VoltAgent=概览；pnpm test/build/lint=构建测试；'Important Notes for AI Agents' 五条=AI 行为；'Gotchas' 一节（JSON.stringify 永不可用，改用 safeStringify）=坑。docs/structure.md 只是链接=架构犹豫。"
+    },
+    "morganlinton/Albatross": {
+      "call": [
+        "build_test",
+        "workflow"
+      ],
+      "borderline": [
+        "style",
+        "agent_meta"
+      ],
+      "why": "CI 检查三连与 'clippy -D warnings 必须过'=构建测试；发版流程（tag → workflow → 校验 gh release view → Homebrew tap）=流程。scorecard 的'分数与 counts 要分清'属设计约定，风格犹豫；'先问用户：只落 main 还是发版' 算 AI 交互，犹豫。"
+    },
+    "youssefvdel/qwengate": {
+      "call": [
+        "environment",
+        "build_test",
+        "structure"
+      ],
+      "borderline": [
+        "style"
+      ],
+      "why": "Runtime 一节（只准 Bun 1.3+、无构建步骤、bun.lock）=环境；Commands 代码块=构建测试；File organization 目录树=架构。'标签名只在 tagNames.ts / 配置值只在 qwen.ts，不许内联副本' 是代码约定，风格犹豫。"
+    },
+    "ThinkInAIXYZ/deepchat": {
+      "call": [
+        "environment",
+        "structure",
+        "build_test",
+        "workflow",
+        "style",
+        "boundaries"
+      ],
+      "borderline": [
+        "agent_meta"
+      ],
+      "why": "pnpm only + Node/pnpm 版本=环境；src/main… 目录=架构；Vitest/Playwright 与'交付前跑 format/i18n/lint/typecheck'=构建测试；Conventional Commits + PR 打 dev=流程；'最小改动''不要默认 TDD''Oxfmt 单引号无分号'=风格；'Preserve unrelated worktree changes; avoid destructive Git'=禁令。对 AI 的 TDD 取向要求带 AI 色彩，agent_meta 犹豫。"
+    },
+    "holaboss-ai/holaOS": {
+      "call": [
+        "style",
+        "workflow",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "structure"
+      ],
+      "why": "图标体系（统一走 @/components/ui/icons、strokeWidth 1.75）=风格；'Never import lucide-react / 不直接 import hugeicons'=禁令；提交与 PR 格式=流程；'Always use Context7 MCP'=AI 行为规定。"
+    },
+    "codetime-dev/codetime-web": {
+      "call": [
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries"
+      ],
+      "borderline": [],
+      "why": "Project Structure 与目录职责=架构；pnpm dev/build/lint/typecheck 与测试要求=构建测试；命名与 2 空格等=风格；Conventional Commits + PR 要点=流程；.env.dev 与密钥管理=环境；'never commit .env.*'=禁令。"
+    },
+    "thumbor/libthumbor": {
+      "call": [
+        "overview",
+        "environment",
+        "build_test",
+        "style",
+        "structure",
+        "boundaries",
+        "workflow"
+      ],
+      "borderline": [],
+      "why": "开头自述是什么库=概览；Prerequisites/poetry=环境；make setup/test/unit/coverage=构建测试；black/flake8/pylint 配置=风格；目录树=架构；'Avoid weakening or bypassing signed URL generation'=禁令；target master + PR 流程=流程。"
+    },
+    "yungwood/ical-filter-proxy": {
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "Project Shape 自述服务定位=概览；config/runtime 分层与包结构=架构；go test / golangci-lint / hadolint / nix flake check=构建测试；命名与编译时机等实现约定=风格；PR 偏好与 CI/发布=流程。Docker/Nix/GoReleaser 的打包环境只算顺带，环境犹豫。"
+    },
+    "owncloud/notes": {
+      "call": [
+        "overview",
+        "structure",
+        "style",
+        "build_test",
+        "workflow",
+        "boundaries"
+      ],
+      "borderline": [
+        "environment"
+      ],
+      "why": "Repository Overview=概览；Architecture & Key Paths=架构；phpcs/PHPStan=风格；make build/test-php-*=构建测试；Git Workflow 与 DCO/签名提交=流程；OSPO 约束（只许用 owncloud/actions/* 且锁 SHA、不许未验证第三方 action、翻译必须同步）=禁令。AGPL 许可与依赖管理偏环境/制度，环境犹豫。"
+    },
+    "langchain-ai/open-swe": {
+      "call": [
+        "overview",
+        "structure",
+        "style",
+        "build_test",
+        "workflow",
+        "boundaries"
+      ],
+      "borderline": [],
+      "why": "Project 段落自述=概览；langgraph.json 表与目录=架构；async-only、绝对导入、结构化日志=风格；测试要求=构建测试；PR 标题 lint 规范=流程；'Never run the full test suite locally''Do not add change-detector tests''Never use parent-relative imports'=禁令。"
+    },
+    "shikokuchuo/secretbase": {
+      "call": [
+        "overview",
+        "build_test",
+        "style",
+        "structure",
+        "environment"
+      ],
+      "borderline": [
+        "agent_meta",
+        "gotchas"
+      ],
+      "why": "开头自述包功能=概览；source()/R CMD check 等=构建测试；Air 格式化与 C 风格=风格；两层架构与文件职责=架构；R>=3.5、零运行时依赖、vendored C=环境。'给 AI agent 的指引'与 .claude/CLAUDE.md 用法带 AI 色彩，agent_meta 犹豫；'Load-bearing implementation details' 像设计要点而非踩坑，坑犹豫。"
+    },
+    "ray-project/ray": {
+      "call": [
+        "workflow",
+        "boundaries",
+        "structure",
+        "environment",
+        "agent_meta",
+        "build_test"
+      ],
+      "borderline": [],
+      "why": "贡献政策（查重、不许低价值 PR、纯 AI PR 不许、必须人类背书）=流程+禁令；source layout=架构；DCO/pre-commit/虚拟环境=流程+环境；'run the relevant tests locally' 与 pre-commit run=构建测试；整篇明说适用于 AI 辅助贡献=AI 行为规定。"
+    },
+    "pulseaiclub/phi": {
+      "call": [
+        "overview",
+        "agent_meta",
+        "boundaries",
+        "structure",
+        "workflow",
+        "build_test",
+        "style"
+      ],
+      "borderline": [],
+      "why": "首行自述 harness=概览；Communication Preferences（干、简洁、别奉承、无前后缀、注释讲 why）=AI 行为与风格；Constraints 里的禁止项（不许绕过权限门、不许把 MCP schema 放上模型、不许换掉 hashline edit、不许无谓加依赖）=禁令；模块与包结构=架构；Conventional Commits 等=流程；make test/fmt/lint/build 命令=构建测试；包名与测试文件命名约定=风格。"
+    },
+    "EKKOLearnAI/hermes-studio": {
+      "call": [
+        "structure",
+        "build_test",
+        "style",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [
+        "workflow"
+      ],
+      "why": "Code Ownership Map（packages/client、server、ekko-agent…）=架构；Common Commands（npm ci / test / e2e / build）=构建测试；Hard Rules 里的写法约定（路由要薄、模块边界、用结构化 API 而非拼 shell、i18n 全语种、不许混无关重构）=风格与禁令；'Agent Gets Stuck 时改 harness 而不是重试 prompt'=AI 行为规定。'提交前跑哪些检查' 偏流程，犹豫。"
+    }
+  }
+}
