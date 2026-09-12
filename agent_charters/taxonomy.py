@@ -121,9 +121,15 @@ HEAD_RULES: dict[str, list[str]] = {
                     "概述", "简介", "背景", "一句话", "项目介绍", "说明",
                     "what this is", "project context", "product direction",
                     "project summary", "current status", "technology stack",
+                    # v0.1.8：发现 24——`intent` 型标题 10 个里 8 个无标签，只补限定式。
+                    "product intent", "project intent",
                     "项目定位", "定位", "技术栈", "项目简介",
                     "目的", "概要", "介绍", "快速开始", "はじめに", "紹介"],
+    # v0.1.8：发现 14——英文词表用单数，`y→ies` 复数不是前缀关系，整词失效——
+    # `directory` 命中不了 `Directories`、`dependency` 命中不了 `Dependencies`。
+    # 实测裸复数标题 12 个原先全无标签，补形态后逐个看过内容都对（目录/入口/依赖）。
     "structure":   ["architecture", "structure", "layout", "organization",
+                    "directories", "entry point",
                     "organisation", "directory", "repository map",
                     # v0.1.7：裸词 `module` 撤掉，换成具体形态。实测它独撑的 2 份
                     # 全错：「File and Module Naming」是命名规范（style）、
@@ -148,7 +154,10 @@ HEAD_RULES: dict[str, list[str]] = {
     # v0.1.8：裸词 `run` 换成"run 后必须跟空格"的 `run ` + `running`。前缀匹配会把
     # `Runtime` / `Runbook` / `Runtimes` 一起收进来（全库 131 个标题命中 run 词首）；
     # 收紧后只掉 2 份 build_test（「How Sessions Run」「Stack & Runtimes」），抽查两份都是假。
-    "build_test":  ["build", "test", "command", "ci", "lint", "run ", "running",
+    # v0.1.8：发现 25——`E2E` 缩写漏。全库 18 个含 `e2e` 的标题里 5 个无标签，
+    # 逐个看过全是真的端到端测试套件（cua/NemoClaw/openhuman/careti/
+    # destructive_command_guard）；词首匹配下 `e2e` 不会误伤别的词。
+    "build_test":  ["build", "test", "command", "ci", "e2e", "lint", "run ", "running",
                     "makefile", "make build", "make test", "make dev", "make run",
                     "make install", "make lint", "make check", "make clean",
                     "make all", "make command", "make target", "make ci",
@@ -158,6 +167,12 @@ HEAD_RULES: dict[str, list[str]] = {
                     "开发指南", "常用任务", "常用命令",
                     "コマンド", "検証", "チェック", "ビルド", "テスト", "実行",
                     "开发命令", "本地开发", "上手指南", "启动"],
+    # v0.1.8：发现 14 的 `Guidelines` 部分**否决**（未采纳）——裸词与限定式都试过：
+    # 裸 `guideline` 全库新增 28 份 style，抽查约一半是假（Repository/Development/
+    # Testing Guidelines 这类**容器词**，类别由限定语定，与 v0.1.7 撤 `start here`
+    # /`quick start` 同口径；其中还夹空章节与指针）；只留 `code/coding guideline`
+    # 也仍是 2 份里 1 假（pydantic-ai 那节正文是指向 agent_docs 的**指针**，
+    # 按口径裁决 6 不算 style）。⇒ 入表门槛（precision 明显过半）不达，不补。
     "style":       ["style", "convention", "naming", "format", "standard",
                     "best practice", "pattern", "idiom", "code quality", "type hints",
                     "error handling",
@@ -176,7 +191,7 @@ HEAD_RULES: dict[str, list[str]] = {
                     # 「Adding a new platform」3 步，两条全丢）。
                     "adding a new", "adding new", "how to add", "how to create",
                     "新增", "添加新"],
-    "environment": ["environment", "tool", "dependency", "config", "cmake",
+    "environment": ["environment", "tool", "dependency", "dependencies", "config", "cmake",
                     "requirement", "prerequisite", "setup", "install",
                     "环境", "工具", "依赖", "配置", "安装", "工具链",
                     "環境", "設定", "依存関係", "ツール", "セットアップ", "インストール",
@@ -188,7 +203,8 @@ HEAD_RULES: dict[str, list[str]] = {
                     "规则", "准则", "要求", "红线",
                     "方針", "ポリシー", "ガードレール", "ルール", "禁止事項", "制約", "厳禁",
                     "铁律", "硬性规则", "不可协商", "非协商"],
-    "gotchas":     ["gotcha", "pitfall", "caveat", "known issue", "warning",
+    # v0.1.8：发现 51——补英文 `trap`（DSHA「已知 trap」整节漏标）。
+    "gotchas":     ["gotcha", "pitfall", "caveat", "known issue", "warning", "trap",
                     "troubleshoot", "common issue", "footgun", "limitation",
                     "陷阱", "注意", "常见问题", "坑", "注意事项", "调试",
                     "局限", "限制",
@@ -219,7 +235,20 @@ BODY_RULES: dict[str, list[str]] = {
                     r"\bnever\b.{0,40}\b(?:secret|credential|token|key)\b",
                     # v0.1.7：补"被禁止"类被动式。google/benchmark 通篇
                     # "are prohibited" / "forbidden"，此前 0 命中。
-                    r"\b(?:is|are|be)\s+(?:strictly\s+)?prohibited\b", r"\bforbidden\b"],
+                    r"\b(?:is|are|be)\s+(?:strictly\s+)?prohibited\b", r"\bforbidden\b",
+                    # v0.1.8：发现 7/10/17——补英文禁令一般式。此前正文通道只认
+                    # never commit / do not commit / must not / 中文模式，于是
+                    # "Do not use pnpm"、"must never import node:*"、"Don't re-write it"
+                    # 这类全丢（全库 2632 处命中 / 100 份文件因此多拿到 boundaries）。
+                    # 只用 `do not` 系——**不收裸 `never`**（"the build never fails" 多）。
+                    # 排除 `do not need / hesitate / worry / forget` 四种非禁令句式
+                    # （全库只有 LocalAI 一处 "don't need"，黑名单即可挡住）；
+                    # ⚠️ 已知残余假阳性 ≈3/100 份，全是**描述句**而非禁令（"harnesses may
+                    # ignore but do not reject" / "workflows do not initialize submodules"
+                    # / "monitors don't receive mouseUp"），集中在"只靠 1 处证据"的文件里；
+                    # 不为此再收窄（会误伤真禁令），记进 LIMITATIONS。
+                    r"\b(?:do not|don't|must not|must never)\s+"
+                    r"(?!need\b|hesitate\b|worry\b|forget\b)[a-z'-]+"],
     # ASCII 词一律加 \b：`conda` 会命中 "se**conda**ry"（4 份），与 v0.1.3 的
     # `ci` → "De**ci**sions" 是同一类子串 bug。裸 `.env` 不收——实测 28 份里多是
     # "Never commit `.env`" 这类**禁令**语句，指向的是 boundaries 不是 environment。

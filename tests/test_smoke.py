@@ -267,6 +267,47 @@ def test_v018_kept_words(text, expected):
     assert expected in analyze_text(text)["categories"]
 
 
+# O3（ruleset_v0.1.8）：补词六组。全库实测（558 份新旧逐份 diff）**净增 119 / 净掉 2**：
+# 正文 DO NOT 一般式 +100；复数 `Dependencies` +12、`Directories`/`Entry Points` +1；
+# `trap` +3；`product/project intent` +3；`e2e` +0（章节级补 5 个真证据）。
+# 掉的 2 个：web-performance-debugger 的 workflow 是 `branch` 多义词假阳性（真修复）、
+# crewAI 的 build_test 是"全文兜底门"副作用（章节一旦有标签就不再跑全文通道）——记 LIMITATIONS。
+# 否决项：`guideline`（裸词 28 份 style 里约一半是容器标题/空章节；限定式 `code/coding
+# guideline` 也只有 2 份里 1 真）⇒ 不达 precision 门槛，不补。
+
+@pytest.mark.parametrize("text, expected", [
+    ("# A\n\n## Input validation\n\nDo not use `datetime.now()` directly.\n", "boundaries"),
+    ("# A\n\n## Lockfile\n\nDon't re-write the lockfile by hand.\n", "boundaries"),
+    ("# A\n\n## Imports\n\nYou must never import `node:*` modules.\n", "boundaries"),
+    ("# A\n\n## When to use what\n\nDo NOT commit generated files.\n", "boundaries"),
+    ("# A\n\n## Common traps\n\n- 改工作区前先读这个。\n", "gotchas"),
+    ("# A\n\n## Project Directories\n\n- `src/` 源码。\n", "structure"),
+    ("# A\n\n## Entry Points\n\n- `src/main.ts`。\n", "structure"),
+    ("# A\n\n## Dependencies\n\n- 见 `requirements.txt`。\n", "environment"),
+    ("# A\n\n## Product intent\n\n- 这是个 Go 写的 harness。\n", "overview"),
+    ("# A\n\n## E2E (WDIO — dual platform)\n\n- 双平台端到端测试。\n", "build_test"),
+])
+def test_v018_added_words(text, expected):
+    assert expected in analyze_text(text)["categories"]
+
+
+@pytest.mark.parametrize("text, forbidden", [
+    # DO NOT 的四种非禁令句式（排除表）
+    ("# A\n\n## Setup\n\nYou don't need to install anything.\n", "boundaries"),
+    ("# A\n\n## Build\n\nDon't hesitate to ask questions.\n", "boundaries"),
+    ("# A\n\n## Build\n\nDon't worry about formatting.\n", "boundaries"),
+    ("# A\n\n## Testing\n\nDon't forget to run the tests.\n", "boundaries"),
+    # 裸 `never` 不收（"the build never fails" 一类散文）
+    ("# A\n\n## Build\n\nThe build never fails on CI.\n", "boundaries"),
+    # `guideline` 是容器词，裸词与限定式都不补（precision 不达门槛）
+    ("# A\n\n## Repository Guidelines\n\n- 保持改动最小。\n", "style"),
+    ("# A\n\n## Testing Guidelines\n\n- 跑 pytest。\n", "style"),
+    ("# A\n\n## Development Guidelines\n\n- 用 Conventional Commits。\n", "style"),
+])
+def test_v018_added_words_veto(text, forbidden):
+    assert forbidden not in analyze_text(text)["categories"]
+
+
 # U3（ruleset_v0.1.3）：标题通道曾是**纯子串**匹配，于是 "ci" 命中了 "De**ci**sions"、
 # "script" 命中了 "Type**Script**"。实测 511 份里 18 份文件各掉 1 个类别标签（无一例新增），
 # `build_test` 覆盖率因此从 87.9% 回到 85.7%（v0.2 的公开数字偏乐观）。
