@@ -1,0 +1,20 @@
+{
+  "_note": "A 主样本第十二批（2 份，大文件）：按约定用「标题清点 + 关键章节切片」读，未逐行通读。只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-12",
+  "files": {
+    "netdata/netdata": {
+      "bytes": 53778,
+      "read_mode": "sections",
+      "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+      "borderline": ["gotchas"],
+      "why": "## Goals 首句（This repository is the Netdata Agent codebase：多语言多平台单体，覆盖监控/排障/采集/告警/存储/流/云集成/打包/文档）+ 三条 critical rules=overview（同时也给 boundaries：必须先找根因、不许不理解就补丁、不许重复代码）；## Development Principles + ## SOW System（Storage Model / When Required / Lifecycle / Umbrella / Pre-Implementation Gate / Review / Followup / Enforcement）+ ## Working With The User（User/Assistant 角色分工、汇报纪律、『Never agree with the user when facts contradict』）+ ## Requirement Language + ### Durable AI-Facing Artifact Formatting=agent_meta（本文件主体）；## SOW Lifecycle/### Git Worktrees/### Git And PR Workflow/### Review/### Regressions=workflow；### Definitions/## Durable Artifacts/### Specs/### Project Skills/### Local-Only Working Directory 的表=structure；### Validation Commands/### Validation Gate/### Go Test Style/### Collector Consistency=build_test；### Go Test Style/### C Code/### Naming Conventions=style；### Local-Only Working Directory/### Per-User Secrets（.env、.env.template、token 不许提交）=environment 兼 boundaries；MUST NOT 型与 NEVER 型禁令（不提交密钥、不复用旧 SOW）=boundaries。### Regressions=gotchas 犹豫（它讲的是流程处置而非坑）。"
+    },
+    "modelcontextprotocol/inspector": {
+      "bytes": 90536,
+      "read_mode": "sections",
+      "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+      "borderline": ["gotchas"],
+      "why": "开头三句（这是检查 MCP server 的应用，有 Web/TUI/CLI 三个化身共用 core/；本文件放 rules、procedures 在 .claude/skills）=overview；## Skills index 十行技能表 + ## Project Structure 目录树 + ## Web source layout: src/lib vs src/utils（什么该放哪个目录）+ ## Typescript instructions/## React instructions 的模块与目录约定=structure；## Development setup + ### Dependency placement（含 Dependency updates are issue-driven、The SDK watch is the third sweep）+ ## Always test new or modified code + ## Mandatory pre-push gate（npm run local:gate）+ ## Build output is never a gate target + ### Lint has no warning tier=build_test；## Typescript instructions（NO floating promise、类型守卫、generics）+ ## React instructions + src/lib vs src/utils 的判定规则=style；## Issue-driven Work Style（board 是唯一入口、版本/类型标签、milestone、分支命名 v2/…、DCO signoff、Closes #N、截图存 pr-screenshots/）+ ### Responding to Code Reviews + ## Contributing + ## Project Status and Direction=workflow；### Dependency placement（依赖该放哪个 package）+ ## Web backend auth token + npm/pnpm 与 workspace 约定=environment；大量 NEVER/不许（NEVER leave a promise floating、never create a duplicate、Only issues go on a board — never PRs、Build output is never a gate target、不许 backfill 标签）=boundaries；『This file holds the rules: the conventions a reviewer cites against a diff』+ ## Maintenance Rules（保持文档最新、维护 skills）+ Skills index 的 model-invoked/按名调用说明=agent_meta。gotchas 犹豫（### The SDK watch is the third sweep、stale-build hazard 属提示但没独立成节）。"
+    }
+  }
+}
