@@ -1,0 +1,206 @@
+{
+  "_note": "用户（第二判定者）在审计工作台上的盲判结果（第二批：中文普查剩余 16 份）。来源：Mac Chrome Local Storage 键 _http://127.0.0.1:8791\\x00\\x01ac-audit-v0.4，经 SSH(2223) 只读 tar 拷贝 leveldb 后解析（非导出）。cats 中 1=有、2=不确定；缺键=判为没有。",
+  "_retrieved_at": "2026-09-13 00:31",
+  "_judge": "user",
+  "_batch": "blind_zh2",
+  "files": {
+    "DSH-APP/DSHA|AGENTS.md": {
+      "cats": {
+        "structure": 1,
+        "overview": 1,
+        "environment": 1,
+        "boundaries": 1,
+        "gotchas": 1,
+        "workflow": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "Mai-with-u/MaiBot|AGENTS.md": {
+      "cats": {
+        "environment": 1,
+        "boundaries": 1,
+        "agent_meta": 1,
+        "build_test": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "ZhuLinsen/daily_stock_analysis|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "workflow": 1,
+        "environment": 1,
+        "boundaries": 1,
+        "style": 1,
+        "structure": 1,
+        "build_test": 1,
+        "agent_meta": 1,
+        "gotchas": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "alibaba/arthas|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "build_test": 1,
+        "style": 1,
+        "workflow": 1,
+        "environment": 1,
+        "agent_meta": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "ayuayue/PiDeck|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "build_test": 1,
+        "style": 1,
+        "workflow": 1,
+        "environment": 1,
+        "boundaries": 1,
+        "agent_meta": 1,
+        "gotchas": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "ccch1mneyyy/dsh-TUI|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "workflow": 1,
+        "boundaries": 1,
+        "agent_meta": 1,
+        "environment": 1,
+        "build_test": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "coze-dev/coze-loop|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "workflow": 1,
+        "environment": 1,
+        "boundaries": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "doocs/md|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "build_test": 1,
+        "environment": 1,
+        "style": 1,
+        "boundaries": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "huiliyi37/Tianshu-harness|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "workflow": 1,
+        "boundaries": 1,
+        "agent_meta": 1,
+        "environment": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "labring/FastGPT|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "build_test": 1,
+        "environment": 1,
+        "boundaries": 1,
+        "agent_meta": 1,
+        "workflow": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "op7418/CodePilot|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "environment": 1,
+        "boundaries": 1,
+        "gotchas": 1,
+        "agent_meta": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "rullerzhou-afk/clawd-on-desk|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "build_test": 1,
+        "boundaries": 1,
+        "gotchas": 1,
+        "agent_meta": 1,
+        "workflow": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "xerrors/Yuxi|AGENTS.md": {
+      "cats": {
+        "workflow": 1,
+        "environment": 1,
+        "style": 1,
+        "boundaries": 1,
+        "structure": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "gqcn/agentbox|AGENTS.md": {
+      "cats": {
+        "overview": 1,
+        "structure": 1,
+        "build_test": 1,
+        "style": 1,
+        "workflow": 1,
+        "environment": 1,
+        "boundaries": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "linaproai/linapro|AGENTS.md": {
+      "cats": {
+        "structure": 1,
+        "style": 1,
+        "build_test": 1,
+        "environment": 1,
+        "workflow": 1,
+        "agent_meta": 1
+      },
+      "note": "",
+      "done": true
+    },
+    "linaproai/linapro-site|AGENTS.md": {
+      "cats": {
+        "structure": 1,
+        "workflow": 1,
+        "environment": 1,
+        "agent_meta": 1,
+        "style": 1,
+        "build_test": 1
+      },
+      "note": "",
+      "done": true
+    }
+  }
+}
