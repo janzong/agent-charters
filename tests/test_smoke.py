@@ -201,6 +201,24 @@ def test_malformed_nested_fence_with_many_headings_is_not_code():
     assert "structure" in analyze_text(text)["categories"]
 
 
+def test_shell_comment_block_is_not_a_heading():
+    """发现 16（v0.1.8）：密度反证加了**语言标记门**。
+
+    反证原本只看"围栏段里有没有 ≥3 行像标题"，于是 shell 注释块（`# Rules` /
+    `# Build` / `# Writing Style`）直接触发反证、整段 bash 被当正文扫。
+    实测全库 86/558 触发，假标题产出 build_test 69 份、environment 41、
+    workflow 27、style 20；改后 15 份各掉 1 个标签、无一例新增，抽查全为真错。
+    无标记的 ``` 仍走反证（`tempoxyz/mpp` 的 ```mdx 畸形嵌套因此没被误伤）。
+    """
+    text = ("# A\n\n```bash\n# Rules\n# Build\n# Writing Style\necho hi\n```\n\n"
+            "## 架构\n\n- `src/` 放实现。\n")
+    rec = analyze_text(text)
+    assert "boundaries" not in rec["categories"], rec["categories"]
+    assert "build_test" not in rec["categories"], rec["categories"]
+    assert "style" not in rec["categories"], rec["categories"]
+    assert rec["section_count"] == 2, rec["section_count"]   # A / 架构
+
+
 @pytest.mark.parametrize("text,forbidden", [
     ("# A\n\n## Next steps\n\nReview each secondary monitor for regressions.\n", "environment"),
     ("# A\n\n## X\n\nNever commit `.env` to the repo.\n", "environment"),

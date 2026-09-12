@@ -78,6 +78,11 @@ CATEGORIES = [
 
 HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 FENCE = re.compile(r"^\s{0,3}(?:```|~~~)")
+# v0.1.8：围栏的**语言标记**（``` 后第一个 token）。密度守卫只对 md 系标记生效，
+# 见 split_sections 里的说明与 RULESET_VERSION v0.1.8。
+# 空串 = 纯 ``` 无标记：语料里这种块多数是"文档片段/示例"，与 md 系同处理（a7 预登记口径）。
+FENCE_INFO = re.compile(r"^\s{0,3}(?:`{3,}|~{3,})\s*([A-Za-z0-9_+#.-]*)")
+MD_FENCE_INFO = {"", "md", "mdx", "markdown"}
 
 # 标题层的否决式：词表命中后，标题整体落在这些模式里就撤掉该标签。
 # 只为**多义词**而设，每条都来自一次实测误标（见 RULESET_VERSION v0.1.6 注释）。
@@ -362,6 +367,13 @@ def split_sections(text: str) -> list[tuple[str, str]]:
       ② 往标题通道灌假信号（`# tools/get-winflexbison.sh …` → environment、
          `# 安装依赖` → build_test、`# Build` → build_test）；
       ③ `section_count` 这一列随之失真（它是发布出去的字段）。
+
+    v0.1.8：给"围栏密度反证"加**语言标记门**。原先只看"围栏段里有没有 ≥3 个
+    `# ` 开头的行"，于是 shell 注释块（`# Install` / `# Build` / `# Rules`）
+    直接触发反证、整段 bash 被当正文扫，注释行全变成章节标题并往标题通道灌假信号
+    （实测 86/558 份触发，build_test 69、environment 41、workflow 27、style 20）。
+    现在只有 ` ```md `` / ` ```mdx `` / ` ```markdown ` 与**无标记**的 ``` 才走密度反证——
+    那才是"真标题被包在围栏里"的畸形嵌套（tempoxyz/mpp），bash/python/… 一律按代码块。
     """
     lines = text.splitlines()
     fence_at = [i for i, ln in enumerate(lines) if FENCE.match(ln)]
@@ -375,7 +387,12 @@ def split_sections(text: str) -> list[tuple[str, str]]:
         # **格式不良的嵌套围栏**（tempoxyz/mpp 用 ```mdx 套 ```ts，作者没升到四反引号，
         # 于是 CommonMark 会把后文 7 个真标题吞进代码块）。真代码块里极少出现
         # "## 标题"这种行，所以按标题密度反证。
-        if sum(1 for i in range(a, b + 1) if HEADING.match(lines[i])) >= 3:
+        # v0.1.8：反证只看**标记为 md 系**的围栏；无标记或 bash/python/… 一律按代码块，
+        # 否则 shell 注释会被当成标题（见 docstring）。
+        info = (FENCE_INFO.match(lines[a]).group(1) or "").lower()
+        if info in MD_FENCE_INFO and sum(
+            1 for i in range(a, b + 1) if HEADING.match(lines[i])
+        ) >= 3:
             continue
         code_lines.update(range(a, b + 1))
 
