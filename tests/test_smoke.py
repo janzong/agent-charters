@@ -308,6 +308,71 @@ def test_v018_added_words_veto(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
 
 
+# O4（ruleset_v0.1.8）：收紧块。全库实测（558 份逐份 diff）**净增 1 / 净掉 34**
+# （章节级 −158 / +3）。34 个掉的逐份看过，**全部**是审计里点名过的假阳性：
+# `task` 4（Finishing a task / Required task lifecycle…）、`requirement` 8（PR/Testing/
+# Merge/Contribution/User/Hard Requirements…）、`tool` 10（Agent Tools / Tool Discipline /
+# MCP Tool Handler / h1 里的 Agent Governance Toolkit…）、`warning` 5（Warnings are errors /
+# Clippy: Zero Warnings / Lint has no warning tier…）、人的 `style` 3、`what is` 1（camel）。
+# 唯一的增：localstack 的 `## Development Process`（教科书式 workflow 章节，原先整类漏）。
+# 未落地：h1 守卫、模块名型标题守卫 —— 实测代价（h1 单条就掉 ~30 个真标签）远大于收益，
+# 留 v0.1.9 单独审计（数字见 changelist §3b）。
+
+@pytest.mark.parametrize("text, expected", [
+    ("# A\n\n## Common Tasks\n\n- 常用任务。\n", "build_test"),
+    ("# A\n\n## Task Commands\n\n- 命令表。\n", "build_test"),
+    ("# A\n\n## System Requirements\n\n- Node 22+。\n", "environment"),
+    ("# A\n\n## Toolchain\n\n- pnpm 10。\n", "environment"),
+    ("# A\n\n## Tooling\n\n- bun 用于安装。\n", "environment"),
+    ("# A\n\n## Development Process\n\n1. 先写失败测试。\n", "workflow"),
+    ("# A\n\n## 强制要求\n\n- 必须走 PR。\n", "boundaries"),
+    ("# A\n\n## Security Rules\n\n- 不要提交密钥。\n", "boundaries"),
+    ("# A\n\n## Agent Warning: Interactive Commands\n\n- 这些命令要人工确认。\n", "gotchas"),
+    ("# A\n\n## Code Style\n\n- 用 4 空格缩进。\n", "style"),
+    ("# A\n\n## Repository Map\n\n- `src/` 源码。\n", "structure"),
+    ("# A\n\n## What is VoltAgent?\n\n- 一个框架。\n", "overview"),
+])
+def test_v018_tightened_words_kept(text, expected):
+    assert expected in analyze_text(text)["categories"]
+
+
+@pytest.mark.parametrize("text, forbidden", [
+    # 发现 5：裸词 task（"任务"义）
+    ("# A\n\n## Finishing a task\n\n- 跑完告诉用户怎么验。\n", "build_test"),
+    ("# A\n\n## Required task lifecycle\n\n- 任务生命周期。\n", "build_test"),
+    # 发现 33：Requirements = 验收标准
+    ("# A\n\n## Merge Requirements\n\n- 满足这些才能合。\n", "environment"),
+    ("# A\n\n## Testing Requirements\n\n- 覆盖率 ≥80%。\n", "environment"),
+    # 发现 20：process = 进程义
+    ("# A\n\n## Renderer Process\n\n- 渲染进程。\n", "workflow"),
+    ("# A\n\n## Inter-process Communication\n\n- 进程间通信。\n", "workflow"),
+    # 发现 48 / 47：中文裸词
+    ("# A\n\n## 项目定位统一要求\n\n- 统一口径。\n", "boundaries"),
+    ("# A\n\n## 职责边界\n\n- 谁负责哪块。\n", "boundaries"),
+    # 发现 9：agent/MCP 工具义
+    ("# A\n\n## Agent Tools\n\n- agent 可用的工具。\n", "environment"),
+    ("# A\n\n## MCP Tool Handler\n\n- ```ts\ncase \"x\": {}\n```\n", "environment"),
+    # 发现 27：lint/clippy 的告警策略
+    ("# A\n\n## Warnings are errors\n\n- pytest 的告警策略。\n", "gotchas"),
+    ("# A\n\n## Lint has no warning tier\n\n- lint 配置。\n", "gotchas"),
+    # 发现 38：人的风格
+    ("# A\n\n## Issue-driven Work Style\n\n- 板卡流程。\n", "style"),
+    ("# A\n\n## Communication style — MANDATORY\n\n- 回复要短。\n", "style"),
+    # 发现 30：版本要求
+    ("# A\n\n## Java Version Targeting\n\n- JDK 17+。\n", "workflow"),
+    # 发现 32：What is 的范围义
+    ("# A\n\n## What is out of scope\n\n- 不在范围内的事。\n", "overview"),
+    # 发现 12：Permitted commands 是禁令
+    ("# A\n\n## Permitted commands\n\n- npm publish 需批准。\n", "build_test"),
+    # 发现 44：Import Organization 是 style
+    ("# A\n\n## Import Organization\n\n- import 分三组。\n", "structure"),
+    # 发现 46：rule 带领域词
+    ("# A\n\n## Rules for Testing\n\n- 测试夹具写法。\n", "boundaries"),
+])
+def test_v018_tightened_words_veto(text, forbidden):
+    assert forbidden not in analyze_text(text)["categories"]
+
+
 # U3（ruleset_v0.1.3）：标题通道曾是**纯子串**匹配，于是 "ci" 命中了 "De**ci**sions"、
 # "script" 命中了 "Type**Script**"。实测 511 份里 18 份文件各掉 1 个类别标签（无一例新增），
 # `build_test` 覆盖率因此从 87.9% 回到 85.7%（v0.2 的公开数字偏乐观）。

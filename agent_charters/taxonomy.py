@@ -87,15 +87,81 @@ MD_FENCE_INFO = {"", "md", "mdx", "markdown"}
 # 标题层的否决式：词表命中后，标题整体落在这些模式里就撤掉该标签。
 # 只为**多义词**而设，每条都来自一次实测误标（见 RULESET_VERSION v0.1.6 注释）。
 HEAD_VETO: dict[str, list[str]] = {
+    # v0.1.8：发现 47/48——中文裸词的两处泛化。「职责/角色/能力/模块/服务/层级边界」
+    # 讲的是分工与接口面（structure/agent_meta），不是禁令；`边界要求` 同理。
+    "boundaries": [r"已知.{0,8}限制", r"限制（不是 bug",
+                   r"(?:职责|角色|能力|模块|服务|层级)边界",
+                   r"边界要求",
+                   # v0.1.8：发现 46——`rule` 是全库最强的禁令词（222 个标题），但其中 43 个
+                   # 带**领域词**（`Rules for Testing` / `TypeScript Rules` / `Architecture
+                   # Rules` / `Documentation Rules` / `Code Shape Rules`…），归属该由领域词
+                   # 决定（testing→build_test、lang→style、architecture→structure）。
+                   # 只是否决该标题的 boundaries，不负责给对标签（那是发现 8 的正文通道活）。
+                   r"\brules?\b[^\n]{0,24}\b(?:testing|tests?|typescript|javascript|python|"
+                   r"golang|go|rust|java|documentation|docs?|architecture|style|formatting|"
+                   r"naming|imports?)\b",
+                   r"\b(?:testing|tests?|typescript|javascript|python|golang|go|rust|java|"
+                   r"documentation|architecture|style|formatting|naming|imports?)\b"
+                   r"[^\n]{0,16}\brules?\b"],
+    # v0.1.8：发现 30——`version` 的两义。版本**发布/迭代**是 workflow；
+    # 「版本要求/版本矩阵/JDK 版本」是 environment 或验收标准（nacos 现场）。
+    "workflow": [r"\bversion\s+(?:targeting|requirement|compat\w*|matrix)\b",
+                 r"\b(?:java|node|python|go|rust|php|dotnet|sdk)\s+version\b",
+                 r"\bversion\s+(?:support|pinning|policy)\b"],
+    # v0.1.8：发现 32——`What is …` 的前缀假阳性。camel 的 overview **全靠**
+    # `What is in scope` / `What is out of scope` 撑着（真 overview `## Project Info`
+    # 反而没标签）；`What is FORBIDDEN` 是禁令。
+    "overview": [r"\bwhat\s+is\s+(?:in|out\s+of)\s+scope\b", r"\bwhat\s+is\s+forbidden\b"],
+    # v0.1.8：发现 12——`command` 的个案假阳性：`Permitted commands` 是禁令不是命令清单。
+    "build_test": [r"\bpermitted\s+commands?\b"],
+    # v0.1.8：发现 44——`organization` 由后一个词决定归属：`Import Organization`
+    # 讲 import 分组与字典序（style），不是文件布局。
+    "structure": [r"\bimports?\s+organization\b"],
+    # v0.1.8：发现 27——`warning` 的两义。pytest/clippy/lint 的**告警策略**
+    # （`Warnings are errors`、`-D warnings`、`Lint has no warning tier`）是构建/测试
+    # 配置，不是坑；真正的告警（`Agent Warning: Interactive Commands`）要留下。
+    "gotchas": [r"\b(?:lint|clippy|compiler)\b",
+                r"-{1,2}d\s+warnings?\b",
+                r"\bwarnings?\b[^\n]{0,20}\b(?:tier|level|policy|flag|are errors|as errors)\b",
+                r"\bsuppress\w*\s+warnings?\b"],
+    # v0.1.8：发现 38——`style` 的"人的风格"：工作/沟通/回复风格是 agent_meta 或
+    # workflow（inspector / openclaude / hermes-webui 现场），不是代码风格。
+    # v0.1.8：发现 44 残余——`standard` 由**相邻词**决定归属：`Standard Commands`
+    # 是命令清单（build_test）、`Standard Test Patterns` 是测试约定（build_test）、
+    # `Standardized Libraries` 是依赖选型（environment）；只有
+    # `… Standards`（提交/测试/构建标准）这类**规范的名称**才属 style。
+    # 实测只影响 2 份（foss42/apidash、mrthoabby/serverpilot 的 `Standard Commands`），
+    # 两处都是审计点名的假阳性。
     "style": [r"(?:提交|发布|流程|合并|分支|评审|工程)规范",
-              r"(?:提交|发布|流程|合并|分支)约定"],
-    "boundaries": [r"已知.{0,8}限制", r"限制（不是 bug"],
+              r"(?:提交|发布|流程|合并|分支)约定",
+              r"\b(?:work|working|communication|response|conversational|contribution|"
+              r"collaboration|writing\s+to\s+the\s+user)\s+style\b",
+              r"\bstandard\s+commands?\b",
+              r"\bstandard\s+test\s+patterns?\b",
+              r"\bstandardiz\w*\s+(?:librar\w*|dependenc\w*|packages?|tools?)\b",
+              r"\b(?:testing|tests?|build|run|running|commit|release|deploy\w*|"
+              r"verification|ci)\s+standards?\b"],
     # v0.1.7：`依赖` 的两种语义。依赖的**拓扑/方向/角色**是架构（structure），
     # 不是环境；实测 claudian「Dependency Direction」、crush「Key Dependency Roles」、
     # langgraph「Dependency map」三份都只有这一个词在撑 environment。
     # 依赖的**管理/版本/安全/钉版本**（management / pinning / security / versioning）
     # 仍是 environment，不在否决之列。
-    "environment": [r"dependenc\w*\s+(?:direction|map|graph|role|diagram|topolog)"],
+    # v0.1.8：发现 9——`tool` 的两义。工具链/构建工具（Tooling/Toolchain/Tool Version）
+    # 是 environment；**agent/MCP 工具**（能力面、开发流程、调用规则）不是。
+    # 实测全库 95 个命中标题里下列 4 类共 10 份文件是纯假阳性（逐份看过）：
+    # Agent Tools / Tool Discipline / Tool registration / New Agent Tool /
+    # Adding a new tool / Available Tools / h1 的 Agent Governance Toolkit /
+    # MCP Tool Handler / MCP Tool Development / MCP Tools·graph tools·Key Tools。
+    # ⚠️ veto 按**标题整体**判：`MCP tools installation` 会连 install 一起否决——
+    # 实测该形态 0 例（词形只吃 tool/tools/tooling/toolkit，不吃 install）。
+    "environment": [r"dependenc\w*\s+(?:direction|map|graph|role|diagram|topolog)",
+                    r"\bagent\w*\b[^\n]{0,24}\btools?\w*\b",
+                    r"\b(?:mcp|webmcp|llm|graph|built-?in|custom)\b[^\n]{0,24}\btools?\w*\b",
+                    r"\btools?\w*\b[^\n]{0,24}\b(?:discipline|registration|development|"
+                    r"usage|preview|handler|calling|selection|definition|invocation|authoring|"
+                    r"catalog|detection|semantics|response)\b",
+                    r"\b(?:adding|add|new|creating|create|available|recommended|key|"
+                    r"when to use|use of)\b[^\n]{0,20}\btools?\w*\b"],
 }
 
 # 裸词白名单（v0.1.7）：这些词只有**整个标题就是它**（可带 guide/说明 等后缀）时才算数。
@@ -161,9 +227,14 @@ HEAD_RULES: dict[str, list[str]] = {
                     "makefile", "make build", "make test", "make dev", "make run",
                     "make install", "make lint", "make check", "make clean",
                     "make all", "make command", "make target", "make ci",
-                    "compile", "usage", "task", "script", "verification", "validation",
+                    "compile", "usage", "script", "verification", "validation",
                     "quality check",
                     "构建", "测试", "命令", "运行", "编译", "校验",
+                    # v0.1.8：发现 5——裸词 `task` 换限定式（`Common Tasks` / `Task Commands`）。
+                    # 全库 45 个命中标题里只有这几种真属构建测试；删词掉 4 份，逐份看过全是假
+                    # （`Finishing a task`、`Approaching complex tasks`、`Required task lifecycle`、
+                    # `Reference (read when relevant to your task)`）。
+                    "common task", "task command",
                     "开发指南", "常用任务", "常用命令",
                     "コマンド", "検証", "チェック", "ビルド", "テスト", "実行",
                     "开发命令", "本地开发", "上手指南", "启动"],
@@ -186,13 +257,20 @@ HEAD_RULES: dict[str, list[str]] = {
                     "贡献", "变更日志",
                     "手順", "フロー", "リリース", "コミット", "ブランチ", "レビュー",
                     "工作流", "协作流程",
+                    # v0.1.8：发现 20——裸词 `process` 会命中 `Inter-process Communication` /
+                    # `Renderer Process` 这类"进程"义（13 个无标签标题里 9 个是这形态）。
+                    # 只收限定式；`工作流程` 本就靠 `工作流` 前缀命中。
+                    "development process", "working process", "process:",
                     # v0.1.7：workflow 此前只有 git/PR/发布词，整类"编号步骤型 how-to"
                     # 都漏（vcz-Gray/loophaus 的「Adding a new core module」4 步 +
                     # 「Adding a new platform」3 步，两条全丢）。
                     "adding a new", "adding new", "how to add", "how to create",
                     "新增", "添加新"],
+    # v0.1.8：发现 33——`requirement` 在英文仓库里默认指"要求/验收标准"（PR/Testing/
+    # Merge/Contribution Requirements），不是依赖。只留 `requirements.txt` /
+    # `system requirement`（`prerequisite` 本就是独立词条）。删裸词掉 8 份，逐份看过全是假。
     "environment": ["environment", "tool", "dependency", "dependencies", "config", "cmake",
-                    "requirement", "prerequisite", "setup", "install",
+                    "requirements.txt", "system requirement", "prerequisite", "setup", "install",
                     "环境", "工具", "依赖", "配置", "安装", "工具链",
                     "環境", "設定", "依存関係", "ツール", "セットアップ", "インストール",
                     "开发环境", "运行环境", "环境准备", "环境搭建", "前置条件"],
@@ -200,7 +278,9 @@ HEAD_RULES: dict[str, list[str]] = {
                     "prohibit", "restriction", "constraint", "hygiene",
                     "forbidden",
                     "禁止", "边界", "限制", "约束", "不要", "不得",
-                    "规则", "准则", "要求", "红线",
+                    # v0.1.8：发现 48——裸词 `要求` 泛化（`顶级规范要求`/`项目定位统一要求`/
+                    # `接口性能统一要求` 那族是规范条目、不是禁令）。换限定式。
+                    "规则", "准则", "强制要求", "硬性要求", "红线要求", "红线",
                     "方針", "ポリシー", "ガードレール", "ルール", "禁止事項", "制約", "厳禁",
                     "铁律", "硬性规则", "不可协商", "非协商"],
     # v0.1.8：发现 51——补英文 `trap`（DSHA「已知 trap」整节漏标）。
