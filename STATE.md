@@ -140,6 +140,9 @@ agent-charters compare <你的AGENTS.md>
 - ~~中文关键词补全~~ → v0.1.1 / v0.1.5 已补两批（含繁体与日文汉字形），仍是关键词法，长尾未清
 - ~~人工校验 100 份~~ ✅ **已闭环**（发现 1–56，四块改动全部落地）
 - ~~新一批 100 份的"规则 vs 人工"逐类对照~~ ✅ **已出**（`work/audit/v0.5-human-vs-rule.md`，脚本 `human_vs_rule_v0.5.py`；微平均 precision 80–92% / recall 75–84%，in-sample 上界，见 `LIMITATIONS.md` §16），并已写进 v0.5 Release 说明
+- ⏳ **留出集估计**：抽样已出（`work/audit/v0.5-holdout-*`，seed 20260913；排除上一轮 106 份后
+  可用池 422，主样本 55 均匀随机、零重叠）→ **待盲判**。⚠️ 中文留出集为 0（25 份全用掉了），
+  中文准确率只能靠新采集，见 `LIMITATIONS.md` §18
 - ⏳ 扩展文件类型（`CLAUDE.md` / `.cursorrules` / `copilot-instructions.md`）
 - ⏳ 留 v0.1.9 的两项（实测后否决，数字见 `work/audit/v0.1.8-changelist.md` §A/B.3）：
   h1 守卫、模块名型标题守卫；以及"全文兜底门放宽"（会让 8 份补标签）

@@ -71,11 +71,28 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=20260911)
     ap.add_argument("--version", default="v0.2", help="数据版本，用于产物命名")
     ap.add_argument("--out", default="work/audit")
+    ap.add_argument("--exclude", default="", help="排除已用过的样本（读其 sample.json 的 identity）——留出集必须带这个")
+    ap.add_argument("--note", default="", help="写进产物的备注（例如为什么排除了哪些）")
     a = ap.parse_args()
 
     allrows = load_corpus()
     df = substantive(allrows)
     rng = random.Random(a.seed)
+
+    # 留出集口径：把上一轮**已用于改规则**的样本整份排除（按 repo+file_path 认身份）。
+    # ⚠️ 不能只按 file_sha 排除：空壳文件几十个仓库共用一个 sha，会连带误杀。
+    excluded_pairs: set[tuple[str, str]] = set()
+    if a.exclude:
+        ex = json.loads(pathlib.Path(a.exclude).read_text(encoding="utf-8"))
+        for items in (ex.get("identity") or {}).values():
+            for it in items:
+                excluded_pairs.add((it["repo"], it["file_path"]))
+    if excluded_pairs:
+        def fresh(src, i) -> bool:
+            return (src.at[i, "repo_full_name"], src.at[i, "file_path"]) not in excluded_pairs
+        df = df.loc[[i for i in df.index if fresh(df, i)]]
+        allrows = allrows.loc[[i for i in allrows.index if fresh(allrows, i)]]
+
     main_idx = sorted(rng.sample(list(df.index), min(a.n, len(df))))
     zh_idx = sorted(i for i in df.index if df.at[i, "doc_language"] == "zh")
 
@@ -107,6 +124,9 @@ def main() -> int:
                  "file_path": src.at[i, "file_path"]} for i in idx]
 
     rec = {"seed": a.seed, "version": a.version,
+           "exclude_source": a.exclude or None,
+           "excluded_pairs": len(excluded_pairs),
+           "_notes": {"_note": a.note} if a.note else {},
            "counts": {"main": len(main_idx), "zh_census": len(zh_idx),
                       "edge": len(edge_idx), "rare_boost": len(rare_idx), "blind": len(blind_idx)},
            "main": [df.at[i, "file_sha"] for i in main_idx],
@@ -181,7 +201,9 @@ def main() -> int:
 
     ws = outdir / f"{a.version}-worksheet.md"
     ws.write_text("\n".join(L), encoding="utf-8")
-    print(f"生成 {ws}：主样本 {len(main_idx)} + 中文 {len(zh_idx)} + 边界件 {len(edge_idx)} + 稀有 {len(rare_idx)}")
+    print(f"可用池 {len(df)} 份（已排除 {len(excluded_pairs)} 份历史样本）"
+          f"；本次：主样本 {len(main_idx)} + 中文 {len(zh_idx)} + 边界件 {len(edge_idx)} + 稀有 {len(rare_idx)}")
+    print(f"生成 {ws}")
 
     if blind_idx:
         # 盲判组：**只给题面，不给任何规则输出**；正文也不内嵌（仓库不含原文全文），

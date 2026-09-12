@@ -1,0 +1,774 @@
+{
+  "seed": 20260913,
+  "version": "v0.5-holdout",
+  "exclude_source": "work/audit/v0.4-sample.json",
+  "excluded_pairs": 106,
+  "_notes": {
+    "_note": "留出集：排除 v0.4/v0.5 改规则用过的全部 106 份（v0.4-sample.json 的 identity 并集）。⚠️ 中文 25 份已被上轮全部用掉 → 本留出集没有中文，中文准确率只能靠新采集文件。"
+  },
+  "counts": {
+    "main": 55,
+    "zh_census": 0,
+    "edge": 4,
+    "rare_boost": 9,
+    "blind": 55
+  },
+  "main": [
+    "4450a444db5a24cf11478c38062fddf0105fed94",
+    "890cb92a617362bedd6aa424de3f6a9da4b5e2ab",
+    "b919654c493d356441b32a769d31482bad689641",
+    "8217f0ad5a95d848b5a8b7ea63f281acf3377485",
+    "b8d7ffc0b786ea1408a41f9ec768d006fe9583b8",
+    "31a54aab7568bb4cccf95f0940b0b88652c32e2d",
+    "1a5eb0cb80d85e673abd6a7d68888bfb8cdd9fb6",
+    "537f98720f2813da708bb07284a65564b6bd012a",
+    "f7192d5fd3d0eca5ff1661f85ceb9eebf5a4341a",
+    "a786d3f662c0e7395ef7e721debf88cdfa2abb70",
+    "94e1f3f962be885f1f8b47864c092b87b25d2d28",
+    "c6f2288c3084cf15915c3dbda15a77832444405e",
+    "77df643ff787b96e036c568742f14ec02d4d3e2d",
+    "389a4c8ef4c1d26487c7609117abd84719b320a7",
+    "de0d466e0a72ac7411de4bf822ebc6d370eaeb1c",
+    "0906038e8b9d40f7d2c9b7675277c30caaf6cfa0",
+    "e4d3ba1b6b7b443e339c9eb46d2af7c77fc156f7",
+    "6ba7f3d0677a79725ab4c9d4b5efcc170c5d204f",
+    "dc54a027d99a80dc6a74c4f7b728d9d17e28142c",
+    "381011cf0baa2326210cce1c0081897dd6ff3f01",
+    "06717835fb65c56bc53385a573ca6843cbe5096e",
+    "9b696d7d6272f11c2a921de08e6f5db468d1e6cd",
+    "fb742ffc82bfe8a036e86f763e57e7a5980d3717",
+    "467d9479335795886b22ca7633ff6476c19f2585",
+    "23a2f54868541c18c0c27b13568dba9b59801bf8",
+    "6e8cb0f3aa48427cd7ac97c9fde3534b0038503a",
+    "ce7d7398af312008cdb212821e43192ae55fecc5",
+    "f67b8969e1410abb246e01633a82c3bbfbcf5116",
+    "a4208b11f158da6f3f37df4a18391b68ba07c571",
+    "18ae06d5ac271115bc2810266ce6f2740d4c1097",
+    "06225f388bca9b17134d8dfbbc72b5bbbb857b74",
+    "0656d6aa2c0e508c46bbb7e0d29f9b4d467355a6",
+    "a168ba56990c1783b7ececc2a0670db6b826ac28",
+    "7278452640f4096f111ebf673ef1bcbe14d2b1e1",
+    "f568e8727e216d99b7f06a9c9be6f453227b6fb8",
+    "88b14137005c0700c3831fbd77891b5e18e9f2ab",
+    "11757de8562bdb1f82cc507d381eee9b38104eca",
+    "5331b3a09cde854810232193d4e9af38be6ff7bc",
+    "c80ff95bbb30ad39923e25dc9884d204eed3dfb6",
+    "0c9cb17e7738be7d1a19b9f044f4ee4375169046",
+    "9b292d5ce252d563d6090e80c67709d98c76a74d",
+    "4fec39cff3b71fb6754c100dcd186ab91f19b663",
+    "98143b5543006d1d036fdefc2890dfec5848de6b",
+    "0a78f2a07642c2d90b9309e2941cfb0ea52af63a",
+    "fa7470eb73ac77ddbafbd35a6e3f5835d054a24e",
+    "5641d049b8fab4db8945e53cc6c227ce9c7199d5",
+    "25d7ecf385e09d20238d00705b4eaed38558764c",
+    "a24af074cb725d8b327258abb52b3d0c36782461",
+    "1c59df21f8b4dee47437e37d1ebaa134a1d0951c",
+    "9cdc1ba4145c40dd3a369503989fda57b152d16f",
+    "feb3ded2bb568ac8d153a83c1016fe834a4ac852",
+    "8ff4aabcf261a92370e1ff36a57919615e87c0c3",
+    "2de1b58393c23bc4954952538581649558cef397",
+    "c629950175c6955e71d2f113193d760022ac3c23",
+    "68601e6155509fc11fe3e4f5b3252a4b0d347833"
+  ],
+  "zh_census": [],
+  "edge": [
+    "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+    "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+    "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+    "681311eb9cf453d0faddf3aacaec7357e97ba8e9"
+  ],
+  "rare_boost": [
+    "20179b22bb599d5bfe8f81c52b042613d1c31c65",
+    "e0a654ed722e94e81e4b9ddf675e7103932885d8",
+    "b6c6dc401556cced28fe34f987ac0659a6ddbbe3",
+    "5ba7bd4b7c901a4d772acfb0d08888fd40077241",
+    "5792f5fba5bd1736dca6990e8562586cbcace4b4",
+    "c54415023b218f0a3af2692769d9a65fb204d3ab",
+    "08599387fe440680bf6f7151c17e63e26d577c9c",
+    "d6338a7a60c2da1a95cc18c6dc019cbced82d76a",
+    "95b9e31cf3a153d6bc8523d13a1ff7fa731703b2"
+  ],
+  "blind20": [
+    "4450a444db5a24cf11478c38062fddf0105fed94",
+    "890cb92a617362bedd6aa424de3f6a9da4b5e2ab",
+    "b919654c493d356441b32a769d31482bad689641",
+    "8217f0ad5a95d848b5a8b7ea63f281acf3377485",
+    "b8d7ffc0b786ea1408a41f9ec768d006fe9583b8",
+    "31a54aab7568bb4cccf95f0940b0b88652c32e2d",
+    "1a5eb0cb80d85e673abd6a7d68888bfb8cdd9fb6",
+    "537f98720f2813da708bb07284a65564b6bd012a",
+    "f7192d5fd3d0eca5ff1661f85ceb9eebf5a4341a",
+    "a786d3f662c0e7395ef7e721debf88cdfa2abb70",
+    "94e1f3f962be885f1f8b47864c092b87b25d2d28",
+    "c6f2288c3084cf15915c3dbda15a77832444405e",
+    "77df643ff787b96e036c568742f14ec02d4d3e2d",
+    "389a4c8ef4c1d26487c7609117abd84719b320a7",
+    "de0d466e0a72ac7411de4bf822ebc6d370eaeb1c",
+    "0906038e8b9d40f7d2c9b7675277c30caaf6cfa0",
+    "e4d3ba1b6b7b443e339c9eb46d2af7c77fc156f7",
+    "6ba7f3d0677a79725ab4c9d4b5efcc170c5d204f",
+    "dc54a027d99a80dc6a74c4f7b728d9d17e28142c",
+    "381011cf0baa2326210cce1c0081897dd6ff3f01",
+    "06717835fb65c56bc53385a573ca6843cbe5096e",
+    "9b696d7d6272f11c2a921de08e6f5db468d1e6cd",
+    "fb742ffc82bfe8a036e86f763e57e7a5980d3717",
+    "467d9479335795886b22ca7633ff6476c19f2585",
+    "23a2f54868541c18c0c27b13568dba9b59801bf8",
+    "6e8cb0f3aa48427cd7ac97c9fde3534b0038503a",
+    "ce7d7398af312008cdb212821e43192ae55fecc5",
+    "f67b8969e1410abb246e01633a82c3bbfbcf5116",
+    "a4208b11f158da6f3f37df4a18391b68ba07c571",
+    "18ae06d5ac271115bc2810266ce6f2740d4c1097",
+    "06225f388bca9b17134d8dfbbc72b5bbbb857b74",
+    "0656d6aa2c0e508c46bbb7e0d29f9b4d467355a6",
+    "a168ba56990c1783b7ececc2a0670db6b826ac28",
+    "7278452640f4096f111ebf673ef1bcbe14d2b1e1",
+    "f568e8727e216d99b7f06a9c9be6f453227b6fb8",
+    "88b14137005c0700c3831fbd77891b5e18e9f2ab",
+    "11757de8562bdb1f82cc507d381eee9b38104eca",
+    "5331b3a09cde854810232193d4e9af38be6ff7bc",
+    "c80ff95bbb30ad39923e25dc9884d204eed3dfb6",
+    "0c9cb17e7738be7d1a19b9f044f4ee4375169046",
+    "9b292d5ce252d563d6090e80c67709d98c76a74d",
+    "4fec39cff3b71fb6754c100dcd186ab91f19b663",
+    "98143b5543006d1d036fdefc2890dfec5848de6b",
+    "0a78f2a07642c2d90b9309e2941cfb0ea52af63a",
+    "fa7470eb73ac77ddbafbd35a6e3f5835d054a24e",
+    "5641d049b8fab4db8945e53cc6c227ce9c7199d5",
+    "25d7ecf385e09d20238d00705b4eaed38558764c",
+    "a24af074cb725d8b327258abb52b3d0c36782461",
+    "1c59df21f8b4dee47437e37d1ebaa134a1d0951c",
+    "9cdc1ba4145c40dd3a369503989fda57b152d16f",
+    "feb3ded2bb568ac8d153a83c1016fe834a4ac852",
+    "8ff4aabcf261a92370e1ff36a57919615e87c0c3",
+    "2de1b58393c23bc4954952538581649558cef397",
+    "c629950175c6955e71d2f113193d760022ac3c23",
+    "68601e6155509fc11fe3e4f5b3252a4b0d347833"
+  ],
+  "identity": {
+    "main": [
+      {
+        "sha": "4450a444db5a24cf11478c38062fddf0105fed94",
+        "repo": "CopilotKit/CopilotKit",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "890cb92a617362bedd6aa424de3f6a9da4b5e2ab",
+        "repo": "EKKOLearnAI/hermes-studio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b919654c493d356441b32a769d31482bad689641",
+        "repo": "Graphify-Labs/graphify",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "8217f0ad5a95d848b5a8b7ea63f281acf3377485",
+        "repo": "HKUDS/nanobot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b8d7ffc0b786ea1408a41f9ec768d006fe9583b8",
+        "repo": "NateBJones-Projects/OB1",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "31a54aab7568bb4cccf95f0940b0b88652c32e2d",
+        "repo": "OtterMind/Chat2DB",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1a5eb0cb80d85e673abd6a7d68888bfb8cdd9fb6",
+        "repo": "ThinkInAIXYZ/deepchat",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "537f98720f2813da708bb07284a65564b6bd012a",
+        "repo": "VoltAgent/voltagent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f7192d5fd3d0eca5ff1661f85ceb9eebf5a4341a",
+        "repo": "Yapie0/carboncode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a786d3f662c0e7395ef7e721debf88cdfa2abb70",
+        "repo": "ag-ui-protocol/ag-ui",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "94e1f3f962be885f1f8b47864c092b87b25d2d28",
+        "repo": "angristan/netclode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c6f2288c3084cf15915c3dbda15a77832444405e",
+        "repo": "autohandai/code-cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "77df643ff787b96e036c568742f14ec02d4d3e2d",
+        "repo": "bytedance/deer-flow",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "389a4c8ef4c1d26487c7609117abd84719b320a7",
+        "repo": "callstack/agent-device",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "de0d466e0a72ac7411de4bf822ebc6d370eaeb1c",
+        "repo": "career-ops-hq/career-ops",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0906038e8b9d40f7d2c9b7675277c30caaf6cfa0",
+        "repo": "coleam00/Archon",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e4d3ba1b6b7b443e339c9eb46d2af7c77fc156f7",
+        "repo": "deanpeters/Product-Manager-Skills",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6ba7f3d0677a79725ab4c9d4b5efcc170c5d204f",
+        "repo": "debpalash/VoiceStudio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "dc54a027d99a80dc6a74c4f7b728d9d17e28142c",
+        "repo": "get-vix/vix",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "381011cf0baa2326210cce1c0081897dd6ff3f01",
+        "repo": "gptme/gptme",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "06717835fb65c56bc53385a573ca6843cbe5096e",
+        "repo": "holaboss-ai/holaOS",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9b696d7d6272f11c2a921de08e6f5db468d1e6cd",
+        "repo": "htdt/godogen",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fb742ffc82bfe8a036e86f763e57e7a5980d3717",
+        "repo": "infiniflow/ragflow",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "467d9479335795886b22ca7633ff6476c19f2585",
+        "repo": "kortix-ai/suna",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "23a2f54868541c18c0c27b13568dba9b59801bf8",
+        "repo": "langchain-ai/open-swe",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6e8cb0f3aa48427cd7ac97c9fde3534b0038503a",
+        "repo": "leon-ai/leon",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "ce7d7398af312008cdb212821e43192ae55fecc5",
+        "repo": "meilisearch/meilisearch",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f67b8969e1410abb246e01633a82c3bbfbcf5116",
+        "repo": "microsoft/ai-agents-for-beginners",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a4208b11f158da6f3f37df4a18391b68ba07c571",
+        "repo": "morganlinton/Albatross",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "18ae06d5ac271115bc2810266ce6f2740d4c1097",
+        "repo": "mvanhorn/cli-printing-press",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "06225f388bca9b17134d8dfbbc72b5bbbb857b74",
+        "repo": "okwasniewski/MiniSim",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0656d6aa2c0e508c46bbb7e0d29f9b4d467355a6",
+        "repo": "ollama/ollama",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a168ba56990c1783b7ececc2a0670db6b826ac28",
+        "repo": "palmier-io/palmier-pro",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7278452640f4096f111ebf673ef1bcbe14d2b1e1",
+        "repo": "pulseaiclub/phi",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f568e8727e216d99b7f06a9c9be6f453227b6fb8",
+        "repo": "pydantic/pydantic-ai",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "88b14137005c0700c3831fbd77891b5e18e9f2ab",
+        "repo": "ray-project/ray",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "11757de8562bdb1f82cc507d381eee9b38104eca",
+        "repo": "rorkai/App-Store-Connect-CLI",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5331b3a09cde854810232193d4e9af38be6ff7bc",
+        "repo": "sirmalloc/ccstatusline",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c80ff95bbb30ad39923e25dc9884d204eed3dfb6",
+        "repo": "siyuan-note/siyuan",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0c9cb17e7738be7d1a19b9f044f4ee4375169046",
+        "repo": "steipete/CodexBar",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9b292d5ce252d563d6090e80c67709d98c76a74d",
+        "repo": "vastsa/PI-Desktop",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "4fec39cff3b71fb6754c100dcd186ab91f19b663",
+        "repo": "yashdev9274/supercli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "98143b5543006d1d036fdefc2890dfec5848de6b",
+        "repo": "youssefvdel/qwengate",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0a78f2a07642c2d90b9309e2941cfb0ea52af63a",
+        "repo": "TryGhost/Deploy",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fa7470eb73ac77ddbafbd35a6e3f5835d054a24e",
+        "repo": "antoniovazquezaraujo/LeTrain",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5641d049b8fab4db8945e53cc6c227ce9c7199d5",
+        "repo": "audacity/audacity.github.io",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "25d7ecf385e09d20238d00705b4eaed38558764c",
+        "repo": "codetime-dev/codetime-web",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a24af074cb725d8b327258abb52b3d0c36782461",
+        "repo": "dwebagents/AgentPipe",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1c59df21f8b4dee47437e37d1ebaa134a1d0951c",
+        "repo": "graphframes/graphframes",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9cdc1ba4145c40dd3a369503989fda57b152d16f",
+        "repo": "ministryofjustice/hmpps-contacts-ui",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "feb3ded2bb568ac8d153a83c1016fe834a4ac852",
+        "repo": "owncloud/notes",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "8ff4aabcf261a92370e1ff36a57919615e87c0c3",
+        "repo": "prolific-oss/cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "2de1b58393c23bc4954952538581649558cef397",
+        "repo": "shikokuchuo/secretbase",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c629950175c6955e71d2f113193d760022ac3c23",
+        "repo": "thumbor/libthumbor",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "68601e6155509fc11fe3e4f5b3252a4b0d347833",
+        "repo": "yungwood/ical-filter-proxy",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "zh_census": [],
+    "edge": [
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "0xJacky/nginx-ui",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "macro-inc/macro",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "open-metadata/OpenMetadata",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "681311eb9cf453d0faddf3aacaec7357e97ba8e9",
+        "repo": "rivet-dev/agentos",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "rare_boost": [
+      {
+        "sha": "20179b22bb599d5bfe8f81c52b042613d1c31c65",
+        "repo": "QwenLM/qwen-code",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e0a654ed722e94e81e4b9ddf675e7103932885d8",
+        "repo": "campfirein/byterover-cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b6c6dc401556cced28fe34f987ac0659a6ddbbe3",
+        "repo": "langbot-app/LangBot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5ba7bd4b7c901a4d772acfb0d08888fd40077241",
+        "repo": "promptfoo/promptfoo",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5792f5fba5bd1736dca6990e8562586cbcace4b4",
+        "repo": "SWE-agent/mini-swe-agent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c54415023b218f0a3af2692769d9a65fb204d3ab",
+        "repo": "fathah/hermes-desktop",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "08599387fe440680bf6f7151c17e63e26d577c9c",
+        "repo": "metalbear-co/mirrord",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "d6338a7a60c2da1a95cc18c6dc019cbced82d76a",
+        "repo": "gogpu/gg",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "95b9e31cf3a153d6bc8523d13a1ff7fa731703b2",
+        "repo": "openSUSE/mcp-bugzilla",
+        "file_path": "AGENTS.md"
+      }
+    ],
+    "blind20": [
+      {
+        "sha": "4450a444db5a24cf11478c38062fddf0105fed94",
+        "repo": "CopilotKit/CopilotKit",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "890cb92a617362bedd6aa424de3f6a9da4b5e2ab",
+        "repo": "EKKOLearnAI/hermes-studio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b919654c493d356441b32a769d31482bad689641",
+        "repo": "Graphify-Labs/graphify",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "8217f0ad5a95d848b5a8b7ea63f281acf3377485",
+        "repo": "HKUDS/nanobot",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "b8d7ffc0b786ea1408a41f9ec768d006fe9583b8",
+        "repo": "NateBJones-Projects/OB1",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "31a54aab7568bb4cccf95f0940b0b88652c32e2d",
+        "repo": "OtterMind/Chat2DB",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1a5eb0cb80d85e673abd6a7d68888bfb8cdd9fb6",
+        "repo": "ThinkInAIXYZ/deepchat",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "537f98720f2813da708bb07284a65564b6bd012a",
+        "repo": "VoltAgent/voltagent",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f7192d5fd3d0eca5ff1661f85ceb9eebf5a4341a",
+        "repo": "Yapie0/carboncode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a786d3f662c0e7395ef7e721debf88cdfa2abb70",
+        "repo": "ag-ui-protocol/ag-ui",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "94e1f3f962be885f1f8b47864c092b87b25d2d28",
+        "repo": "angristan/netclode",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c6f2288c3084cf15915c3dbda15a77832444405e",
+        "repo": "autohandai/code-cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "77df643ff787b96e036c568742f14ec02d4d3e2d",
+        "repo": "bytedance/deer-flow",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "389a4c8ef4c1d26487c7609117abd84719b320a7",
+        "repo": "callstack/agent-device",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "de0d466e0a72ac7411de4bf822ebc6d370eaeb1c",
+        "repo": "career-ops-hq/career-ops",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0906038e8b9d40f7d2c9b7675277c30caaf6cfa0",
+        "repo": "coleam00/Archon",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "e4d3ba1b6b7b443e339c9eb46d2af7c77fc156f7",
+        "repo": "deanpeters/Product-Manager-Skills",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6ba7f3d0677a79725ab4c9d4b5efcc170c5d204f",
+        "repo": "debpalash/VoiceStudio",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "dc54a027d99a80dc6a74c4f7b728d9d17e28142c",
+        "repo": "get-vix/vix",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "381011cf0baa2326210cce1c0081897dd6ff3f01",
+        "repo": "gptme/gptme",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "06717835fb65c56bc53385a573ca6843cbe5096e",
+        "repo": "holaboss-ai/holaOS",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9b696d7d6272f11c2a921de08e6f5db468d1e6cd",
+        "repo": "htdt/godogen",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fb742ffc82bfe8a036e86f763e57e7a5980d3717",
+        "repo": "infiniflow/ragflow",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "467d9479335795886b22ca7633ff6476c19f2585",
+        "repo": "kortix-ai/suna",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "23a2f54868541c18c0c27b13568dba9b59801bf8",
+        "repo": "langchain-ai/open-swe",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "6e8cb0f3aa48427cd7ac97c9fde3534b0038503a",
+        "repo": "leon-ai/leon",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "ce7d7398af312008cdb212821e43192ae55fecc5",
+        "repo": "meilisearch/meilisearch",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f67b8969e1410abb246e01633a82c3bbfbcf5116",
+        "repo": "microsoft/ai-agents-for-beginners",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a4208b11f158da6f3f37df4a18391b68ba07c571",
+        "repo": "morganlinton/Albatross",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "18ae06d5ac271115bc2810266ce6f2740d4c1097",
+        "repo": "mvanhorn/cli-printing-press",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "06225f388bca9b17134d8dfbbc72b5bbbb857b74",
+        "repo": "okwasniewski/MiniSim",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0656d6aa2c0e508c46bbb7e0d29f9b4d467355a6",
+        "repo": "ollama/ollama",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a168ba56990c1783b7ececc2a0670db6b826ac28",
+        "repo": "palmier-io/palmier-pro",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "7278452640f4096f111ebf673ef1bcbe14d2b1e1",
+        "repo": "pulseaiclub/phi",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "f568e8727e216d99b7f06a9c9be6f453227b6fb8",
+        "repo": "pydantic/pydantic-ai",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "88b14137005c0700c3831fbd77891b5e18e9f2ab",
+        "repo": "ray-project/ray",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "11757de8562bdb1f82cc507d381eee9b38104eca",
+        "repo": "rorkai/App-Store-Connect-CLI",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5331b3a09cde854810232193d4e9af38be6ff7bc",
+        "repo": "sirmalloc/ccstatusline",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c80ff95bbb30ad39923e25dc9884d204eed3dfb6",
+        "repo": "siyuan-note/siyuan",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0c9cb17e7738be7d1a19b9f044f4ee4375169046",
+        "repo": "steipete/CodexBar",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9b292d5ce252d563d6090e80c67709d98c76a74d",
+        "repo": "vastsa/PI-Desktop",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "4fec39cff3b71fb6754c100dcd186ab91f19b663",
+        "repo": "yashdev9274/supercli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "98143b5543006d1d036fdefc2890dfec5848de6b",
+        "repo": "youssefvdel/qwengate",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "0a78f2a07642c2d90b9309e2941cfb0ea52af63a",
+        "repo": "TryGhost/Deploy",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "fa7470eb73ac77ddbafbd35a6e3f5835d054a24e",
+        "repo": "antoniovazquezaraujo/LeTrain",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "5641d049b8fab4db8945e53cc6c227ce9c7199d5",
+        "repo": "audacity/audacity.github.io",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "25d7ecf385e09d20238d00705b4eaed38558764c",
+        "repo": "codetime-dev/codetime-web",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "a24af074cb725d8b327258abb52b3d0c36782461",
+        "repo": "dwebagents/AgentPipe",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "1c59df21f8b4dee47437e37d1ebaa134a1d0951c",
+        "repo": "graphframes/graphframes",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "9cdc1ba4145c40dd3a369503989fda57b152d16f",
+        "repo": "ministryofjustice/hmpps-contacts-ui",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "feb3ded2bb568ac8d153a83c1016fe834a4ac852",
+        "repo": "owncloud/notes",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "8ff4aabcf261a92370e1ff36a57919615e87c0c3",
+        "repo": "prolific-oss/cli",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "2de1b58393c23bc4954952538581649558cef397",
+        "repo": "shikokuchuo/secretbase",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "c629950175c6955e71d2f113193d760022ac3c23",
+        "repo": "thumbor/libthumbor",
+        "file_path": "AGENTS.md"
+      },
+      {
+        "sha": "68601e6155509fc11fe3e4f5b3252a4b0d347833",
+        "repo": "yungwood/ical-filter-proxy",
+        "file_path": "AGENTS.md"
+      }
+    ]
+  }
+}
