@@ -1,0 +1,24 @@
+{
+  "_note": "D 稀有类组第三批（3 份，D 组收官）：只看原文、未看规则输出。均用标题清点 + 关键章节切片。borderline=我判得犹豫的类别。",
+  "batch": "D-rare-3",
+  "files": {
+    "lemonade-sdk/lemonade": {
+      "bytes": 19639,
+      "call": ["overview", "structure", "build_test", "style", "environment"],
+      "borderline": ["workflow"],
+      "why": "## Project Overview（Lemonade 是本地 LLM server，为消费级硬件提供 GPU/NPU 加速，暴露 OpenAI/Ollama/Anthropic 兼容 REST + WebSocket Realtime API，支持 llama.cpp/FastFlowLM/RyzenAI/whisper.cpp/stable-diffusion.cpp/Kokoro/Moonshine 等后端）=overview；## Architecture 七个子节（Executables 四个可执行文件职责、Backend Abstraction 的 WrappedServer 与八个后端能力表与 I*Server 接口、Router & Multi-Model、Model Manager & Recipe、API Routes、Desktop & Web App）+ ## Key Files=structure；## Build Commands（C++ server / Tauri / Web / MSI / macOS 签名 / .deb.rpm 七步）+ ## Testing（CLI/Endpoint/LLM/Audio/Image 分层 + C++ unit tests）=build_test；## Code Style 三节（Comments & Documentation 的『默认不写注释』、C++ 命名与 include 排序、Python Black、TS/React）+ PR 描述要求=style；### Key Dependencies=dota environment。workflow 犹豫（只有 PR 模板与描述要求，没有分支/发布流程）。agent_meta 不入（开头『This file provides guidance to agent driven code reviews』是路由型自述，按 v0.1.4 口径不算）。"
+    },
+    "HKUDS/LightRAG": {
+      "bytes": 25237,
+      "call": ["overview", "structure", "build_test", "style", "environment", "workflow", "gotchas"],
+      "borderline": [],
+      "why": "## Project Overview（LightRAG 是基于图知识表示的 RAG 框架，实体关系抽取 + 多检索模式 local/global/hybrid/mix/naive）=overview；## Project Structure（顶层目录）+ ### Module Layout（lightrag.py/utils_pipeline.py/llm_roles.py/kg/llm/parser/chunker/api 逐文件职责）+ ## Core Architecture 七个子节（类组合、存储层、无事务一致性、pipeline 并发契约、purge 恢复契约、关系权重契约、查询模式）=structure；## Development Commands（uv sync、.venv、API server、WebUI、Testing）+ ### Testing + #### React component tests + ### Linting=build_test；## Code Style 三节（Language/Python/TypeScript-React incl. WebUI ESLint）=style；### Setup + ## Configuration 的 .env Configuration 与 Setup Wizard=environment；## Commit and Pull Request Guidance=workflow；三个 contract 节（Consistency without transactions / Purge recovery contract / Pipeline concurrency contract）写的是『违反会怎样』的硬约束与陷阱=gotchas。"
+    },
+    "can1357/oh-my-pi": {
+      "bytes": 28777,
+      "call": ["structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+      "borderline": ["overview", "gotchas"],
+      "why": "### Package Structure（十个 packages + crates/pi-natives 的职责表）+ ## Central Utilities + ## Generated Files=structure；## Commands + ## Testing Guidance + ### Good vs. bad test filter=build_test；## Code Quality + ## Bun Over Node 整族（Process execution / Node module imports / File I/O / Streams / Misc）+ ## Logging and CLI Output + ## TUI Sanitization=style；## GitHub（发评论/开 issue/PR 的授权纪律）+ ## Changelog + ## Releasing=workflow；## Model/Provider Policy Lives in KDL + ## Rust Build Profiles=environment；同节的 MUST/NEVER（MUST 先展示文本再发、NEVER 未经批准就 resolve、MUST 先读 CONTRIBUTING 模板）=boundaries；## Default Context 的术语澄清（『用户说 agent 时指 packages/coding-agent 的实现，不是指你（这个 assistant）』）=agent_meta。overview 犹豫（没有产品概览章节，只有仓库焦点说明）；gotchas 犹豫（### Quick reference 与 TUI Sanitization 里有提示但不成节）。"
+    }
+  }
+}
