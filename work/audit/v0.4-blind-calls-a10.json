@@ -1,0 +1,18 @@
+{
+  "_note": "A 主样本第十批（2 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-10",
+  "files": {
+    "alibaba/nacos": {
+      "bytes": 24727,
+      "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+      "borderline": ["environment"],
+      "why": "## Repository Overview（Nacos 是 Dynamic Naming and Configuration Service + 版本/分支/JDK/Maven 一行）=overview；## Core Architecture（16 个模块及其职责 + gRPC/HTTP 通信）=structure；## Build & Test Commands（mvn 全量构建/单测/三个集成测试 profile + spotless + 预提交检查）+ ### Mandatory Formatting Before Commit（必须先 spotless:apply 再 check 再编译）=build_test；## Code Style（Alibaba Java 规范 + ### Key Rules for AI Agents 十条表格 + ### License Header Apache 2.0）=style；## PR Convention（必须打到 develop、标题格式 [ISSUE #14122]、预提交清单）=workflow；## AI Contribution Guidelines（不许发 AI 生成评论、必须先讨论、spec-first 强制、API IT/SDK IT 影响先行）+ ## Security Vulnerabilities（不许用 GitHub Issue 报漏洞）=boundaries；同一节里的『AI agents MUST read the relevant specs』『Disclose AI usage / Assisted-by: Claude Code trailer』=agent_meta；## Java Version Targeting（服务端 JDK17+/客户端 JDK8+）与 Maven 3.2.5+=environment 犹豫（我倾向算，它是工具链约束）。**注**：本文件是英中双语（后半段是同一批 specs/ 链接的中文镜像），doc_language 归属待查。"
+    },
+    "yuanyuekejiJN/AivoClaw": {
+      "bytes": 25807,
+      "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas"],
+      "borderline": [],
+      "why": "## What This Project Is（AivoClaw 是包 openclaw gateway 的跨平台桌面应用 + 三进程架构图）=overview；## Tech Stack（Electron 40.2.1 / TS→CommonJS / Lit 3 / electron-builder / 目标平台 / 日历版本号）与 ## Runtime Paths (on user's machine)（~/.openclaw/ 目录树与各文件用途）=environment；## Repository Layout + ## Key Design Decisions（17 个模块级设计决策，逐文件）+ ## Architecture Diagram=structure；## Build Commands=build_test；## Design Rules 四条（主题红 #c0392b、不许 text-transform、用 iOS Switch、按钮右对齐）=style；同节与 Common Gotchas 里的禁令（Never use blue、Don't reduce timeout without testing、Don't manually edit version、Don't hardcode port、Do not delete config）=boundaries；## Common Gotchas 18 条（npm install file: 建符号链接、跨平台需重打包、OPENCLAW_NO_RESPAWN=1、blockmap 关闭、macOS 自动更新需 ZIP、CLI 用 RC 标记块、AGENTS.md 是 CLAUDE.md 的符号链接…）=gotchas，教科书式。无 workflow、无 agent_meta。"
+    }
+  }
+}
