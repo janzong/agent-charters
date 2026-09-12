@@ -7,7 +7,8 @@
     "edge": 10,
     "rare_boost": 9,
     "blind": 20,
-    "blind_zh": 10
+    "blind_zh": 10,
+    "edge_ptr": 7
   },
   "main": [
     "ed8031de904d200267ec6e2206f79592a30bf7ff",
@@ -801,6 +802,57 @@
         "repo": "nzh63/syc",
         "file_path": "AGENTS.md"
       }
+    ],
+    "edge_ptr": [
+      {
+        "sha": "85943d4d4f945860183d2674b17b05a7941064e7",
+        "repo": "JuliusBrussee/caveman",
+        "file_path": "AGENTS.md",
+        "bytes": 734,
+        "note": "误排除：有实质内容"
+      },
+      {
+        "sha": "64349851a89fcdc93aeed9fb13d821c930b53426",
+        "repo": "MadsLorentzen/ai-job-search",
+        "file_path": "AGENTS.md",
+        "bytes": 1586,
+        "note": "误排除：有实质内容"
+      },
+      {
+        "sha": "7649447bc320e098a06e95fe5dbc3e9a7539888b",
+        "repo": "calesthio/OpenMontage",
+        "file_path": "AGENTS.md",
+        "bytes": 384,
+        "note": "误排除：有实质内容"
+      },
+      {
+        "sha": "ddc88d378dc9c013c79ac692954c9a3f939834b1",
+        "repo": "chroma-core/chroma",
+        "file_path": "AGENTS.md",
+        "bytes": 129,
+        "note": "纯指针（排除正确）"
+      },
+      {
+        "sha": "0e97d223fc35dedb3f36f164458404b87047a74e",
+        "repo": "plotly/dash",
+        "file_path": "AGENTS.md",
+        "bytes": 444,
+        "note": "口径不清"
+      },
+      {
+        "sha": "34dbe5299a1d56dd103cbe68d78b6c67a3191767",
+        "repo": "voxel51/fiftyone",
+        "file_path": "AGENTS.md",
+        "bytes": 374,
+        "note": "误排除：有实质内容"
+      },
+      {
+        "sha": "27e16c5ded02564acc31f4f08360ab149be5b6e6",
+        "repo": "buttondown/docs",
+        "file_path": "AGENTS.md",
+        "bytes": 314,
+        "note": "误排除：有实质内容"
+      }
     ]
   },
   "blind_zh": [
@@ -814,5 +866,18 @@
     "80b33f168f3c412a89f8c84f78e121af059a5bdc",
     "b2bc1e58bb0fed1f0158ab66bc3c7737dcc90b9c",
     "023597059f6e5cae6fbb194de0ce91ad7887a7ac"
-  ]
+  ],
+  "edge_ptr": [
+    "85943d4d4f945860183d2674b17b05a7941064e7",
+    "64349851a89fcdc93aeed9fb13d821c930b53426",
+    "7649447bc320e098a06e95fe5dbc3e9a7539888b",
+    "ddc88d378dc9c013c79ac692954c9a3f939834b1",
+    "0e97d223fc35dedb3f36f164458404b87047a74e",
+    "34dbe5299a1d56dd103cbe68d78b6c67a3191767",
+    "27e16c5ded02564acc31f4f08360ab149be5b6e6"
+  ],
+  "_notes": {
+    "edge_ptr": "原 C 组（edge）只抽到 10 份空壳：audit_sample.py 的指针池从已过滤的 511 基座里取，恒为空。这 7 份是补审结果（work/audit/v0.4-edge-verdicts.md）：7 份里 2 份排除正确、4 份误排除、1 份口径不清。样本已冻结（中文 10 份与英文 17 份已判），故另开一组而不重生成。",
+    "zh_census_26va25": "中文普查 26 份是**抽取时**的 doc_language 口径（v0.1.5）。v0.1.6 加假名判据后 sankichi92/LiveLog 被判成 ja，511 基座里的中文实为 **25 份（4.9%）**。普查 26 份照旧全部判完（LiveLog 也判），但对外口径要用 25/511，不是 26/511。"
+  }
 }

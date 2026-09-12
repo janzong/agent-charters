@@ -79,8 +79,10 @@ def main() -> int:
     main_idx = sorted(rng.sample(list(df.index), min(a.n, len(df))))
     zh_idx = sorted(i for i in df.index if df.at[i, "doc_language"] == "zh")
 
-    # 边界件：转引用文件（全取，语料库只有 7 份）+ 非实质空壳随机抽
-    ptr_idx = sorted(i for i in df.index if df.at[i, "is_pointer"])
+    # 边界件：转引用文件（全取，语料库只有 7 份）+ 非实质空壳随机抽。
+    # 注意指针池要从 allrows 取——从 df（=substantive() 的 511 基座）里找，
+    # 等于在"已排除指针"的集合里找指针，恒为空。2026-09-12 的 C 组就是这么漏掉 7 份的。
+    ptr_idx = sorted(i for i in allrows.index if allrows.at[i, "is_pointer"])
     shell_pool = [i for i in allrows.index if not allrows.at[i, "is_substantive"]]
     shell_idx = sorted(rng.sample(shell_pool, max(0, min(a.edge - len(ptr_idx), len(shell_pool))))) if a.edge else []
     edge_idx = ptr_idx + shell_idx

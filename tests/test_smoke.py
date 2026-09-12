@@ -612,3 +612,84 @@ def test_refs_still_reports_missing_inside_a_repo(tmp_path):
     f.write_text("先读 `docs/nope.md`。\n", encoding="utf-8")
     res = dict(resolve_targets(find_refs(f.read_text(encoding="utf-8")), tmp_path))
     assert res["docs/nope.md"] == "missing"
+
+
+# --- v0.1.7：多义词标题通道 + 容器型标题（2026-09-12，A 主样本第一批）-----
+#
+# 这一批 bug 全部**只能靠真实正文复现**：合成文本"看起来对"，闸门类回归
+# 会绿着把真问题放走（C 组教训，见 work/audit/v0.4-edge-verdicts.md）。
+# 所以下面一律直读 data/raw/full 的原文。
+
+def _real_cats(rel: str) -> set[str]:
+    """读 data/raw/full/<owner__repo>.md 的真实正文，返回类别集合。"""
+    text = (RAW / f"{rel}.md").read_text(encoding="utf-8")
+    return set(analyze_text(text)["categories"])
+
+
+def test_real_usage_heading_does_not_mean_build_test():
+    """`usage` 只在标题**就是它**时才算 build_test。
+
+    google/benchmark 的「AI usage」是 AI 使用政策、catatz 的「Color Usage Rules」
+    是样式规范、astron-agent 的「Context7 Usage Rules」是工具规定——三份都曾
+    只靠 `heading:usage` 拿到 build_test（全篇没有任何构建/测试命令）。
+    """
+    assert "build_test" not in _real_cats("google__benchmark")
+    assert "build_test" not in _real_cats("kupzed__catatz")
+    assert "build_test" not in _real_cats("iflytek__astron-agent")
+    # 反面：fable-method 的「Usage」是斜杠命令用法，裸词，仍然算 build_test
+    assert "build_test" in _real_cats("Sahir619__fable-method")
+
+
+def test_ai_usage_policy_is_agent_meta_and_boundaries():
+    """google/benchmark 是九类里最纯的 agent_meta 样本，此前 0 命中还倒贴 build_test。"""
+    cats = _real_cats("google__benchmark")
+    assert "agent_meta" in cats, cats
+    assert "boundaries" in cats, cats
+
+
+def test_real_start_here_is_not_overview():
+    """`Start Here` 是导航段（阅读顺序/文档指针/纪律），不是项目概览。
+
+    全库 7 份靠它拿 overview 的文件**全部**是误标（逐个读过原文）。
+    """
+    for rel in ("Kevandrew__sophia", "openclaw__Peekaboo", "ayghri__i-have-adhd",
+                "fallow-rs__fallow", "botiverse__hands", "NanmiCoder__cc-haha"):
+        assert "overview" not in _real_cats(rel), rel
+    # 容器型标题单独出现时也不该产生 overview
+    assert "overview" not in analyze_text(
+        "# A\n\n## Start Here\n\n- 先读 `README.md`。\n")["categories"]
+
+
+def test_real_dependency_topology_is_not_environment():
+    """依赖的**拓扑/方向/角色**是架构；依赖的**管理/版本/安全**才是环境。"""
+    assert "environment" not in _real_cats("langchain-ai__langgraph")
+    assert "structure" in _real_cats("langchain-ai__langgraph")
+    assert "environment" not in _real_cats("charmbracelet__crush")
+    # 反面：钉版本、供应链姿态、Dependabot 维护仍是 environment
+    assert "environment" in _real_cats("triggerdotdev__trigger.dev")
+    assert "environment" in _real_cats("owncloud__notes")
+    assert "environment" in _real_cats("hotosm__ui")
+
+
+def test_real_howto_heading_is_workflow_not_structure():
+    """`## Adding a new core module` 是流程，不是结构描述。"""
+    cats = _real_cats("vcz-Gray__loophaus")
+    assert "workflow" in cats, cats
+    assert "structure" in cats, cats          # Project Structure 一节仍在
+
+
+def test_real_module_naming_and_module_scope_are_not_structure():
+    """裸词 module 太泛：命名规范是 style，i18n 陷阱是 gotchas。"""
+    assert "structure" not in _real_cats("stablyai__orca")
+    assert "style" in _real_cats("stablyai__orca")
+    assert "structure" not in _real_cats("thunderbird__thunderbolt")
+
+
+def test_prose_docker_compose_is_not_a_command():
+    """正文里提到 `Docker Compose` 不是构建命令（astron-agent 的目录清单误命中）。"""
+    prose = ("# A\n\n## Repository Structure\n\n- `docker` - Docker Compose and related "
+             "infrastructure configuration\n")
+    assert "build_test" not in analyze_text(prose)["categories"]
+    assert "build_test" not in _real_cats("langgenius__dify")
+    cmd = "# A\n\n## 部署\n\n```bash\ndocker compose up -d\n```\n"
+    assert "build_test" in analyze_text(cmd)["categories"]

@@ -62,7 +62,7 @@ VERSION = "taxonomy_v0.1"          # 九类的**定义**版本（类别是什么
 #   同批落地 `TAXONOMY.md` 口径裁决 5–7（人定）：①"本文件是…入口"这类文件自身角色不算 overview；
 #   ②指向某规范的链接不算 style；③文档指针表算 structure（新增"表格型结构信号"，
 #   只认表头首列为 文档/文件/路径/目录/模块/组件/包 的表，实测 structure 59.7%→59.9%）。
-RULESET_VERSION = "ruleset_v0.1.6"
+RULESET_VERSION = "ruleset_v0.1.7"
 
 CATEGORIES = [
     "overview",     # 项目概览、技术栈、目的、核心概念
@@ -85,7 +85,20 @@ HEAD_VETO: dict[str, list[str]] = {
     "style": [r"(?:提交|发布|流程|合并|分支|评审|工程)规范",
               r"(?:提交|发布|流程|合并|分支)约定"],
     "boundaries": [r"已知.{0,8}限制", r"限制（不是 bug"],
+    # v0.1.7：`依赖` 的两种语义。依赖的**拓扑/方向/角色**是架构（structure），
+    # 不是环境；实测 claudian「Dependency Direction」、crush「Key Dependency Roles」、
+    # langgraph「Dependency map」三份都只有这一个词在撑 environment。
+    # 依赖的**管理/版本/安全/钉版本**（management / pinning / security / versioning）
+    # 仍是 environment，不在否决之列。
+    "environment": [r"dependenc\w*\s+(?:direction|map|graph|role|diagram|topolog)"],
 }
+
+# 裸词白名单（v0.1.7）：这些词只有**整个标题就是它**（可带 guide/说明 等后缀）时才算数。
+# 起因：`usage` 在 4 份文件里独撑 build_test，其中 3 份是错的——
+# 「AI usage」（AI 使用政策 → agent_meta）、「Color Usage Rules」（样式规范）、
+# 「Context7 Usage Rules」（工具使用规定）。带限定语时词义已经变了。
+BARE_HEADING: dict[str, set[str]] = {"build_test": {"usage", "用法"}}
+BARE_SUFFIX = {"", "guide", "说明", "指南", "用法", "instructions", "notes", "note"}
 
 # 标题通道（强信号）
 HEAD_RULES: dict[str, list[str]] = {
@@ -93,15 +106,28 @@ HEAD_RULES: dict[str, list[str]] = {
     # ②**繁体/日文汉字形**（環境≠环境、設定≠设定、検証≠验证、構成≠构成），
     # 简体词表在繁体与日文文档上等于空转（实测 sankichi92/LiveLog：7 个日文标题 0 命中）。
     "overview":    ["overview", "purpose", "about", "introduction", "what is",
-                    "what this project", "tech stack", "quick reference",
-                    "quick start", "start here", "background", "key concept",
+                    "what this project", "tech stack",
+                    # v0.1.7：撤掉 `start here` / `quick start` / `quick reference`——
+                    # 它们是**容器型/导航型**标题，本身不含类别信息，正文才决定类别。
+                    # 实测：start here 独撑的 7 份、quick start 独撑的 3 份**全部**是
+                    # 阅读顺序/文档指针/命令行块；quick reference 独撑的 10 份里 9 份
+                    # 是命令块或规则表，只有 1 份（AReaL）真的是技术栈。
+                    "background", "key concept",
                     "概述", "简介", "背景", "一句话", "项目介绍", "说明",
                     "what this is", "project context", "product direction",
                     "project summary", "current status", "technology stack",
                     "项目定位", "定位", "技术栈", "项目简介",
                     "目的", "概要", "介绍", "快速开始", "はじめに", "紹介"],
     "structure":   ["architecture", "structure", "layout", "organization",
-                    "organisation", "directory", "module", "repository map",
+                    "organisation", "directory", "repository map",
+                    # v0.1.7：裸词 `module` 撤掉，换成具体形态。实测它独撑的 2 份
+                    # 全错：「File and Module Naming」是命名规范（style）、
+                    # 「Module scope freezes the locale」是坑（gotchas）；
+                    # 另有「Adding a new core module」这种流程章节被误判成结构。
+                    "module boundar", "module structure", "module layout",
+                    "module organisation", "module organization", "module map",
+                    "dependency direction", "dependency map", "dependency graph",
+                    "dependency role", "依赖方向", "依赖图", "模块边界",
                     "repo map", "file organization", "source tree", "monorepo",
                     "key file", "key director", "where to look",
                     # v0.1.2 补：职责/归属类标题。实测 33 个这类章节里 9 个原先无标签，
@@ -136,7 +162,12 @@ HEAD_RULES: dict[str, list[str]] = {
                     "流程", "提交", "发布", "分支", "合并", "发布交付",
                     "贡献", "变更日志",
                     "手順", "フロー", "リリース", "コミット", "ブランチ", "レビュー",
-                    "工作流", "协作流程"],
+                    "工作流", "协作流程",
+                    # v0.1.7：workflow 此前只有 git/PR/发布词，整类"编号步骤型 how-to"
+                    # 都漏（vcz-Gray/loophaus 的「Adding a new core module」4 步 +
+                    # 「Adding a new platform」3 步，两条全丢）。
+                    "adding a new", "adding new", "how to add", "how to create",
+                    "新增", "添加新"],
     "environment": ["environment", "tool", "dependency", "config", "cmake",
                     "requirement", "prerequisite", "setup", "install",
                     "环境", "工具", "依赖", "配置", "安装", "工具链",
@@ -173,7 +204,10 @@ BODY_RULES: dict[str, list[str]] = {
     "boundaries":  [r"(?:严禁|禁止|不允许|请勿|切勿|绝对禁止|严格禁止|不得不)",
                     r"(?:不得|勿)[\s]{0,2}(?:提交|推送|删除|修改|执行|使用)",
                     r"\bnever commit\b", r"\bdo not commit\b", r"\bmust not\b",
-                    r"\bnever\b.{0,40}\b(?:secret|credential|token|key)\b"],
+                    r"\bnever\b.{0,40}\b(?:secret|credential|token|key)\b",
+                    # v0.1.7：补"被禁止"类被动式。google/benchmark 通篇
+                    # "are prohibited" / "forbidden"，此前 0 命中。
+                    r"\b(?:is|are|be)\s+(?:strictly\s+)?prohibited\b", r"\bforbidden\b"],
     # ASCII 词一律加 \b：`conda` 会命中 "se**conda**ry"（4 份），与 v0.1.3 的
     # `ci` → "De**ci**sions" 是同一类子串 bug。裸 `.env` 不收——实测 28 份里多是
     # "Never commit `.env`" 这类**禁令**语句，指向的是 boundaries 不是 environment。
@@ -184,7 +218,10 @@ BODY_RULES: dict[str, list[str]] = {
     # 是文档指针列表里的短语，不是项目概览（artemis 实测）。
     # 排除"本文件是…入口"这类**文件自身角色**的句子（claude-tap 实测误命中）。
     "overview":    [r"(?:本项目|该项目|本仓库|本文件|这是一个|是一款)"
-                    r"(?:是|为|旨在|主要|用于|提供)(?![^。\n]{0,12}入口)"],
+                    r"(?:是|为|旨在|主要|用于|提供)(?![^。\n]{0,12}入口)",
+                    # v0.1.7：撤掉容器型标题后，用正文把"技术栈"接回来
+                    # （AReaL 的 Quick reference 正文就是 `**Tech stack**: ...`）。
+                    r"(?:tech(?:nology)?\s+stack|技术栈)\**\s*[:：]"],
     # 裁决 7（2026-09-12）：文档指针表算 structure——"哪份文档在哪、谁读、什么放哪里"
     # 正是该类定义里的文件布局/路径/归属。只认**表头首列**是文档/文件/路径…的表，
     # 不认正文里出现的"文件"二字（那太泛）。
@@ -195,6 +232,16 @@ BODY_RULES: dict[str, list[str]] = {
     "style":       [r"(?:代码风格|编码规范|注释规范)",
                     r"(?<!分支)(?<!目录)(?<!文件)命名(?:规范|约定|规则)"],
     "agent_meta":  [r"\byou are\b", r"\byour role\b",
+                    # v0.1.7：补"AI 使用政策"文体。此前 body 通道只有**人格指令**
+                    # （you are / be concise / tone），于是 google/benchmark 这种
+                    # "AI 能不能参与贡献、必须披露、责任归属"的政策文档 0 命中——
+                    # 而它恰恰是九类里最纯的 agent_meta 样本。
+                    # 只认"AI + 规范性情态"（must / shall / 披露 / 禁止）：
+                    # 实测 `responsib|accountab` 太松——"Responsible AI principles"
+                    # 是课程话题（microsoft/AI-For-Beginners 假阳性）；
+                    # lookaround 排掉路径里的 ai（777genius 的 `ai/claude-runtime` 假阳性）。
+                    r"(?<![/\w])AI(?!/[\w])[^.\n]{0,60}\b(?:must|shall|disclos|prohibit)",
+                    r"\b(?:bot|autonomous)\w*\s+contributions?\b",
                     r"\bdo not (?:praise|flatter|apologize)\b",
                     r"\bbe concise\b", r"\btone\b"],
     "build_test":  [r"```(?:bash|sh|shell)?\n[^`]{0,200}\b(?:npm|yarn|pnpm|"
@@ -280,7 +327,7 @@ STRONG_PATTERNS: dict[str, list[str]] = {
         # 同理只认具体目标；`gradle \w+` 会命中 "Gradle 9"（版本号）
         r"|(?:mvn|gradle) (?:test|build|compile|package|install|verify|check"
         r"|clean|assemble|run|tasks|dependencies|clippy)"
-        r"|\./gradlew \w+|docker compose)\b",
+        r"|\./gradlew \w+|docker compose (?:up|down|build|run|logs|exec|ps|restart|stop|start))\b",
         r"\.venv/bin/python -m \w+",
     ],
     "workflow": [
@@ -371,6 +418,20 @@ def heading_keyword_hits(low_head: str, kw: str) -> bool:
     return False
 
 
+def is_bare_heading(low_head: str, kw: str) -> bool:
+    """标题是否**就是**这个词（可带 guide/说明 这类后缀）。
+
+    供 `BARE_HEADING` 用：多义词只有在标题整体等于它时才承认词义，
+    带限定语的（AI usage / Color Usage Rules）交回给别的类别或正文通道。
+    """
+    norm = re.sub(r"[^\w\u4e00-\u9fff]+", " ", low_head).strip()
+    if norm == kw:
+        return True
+    if norm.startswith(kw + " "):
+        return norm[len(kw) + 1:] in BARE_SUFFIX
+    return False
+
+
 def classify(heading: str, body: str) -> tuple[set[str], dict[str, list[str]]]:
     """双通道分类：标题强信号 + 正文弱信号。
 
@@ -385,6 +446,9 @@ def classify(heading: str, body: str) -> tuple[set[str], dict[str, list[str]]]:
     for cat, keys in HEAD_RULES.items():
         for k in keys:
             if heading_keyword_hits(low_head, k):
+                if (k in BARE_HEADING.get(cat, set())
+                        and not is_bare_heading(low_head, k)):
+                    continue
                 if any(re.search(p, low_head) for p in HEAD_VETO.get(cat, [])):
                     break
                 tags.add(cat)

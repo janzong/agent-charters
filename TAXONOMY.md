@@ -124,6 +124,34 @@
 不定下来，下一轮 90 份审计会把同一个分歧反复记成"规则错"，把"口径模糊"算进规则准确率里，数字就不可信了。
 这与上文裁决 1–4 的动机一致。
 
+## 口径裁决 8（2026-09-12 定，由 A 主样本第一批 6 份盲判抽出）
+
+`work/audit/v0.4-a1-verdicts.md`：6 份里规则给出 15 个文件级标签、人工给 24 个
+（错标 4、漏标 8、归段错 1）。四处错标**根因都是"标题词表多义词"**，与 v0.1.6 已修的
+4 处同源——一个高频词在标题里出现时，词义往往已经变了。
+
+| # | 多义词 | 语料库实测 | 裁决 |
+|---|---|---|---|
+| 8.1 | `usage` → `build_test` | 独撑 4 份，**3 份是错的**：`AI usage`（AI 使用政策→agent_meta）、`Color Usage Rules`（样式）、`Context7 Usage Rules`（工具规定） | 加 `BARE_HEADING` 机制：只有标题**就是它**（可带 guide/说明 等后缀）才承认词义。`Usage` 仍算 build_test，`API Usage`/`AI usage` 不算 |
+| 8.2 | `start here` / `quick start` / `quick reference` → `overview` | 独撑 7 / 3 / 10 份；`start here` 与 `quick start` **10 份全错**，`quick reference` 9 错 1 对 | **撤掉这三个词**——它们是**容器型/导航型标题**，本身不含类别信息，类别该由正文决定；正文侧补 `tech stack:` 句式把"技术栈"接回来 |
+| 8.3 | `dependency` → `environment` | 独撑 7 份，3 份是错的（Dependency Direction / Map / Roles 是**架构**） | 加否决式：`dependenc* + direction/map/graph/role/diagram/topolog` 不算 environment；*management/pinning/security/versioning* 仍算。同时给 `structure` 补这些形态 |
+| 8.4 | `module` → `structure` | 独撑 2 份全错（命名规范→style、i18n 陷阱→gotchas），另有一处流程章节误判 | 裸词换成具体形态（`module boundar/structure/layout/map`…） |
+
+**两条通道性缺口**（不是多义词，是词表没覆盖）：
+
+- `workflow` 此前只有 git/PR/发布词，**编号步骤型 how-to 整类漏**（`Adding a new core module` 4 步全丢）→ 补 `adding a new` / `how to add` / `新增` 等标题词。
+- `agent_meta` 正文通道只有**人格指令**（you are / be concise / tone），**"AI 使用政策"文体 0 命中**（google/benchmark 通篇"必须披露 AI 使用 / 禁止全自动贡献 / 责任归属"，恰是九类里最纯的样本）→ 补"AI + 规范性情态"模式（**只认 must/shall/披露/禁止**；`responsib` 会误收"Responsible AI"这类课程话题，实测撤掉）。
+- `build_test` 的强模式 `docker compose` 会在**散文**里命中（`Docker Compose and related infrastructure configuration`）→ 收紧为必须带子命令（up/down/build/run/logs/…）。
+
+**落地效果（511 基座，v0.1.6 → v0.1.7）**：
+`build_test` 85.9→**85.1%**、`overview` 36.0→**32.1%**、`environment` 49.1→**48.5%**、
+`structure` 59.9→**59.7%**、`workflow` 66.5→**67.9%**、`boundaries` 66.3→**67.1%**、
+`agent_meta` 29.5→**30.9%**；`style`(56.6%) 与 `gotchas`(14.1%) 不变。
+逐份确认了每个增减的来源（`work/audit/v0.4-a1-verdicts.md` §三）。
+
+> 头条结论不变：**构建测试仍是第一名，仍明显领先第二名**（85.1% vs 流程 67.9%）。
+> 但"85.9%"里约 0.8pp 是假阳性——与 `LIMITATIONS.md §11` 是同一类错误。
+
 ## 已知问题（v0.4 待改进）
 
 0. **规则法无法处理同义表达**：只有写进关键词的措辞才能命中。

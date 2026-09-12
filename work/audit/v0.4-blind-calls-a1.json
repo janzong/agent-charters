@@ -1,0 +1,42 @@
+{
+  "_note": "A 主样本（55 份）第一批：最小的 6 份。只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-1",
+  "files": {
+    "yanyiwu/nodejieba": {
+      "bytes": 211,
+      "call": ["workflow"],
+      "borderline": ["agent_meta", "build_test"],
+      "why": "唯一一节 Repository Instructions：每次改代码评估是否发版 + 把发布决定写进给用户的最终回复。发布流程=workflow；'写进最终回复'是在规定 AI 的汇报行为，agent_meta 犹豫；无命令故 build_test 只在'发版算构建流程'这一层上勉强成立，偏犹豫。"
+    },
+    "baimard/gestion": {
+      "bytes": 280,
+      "call": ["overview", "workflow", "boundaries"],
+      "borderline": ["environment"],
+      "why": "'Gestion is a Nextcloud invoicing application'=一句话项目介绍=overview；默认分支/分支命名/draft PR/不自动合=workflow；Never push / Never merge=禁令=boundaries；'Preserve PHP 8+ 与 Nextcloud 兼容'是栈/版本约束，environment 犹豫（也可读成 style）。"
+    },
+    "vcz-Gray/loophaus": {
+      "bytes": 1411,
+      "call": ["structure", "style", "build_test", "workflow"],
+      "borderline": ["boundaries"],
+      "why": "Project Structure 列 9 个目录=structure；Conventions（TS strict/.js 后缀/零依赖/.mjs 需独立运行）=style；Testing 四条 npm 命令=build_test；两段'如何新增模块/平台'的编号步骤=workflow。'No external runtime dependencies' 既是约定也是禁令，boundaries 犹豫。"
+    },
+    "google/benchmark": {
+      "bytes": 1716,
+      "call": ["agent_meta", "boundaries"],
+      "borderline": ["workflow"],
+      "why": "整篇是 AI 使用政策：AI 非智能体、贡献必须披露 AI 使用、禁止全自动 bot 贡献、'你的工具你的责任'、DO NOT 直接贴 AI 输出=对 AI 参与方式的规定=agent_meta + 禁令=boundaries。'贡献必须披露'也可读成贡献流程=workflow 犹豫。无项目介绍、无目录、无命令。"
+    },
+    "langchain-ai/langgraph": {
+      "bytes": 2113,
+      "call": ["build_test", "structure", "workflow", "style"],
+      "borderline": ["overview", "agent_meta", "boundaries"],
+      "why": "make format/lint/test=build_test；monorepo+libs 清单+依赖图+Libraries 高亮=structure；'before creating a pull request'把三步绑进 PR 流程=workflow；禁用 Sphinx 双反引号=style（同时是禁令，boundaries 犹豫）；corridor/analyzePlan 是 AI 工具专属要求，agent_meta 犹豫；首句'monorepo 每库一子目录'也可算 overview 犹豫。"
+    },
+    "Kevandrew/sophia": {
+      "bytes": 2143,
+      "call": ["overview", "structure", "build_test", "workflow", "boundaries", "style"],
+      "borderline": ["agent_meta", "environment", "gotchas"],
+      "why": "首句 Sophia 是什么=overview；Start Here 文档索引 + Codebase Map（internal/* 四个目录）=structure；go run/build/test/vet + '最小本地检查 go test && go vet'=build_test；Workflow Invariants（CR 流程、task contract、checkpoint 参数）=workflow；'do not open/sync PRs or push remote state unless explicitly asked'=boundaries；gofmt/文件命名/测试就近=style。Skills 说 $sophia + 注册表为准=agent_meta 犹豫；.sophia/ 与 _docs/ 被 gitignore + '元数据漂移就 sophia repair'=environment/gotchas 犹豫。"
+    }
+  }
+}
