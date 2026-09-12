@@ -1,0 +1,24 @@
+{
+  "_note": "A 主样本第三批（3 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-3",
+  "files": {
+    "opendlt/accumulate_studio": {
+      "bytes": 4634,
+      "call": ["overview", "structure", "build_test", "environment", "workflow", "boundaries", "gotchas"],
+      "borderline": ["agent_meta"],
+      "why": "首段讲 monorepo 是什么+含哪些组件=overview；npm workspaces 布局、## Layout 目录树、build:types 依赖顺序=structure；Setup/Build/Test&validate/Run/Before you commit 全是命令=build_test；Node>=18+Python 3.11+ 工具链=environment；pre-commit 前的命令链=workflow；## Permitted commands 的'需人工批准'清单（npm publish/mainnet/force-push）=boundaries；## Gotchas 一节=gotchas。'repository guide for agents' 是文件角色句，agent_meta 只在'可无人值守'那层上犹豫。"
+    },
+    "tirth8205/code-review-graph": {
+      "bytes": 5254,
+      "call": ["workflow", "boundaries"],
+      "borderline": ["build_test", "agent_meta", "gotchas"],
+      "why": "通篇是流程与硬规则：bd 议题追踪、## Session Completion 的 MANDATORY WORKFLOW（必须 push、git status 须 up to date）=workflow；**ALWAYS use non-interactive flags**、**CRITICAL RULES: NEVER stop before pushing**、do NOT use TodoWrite=boundaries。bd/cp/rm/git push 这些是命令块，build_test 犹豫（但它们不是构建/测试/运行，是任务与仓库操作）；MCP 工具那节讲「先查图、再读源码、以源码为准」是调查流程，agent_meta 犹豫；'会挂住等 y/n 输入'是坑，gotchas 犹豫。整篇没说这个项目是什么，故无 overview。"
+    },
+    "shibanet0/datamitsu-config": {
+      "bytes": 6078,
+      "call": ["environment", "boundaries", "build_test", "workflow", "style"],
+      "borderline": ["structure", "agent_meta"],
+      "why": "首行是**转引用**（'Read .datamitsu/ai/...md now and follow it strictly'）+ 优先级声明，按裁决 5 不算 overview；## Runtime Environment（goja、无 Node API、只能用 ES5/6、src/ 不得 import node:*）=environment+boundaries；文档生成/pnpm dm exec task 命令、blocklist 校验命令=build_test；Lefthook pre-commit、validator 优先级=workflow；One Config Per Tool / JS-TS 配置优先 / indentSettings 单一事实源 / 不得硬编码 2-100=style（同时是禁令，已并入 boundaries）。docs/ 文件清单与 src/apps 结构=structure 犹豫；'follow it strictly without asking permission' 是对 AI 行为的硬规定，agent_meta 犹豫。"
+    }
+  }
+}

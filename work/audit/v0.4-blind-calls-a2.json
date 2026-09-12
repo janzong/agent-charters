@@ -1,0 +1,24 @@
+{
+  "_note": "A 主样本第二批（3 份，按字节升序接第一批）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-2",
+  "files": {
+    "lisa/bash-llm": {
+      "bytes": 2651,
+      "call": ["agent_meta", "boundaries", "build_test", "workflow"],
+      "borderline": ["structure", "gotchas"],
+      "why": "整篇是对着 AI 说话（'inferior agents'、'maintain an upbeat attitude... in a low key way'=语气规定）→ agent_meta；'DO NOT READ OR EXECUTE chat.sh'、'never read or execute the core business logic'=禁令 → boundaries；bash chat.sh 调用示例 + 'skip all tests'=build_test；PR 标题格式/必须提供模型版本/配方/提示词=workflow。'bash-llm generator code resides in chat.sh' 是文件位置，structure 犹豫；'can damage your internal model' 是玩笑式警告，gotchas 犹豫。"
+    },
+    "prevalentWare/opencode-goal-plugin": {
+      "bytes": 3470,
+      "call": ["structure", "build_test", "workflow", "style"],
+      "borderline": ["environment", "boundaries"],
+      "why": "Project Shape 逐个文件讲职责（src/server.ts / state.ts / tui.tsx / prompts.ts / test/）=structure；Local Validation 的 bun run lint/typecheck/test/build/pack:dry-run=build_test；Publishing Flow 的 GH Actions→npm 版本→gh run watch=workflow；Change Guidelines 的'保留 Promise API/继续用 zod/别把 Effect 扩散到 TUI/原子写'=编码约定=style。OPENCODE_GOAL_STATE_PATH 与运行时依赖=environment 犹豫；'Do not spread Effect' 也是禁令，boundaries 犹豫。"
+    },
+    "omnigent-ai/omnigent": {
+      "bytes": 4352,
+      "call": ["workflow", "build_test", "style", "agent_meta"],
+      "borderline": ["structure", "boundaries", "environment"],
+      "why": "Committing 的 pre-commit 流程 + Pull requests 的模板/章节/checkbox 要求=workflow；Local development shortcuts 的 just 食谱与 just --list、pre-commit run --all-files=build_test；Code comments（简短、别引用 PR 号）+ Database query names（命名约定）=style；Finishing a task（'print instructions to the user on how to test it'）是对 AI 汇报方式的硬性规定=agent_meta。Framework-owned instructions（框架指令与可移植指令分离、别把策略复制到 adapter）偏架构，structure 犹豫；'Don't pass a --body that skips these sections'=boundaries 犹豫；just ensure=装前置条件=environment 犹豫。"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_note": "A 主样本第四批（3 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-4",
+  "files": {
+    "rohitg00/agentmemory": {
+      "bytes": 6136,
+      "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries"],
+      "borderline": ["environment"],
+      "why": "Architecture 首句「agentmemory is a persistent memory system for AI coding agents, built on iii-engine's three primitives」=overview；同节的 Engine/State/Build/Test 与文件路径映射=structure；Testing 一节 + npm test=build_test；## Code Patterns（registerFunction/registerTrigger 模板）+ ## Coding Standards=style；## Consistency Rules（改 MCP 工具必须同步更新 8 处）与版本号必改清单=workflow；「never bypass iii-engine」「MUST use try/catch with AbortSignal.timeout」=boundaries。Engine/State/Build/Test 那条也可读成技术栈=environment，故列为犹豫。"
+    },
+    "onyx-dot-app/onyx": {
+      "bytes": 6254,
+      "call": ["overview", "structure", "build_test", "environment", "workflow", "style", "boundaries"],
+      "borderline": ["agent_meta", "gotchas"],
+      "why": "## Project Overview（Onyx 是什么）+ Technology Stack=overview；Repository Layout 与子项目指南、backend/web/mobile 分工=structure；pre-commit、Testing、uv sync、psql 命令=build_test；uv venv、secrets 解析顺序、日志目录、db 连接方式=environment；Code Quality 的 pre-commit 流程与 Creating a Plan 的固定章节=workflow；Writing（ASD-STE100 简化技术英语：短句、主动语态）与 Code Quality 的严格类型/注释要求=style；Security Considerations（不得提交密钥、按 RBAC）=boundaries。Creating a Plan 是对 AI 写计划行为的硬规定，agent_meta 犹豫；「假设所有服务都在跑」偏 gotchas 犹豫。"
+    },
+    "stagewise-io/stagewise": {
+      "bytes": 6319,
+      "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries"],
+      "borderline": ["gotchas"],
+      "why": "Architecture Overview（「Stagewise is a pnpm workspace and Turborepo monorepo. The product is an open-source agentic IDE with a built-in coding agent.」）与 Key Technologies=overview；Directory Structure 树 + Browser App Architecture 的 tsconfig 分工=structure；Essential Commands 六大类全是 pnpm 命令、Pre-commit 的 lefthook 步骤=build_test；Code Style（Biome 缩进/引号/命名约定）+ Important Notes 的 Biome 而非 ESLint=style；Commit Guidelines（Conventional Commits 强制 scope）+ Pre-commit + Turbo 缓存=workflow；Node>=22.12/pnpm 10.30.3、workspace:* 依赖协议=environment；「Do not edit pnpm-lock.yaml manually」「TypeScript strict 要处理所有类型错误」=boundaries。"
+    }
+  }
+}

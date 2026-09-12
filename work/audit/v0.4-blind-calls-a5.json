@@ -1,0 +1,52 @@
+{
+  "_note": "A 主样本第五批（3 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-5",
+  "files": {
+    "lobehub/lobehub": {
+      "bytes": 6484,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "workflow",
+        "style",
+        "environment",
+        "boundaries"
+      ],
+      "borderline": [
+        "agent_meta"
+      ],
+      "why": "## Tech Stack（Next.js/React/TS/Drizzle/Vitest）=overview；## Code Ownership 逐层讲 apps-server/src/spa/services/store/e2e 归属=structure；Starting the Dev Environment 与 Quality Check（bun run check 等）=build_test；Git Workflow（canary→main、rebase、gitmoji、分支格式）+ Acceptance 流程 + i18n 的 CI PR + Code Review 的 light/deep 模式=workflow；Code Style 的 800 行拆分规则=style；Package Management（pnpm/bun/bunx 分工）=environment；『Never run bun run test』『do not put backend business logic there』『Do not create features directories inside src/routes』=boundaries。## Agent Skills 讲『细则放 skill、保持单一事实源』偏 agent_meta 犹豫。"
+    },
+    "tech-leads-club/agent-skills": {
+      "bytes": 6558,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "environment",
+        "boundaries",
+        "agent_meta"
+      ],
+      "borderline": [],
+      "why": "## Workflow Orchestration 五节全是对 AI 工作方式的硬规定（Plan Mode Default、用 subagent 保上下文、Verification Before Done、Demand Elegance、Autonomous Bug Fixing 不要人陪）+ Core Principles（Simplicity/No Laziness/Minimal Impact）=agent_meta，是整篇的主体；## Repository 首句（Agent Skills Monorepo——给 AI 编码代理分发 skill 的注册表与 CLI）=overview；## Architecture 的 Nx monorepo 与 packages 清单 + Key Flows + Agent Configuration=structure；## Commands 的 npm ci/build/test/lint=build_test；## Code Conventions 的 ESM-only、TS strict、Prettier 设置=style；同节的 Node≥24/≥22=environment；Skill Structure 的『必须用 Nx 生成器』与 Skill Quality Standards 的 MUST/Do NOT=boundaries；## Release（Nx Release、约定式提交、发布前安全扫描）=workflow。"
+    },
+    "Weaverse/.agents": {
+      "bytes": 6757,
+      "call": [
+        "overview",
+        "structure",
+        "build_test",
+        "style",
+        "workflow",
+        "agent_meta"
+      ],
+      "borderline": [
+        "boundaries"
+      ],
+      "why": "开头说明本仓存的是 agent 定义/命令工作流/skill 定义/编码规则，且『These files configure how specialized AI agents behave』=overview；## Repository Structure 目录树=structure；Build/Lint/Test 的 jq 与 bash -n 校验 + 手工验证三步=build_test；Code Style Guidelines（kebab-case 命名、ATX 标题、frontmatter 必填字段、内容结构、写作风格）+ Naming Conventions + Common Patterns=style；Quality Checklist『提交前逐项勾』=workflow；整篇在教怎么写 agent 定义（『Start with You are an expert…』、第二人称、现在时、示例必须带 commentary）——是关于 agent 自身的规范=agent_meta。"
+    }
+  }
+}
