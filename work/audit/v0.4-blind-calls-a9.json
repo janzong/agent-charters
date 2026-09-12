@@ -1,0 +1,18 @@
+{
+  "_note": "A 主样本第九批（2 份）：只看原文、未看规则输出。borderline=我判得犹豫的类别。",
+  "batch": "A-main-9",
+  "files": {
+    "langchain-ai/deepagents": {
+      "bytes": 10315,
+      "call": ["structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+      "borderline": [],
+      "why": "无 overview——首段只说『This file contains repository-wide rules for agents and contributors』（文件自身角色，按口径裁决 5 不算 overview），正文全是路由与规则。## Repository routing（搜索卫生 + 目标路径清单 + Scoped guides 索引）+ ## SDK and dependencies=structure；### Testing（tests/unit_tests 与 tests/integration_tests 的放置、asyncio_mode=auto、warnings are errors 与 filterwarnings 细则）+ ### Benchmarks（用包的 bench/bench-memory Make 目标而非直接 pytest）=build_test；## PR conventions（Conventional Commits + scope、分支名 <user>/<scope>/<desc>、PR body 模板与 release note）+ ## CI and releases（release-please、GitHub Actions 必须钉全 SHA）=workflow；## Core development principles + ### Code and documentation + ### Suppressing ruff rules（noqa 与 per-file-ignores 的取舍）=style；禁令（不许 eval/exec/pickle、不许无理由加依赖、不许手改 OpenWiki 生成页、Keep this heading stable）=boundaries；`<corridor>` 块（当 analyzePlan 工具可用时先建计划再做安全分析）与『Warn the developer about any signature change』=agent_meta。"
+    },
+    "mem0ai/mem0": {
+      "bytes": 11997,
+      "call": ["overview", "structure", "environment", "style", "workflow", "boundaries", "agent_meta"],
+      "borderline": ["build_test", "gotchas"],
+      "why": "首段『Mem0 (\"mem-zero\") is a memory layer for AI agents: persistent, personalized memory through a hosted platform API and self-hosted open-source SDKs』=overview；## Where to look（编辑路径→该读的 AGENTS.md→工具链 三列表）+ ## Repository map + 目录树=structure；## Setup（hatch shell、pre-commit install、pnpm install）+ Requirements（Python 3.9+/Node 18+/pnpm 10+/Docker）=environment；## Conventions everywhere（命名、Pydantic v2、strict TS、Conventional Commits、版本 bump）=style；## Contributing 七步 + Two gates（PR Gate/vouch）+ CLA + ## What gets a pull request closed=workflow；## Do NOT 十一条（无 CLA 不开 PR、不提交 .env 与密钥、不跳过 pre-commit、TS 包不许 npm/yarn/require、不改 workflow 文件、不许造证据/未跑就交）=boundaries；『Disclose AI use』『If you are an agent opening a pull request on someone's behalf』=agent_meta。## Benchmarking 只有一条 git submodule 命令、没有测试章节（细则下放到各包 AGENTS.md）=build_test 犹豫；『每个包规则不同，用错 linter 会让 CI 挂』=gotchas 犹豫（我倾向不算，它属结构说明）。"
+    }
+  }
+}
