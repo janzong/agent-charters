@@ -175,24 +175,45 @@ def main() -> int:
     if blind_idx:
         # 盲判组：**只给题面，不给任何规则输出**；正文也不内嵌（仓库不含原文全文），
         # 只给本地路径——判者自己打开文件读全文，避免"只摘 600 字"这种上次的坑。
-        B = [f"# 盲判组（{len(blind_idx)} 份，主样本随机抽出的前 {len(blind_idx)} 个）\n",
-             "> 只判这 %d 份，判完再打开 `%s` 对比。\n" % (len(blind_idx), ws.name),
-             "> 每条只写一句：`1. 准确`、`1. 漏标：坑,流程`、`1. 错标：风格`，可加几个字理由。\n",
-             "> **请打开文件读全文**（路径在每条的「原文」行），不要只看下面的标题列表——",
-             "> 判定口径：**漏标**＝原文明明有这类内容却没打上；**错标**＝打上了但原文没有。\n",
-             "> 九类：概览 overview / 架构 structure / 构建测试 build_test / 风格 style /",
-             "> 流程 workflow / 环境 environment / 禁令 boundaries / 坑 gotchas / AI行为 agent_meta\n",
-             "\n---\n"]
+        B = [
+            f"# 盲判组（{len(blind_idx)} 份）——请只做一件事：列出每份文件里**实际有什么**\n",
+            "> **怎么读**：对每条，打开「原文」那个路径读**全文**（VS Code 里点开即可）。\n",
+            "> **怎么标**：通读后在「答案」行写下这份文件**确实包含**的类别（九类里选任意几类，"
+            "没有的就不写）。**不要猜规则想要什么**——这一遍要的就是你的独立判断。\n",
+            "> **判不准的**：在该类后面加 `?`（例：`风格?`），我会单独统计「犹豫」的比例。\n",
+            f"> 判完把答案发我。之后我才会打开 `{ws.name}` 对照——先别看它，看了就白判了。\n",
+            "",
+            "## 九类是什么意思（判定依据只有这几行）\n",
+            "| 类别 | 收什么 |",
+            "|---|---|",
+            "| 概览 overview | 这个项目/仓库是什么、技术栈、目的、核心概念 |",
+            "| 架构 structure | 代码怎么组织：目录结构、模块划分、谁负责哪块、关键文件在哪 |",
+            "| 构建测试 build_test | 怎么构建/测试/运行/校验（命令也算），以及「改完该跑什么」 |",
+            "| 风格 style | 代码怎么写：命名、格式、约定、最佳实践、错误处理 |",
+            "| 流程 workflow | 分支、提交信息、PR、评审、发布、版本、变更日志 |",
+            "| 环境 environment | 环境、工具链、依赖、配置、安装、版本要求 |",
+            "| 禁令 boundaries | 「不要做什么」：禁止、边界、卫生规则、红线 |",
+            "| 坑 gotchas | 坑、陷阱、已知问题、踩过的雷、限制 |",
+            "| AI行为 agent_meta | 对 AI 自身的规定：角色、语气、身份、协作方式、该怎么做事 |",
+            "\n---\n",
+        ]
         for k, i in enumerate(blind_idx, 1):
             r = df.loc[i]
             p = f"data/raw/full/{r['repo_full_name'].replace('/', '__')}.md"
-            heads = [h for h, _ in split_sections(pathlib.Path(p).read_text(encoding='utf-8', errors='replace'))] if pathlib.Path(p).exists() else []
+            path = pathlib.Path(p)
+            heads = [h for h, _ in split_sections(path.read_text(encoding="utf-8", errors="replace"))] if path.exists() else []
             B.append(f"### {k}. `{r['repo_full_name']}` — {r['file_path']}")
             B.append(f"- {r['doc_language']} ｜ {r['bytes']} 字节 ｜ {r['section_count']} 章节 ｜ {int(r['repo_stars'])} ★")
             B.append(f"- 原文：`{p}`")
             B.append(f"- 标题（{len(heads)}）：" + (" / ".join(h.strip() for h in heads[:14]) or "（无标题）"))
-            B.append("- 你的判定：□ 准确　□ 漏标（缺哪类：______）　□ 错标（多哪类：______）　备注：")
+            hint = "（例：概览, 构建测试, 禁令；不确定的写 `风格?`）" if k == 1 else ""
+            B.append(f"- **答案**：______ {hint}")
             B.append("")
+        B.append("\n---\n\n## 答案汇总（判完把这段发我）\n")
+        B.append("```text")
+        for k in range(1, len(blind_idx) + 1):
+            B.append(f"{k}. ")
+        B.append("```")
         blind = outdir / f"{a.version}-blind{len(blind_idx)}.md"
         blind.write_text("\n".join(B), encoding="utf-8")
         print(f"生成 {blind}：{len(blind_idx)} 份，只有题面与路径，无任何规则输出")
