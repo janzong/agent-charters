@@ -100,11 +100,14 @@ def main() -> int:
         L.append("")
     if n < len(planned):
         todo = [r for r in planned if r not in calls]
+        used = sorted(p.name for p in (ROOT / "work/audit").glob("v0.6-cn-calls-a*.json"))
+        nxt = f"a{len(used) + 1}"
         L += ["## 尚未判读（续判用）", "",
               f"还差 **{len(todo)}** 份：" + "、".join(f"`{r}`" for r in todo[:12])
               + ("…" if len(todo) > 12 else ""), "",
-              "续判：按 `work/audit/v0.6-cn-worksheet.md` 顺序，新建 "
-              "`work/audit/v0.6-cn-calls-a2.json`（格式同 a1），重跑本脚本即可。", ""]
+              f"续判：按 `work/audit/v0.6-cn-worksheet.md` 顺序读原文（**先别跑规则**），"
+              f"新建 `work/audit/v0.6-cn-calls-{nxt}.json`（格式同 "
+              f"`{used[0] if used else 'a1'}`），重跑本脚本即可刷新本表。", ""]
 
     OUT.write_text("\n".join(L), encoding="utf-8")
     print(f"覆盖 {n}/{len(planned)} 份 → {OUT}")
