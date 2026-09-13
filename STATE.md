@@ -52,13 +52,13 @@
 | 留出集补充评论 | ⏳ **文案已就绪，待人贴**（2026-09-13）：`zhihu-comment-03.txt`（708 字符）/ `oschina-comment-03.txt`（464 字符，≤500 限）/ `juejin-comment-02.txt`（485 字符）。内容＝留出集 55 份盲判 precision 92% / recall 70%（§19），并自陈三个边界（单标注者、无中文、完全一致仅 12.7%）。事实源＝`SHARE.md` §7.5–7.7。⚠️ 措辞已按实测修正：可用池 422 = 516 − **94**（不是 516 − 106，见 §18 新增算术关系） |
 | 错标归因 | ✅ **已闭环**（2026-09-13）：10 处错标（`environment` 5 / `boundaries` 5）全部落在两个机制——**标题词多义 5 处**（`dependency`/`tool`/`setup`/`config`/`rules`）+ **正文命中 5 处**（4 处「句式像禁令、语义不是禁令」+1 处配置文件名出现在流程句里）；证据都只 1–2 条。产物 `work/audit/v0.5-holdout-mislabel-attribution.md`（脚本 `mislabel_attribution.py`）。按 D11/§3.2 只归因不改规则 |
 | 口径自披露 | ⚠️ **待人裁定**（2026-09-13）：§19 与两份 `work/audit/*.md` 写「犹豫单列、不计入错标」，但脚本主口径是 `rule - call`（**犹豫被计入错标**），且 in-sample 的宽松口径从未打印。现行 92%/70% vs 文档口径 97%/71%。**未改任何对外数字、规则、脚本行为**，只记进 §20 |
-| 中文留出集（v0.6） | 🟡 **盲判 42/50**（2026-09-13）：15 个中文关键词 → 1065 个新仓库 → 抓到 **1046** 份 AGENTS.md（**1016 份判 `zh`**，v0.5 中文样本的 40 倍）｜随机抽 **50** 份（seed `20260913`）｜已判 42 份（`v0.6-cn-calls-a1..a9.json`）当前 **precision 87% / recall 69%**（现行口径；文档口径 93% / 70%）——**仅供看趋势，未判完，不得对外引用**｜剩 **8 份**（cloudwego-microservice-demo 16.9KB、skywind3000/vim 16.6KB、How_to_implment_PL_in_Antlr4 14.2KB、moyanj/lunaris 9.3KB、wind0ws/MyToolbox 8.9KB、ndnhatvien/Awesome-Context-Engineering 8.4KB、zhangjunmengyang/quant-research-platform 6.7KB、xcanwin/KeepChatGPT 4.8KB）。⚠️ 框偏向中文（97% 判 zh 是检索方式的产物，不是 GitHub 真实分布） |
+| 中文留出集（v0.6） | ✅ **盲判 50/50 完成**（2026-09-13，`LIMITATIONS.md` §21）：15 个中文关键词 → 1065 个新仓库 → 抓到 **1046** 份 AGENTS.md（**1016 份判 `zh`**，v0.5 中文样本的 40 倍）｜随机抽 **50** 份（seed `20260913`，与基座零重叠）｜微平均 **precision 88% / recall 73%**（现行口径；文档口径 95% / 74%）｜文件级完全一致仅 6/50｜**最弱两类**：`agent_meta` recall **26%**（35 处漏 26，占全部漏标 30%）、`gotchas` precision 62% / recall 45%；`workflow` 错标最多（6 处）｜⚠️ 框偏向中文（97% 判 zh 是检索方式的产物，不是 GitHub 真实分布）；单标注者、未过第二人复核。**规则处置待人裁定（D32）：本轮不改任何规则**。 |
 | 100 份人工核对 | ✅ **已闭环**（发现 1–56）。四块改动全部落地：①围栏语言标记门 ②删词与收紧 ③补词（净增 119/净掉 2）④收紧（净增 1/净掉 36）+ 指针反证闸。清单 `work/audit/v0.1.8-changelist.md` |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
 | 外部信号 | GitHub **1 star＝作者自己**（`gh api .../stargazers` 实查）、0 fork、0 外部事件；掘金 **阅读 3 / 粉丝 0**；OSC 阅读 1。**判据 6「非作者的外部使用者」仍未闭环** |
 | 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |
-| 分类准确率 | ✅ **留出集已出**（2026-09-13，55 份盲判，`work/audit/v0.5-holdout-vs-rule.md` / `LIMITATIONS.md` §19）：微平均 **precision 92% / recall 70%**（TP 221 / FP 19 / FN 93）。in-sample 100 份为 precision A 90% / B 80% / D 92%、recall A 75% / B 79% / D 84%（`v0.5-human-vs-rule.md` / §16，**上界**）。两组差 3–5pp、方向一致 ⇒ v0.5 未过拟合。最弱 `gotchas` recall 32–38%、留出集 `environment` 57%；中文组 `build_test` precision 61% 仍只有 in-sample。v0.1 自述口径已被取代 |
+| 分类准确率 | ✅ **两组留出集都已出**（2026-09-13）：英文 55 份（`work/audit/v0.5-holdout-vs-rule.md` / §19）precision **92% / recall 70%**（TP 221/FP 19/FN 93）；中文 50 份（`work/audit/v0.6-cn-vs-rule.md` / §21）precision **88% / recall 73%**（TP 228/FP 30/FN 86）。in-sample 100 份为 precision A 90% / B 80% / D 92%、recall A 75% / B 79% / D 84%（`v0.5-human-vs-rule.md` / §16，**上界**）。两组与 in-sample 差 3–5pp、方向一致 ⇒ v0.5 未过拟合。最弱：英文 `gotchas` recall 32–38%、留出集 `environment` 57%；中文 `agent_meta` recall 26%、`gotchas` precision 62%。v0.1 自述口径已被取代 |
 | 无标签率 | 1.6%（8 / 516，v0.1 时为 2.1% = 11 / 518） |
 
 **当前最真实的问题：发出去了，但还没被看见。** 首站知乎已发（2026-09-11），
@@ -165,15 +165,13 @@ agent-charters compare <你的AGENTS.md>
    （源＝`SHARE.md` §7.5–7.7，经 `work/share-paste/make_comment.py` 抽取，三份均过字数限制）。
    内容＝留出集 55 份 precision 92% / recall 70%，与 in-sample 差 3–5pp，并主动交代
    单标注者/无中文/完全一致 12.7% 三个边界。**只剩"人贴"这一步。**
-2. ~~v0.6 首选：新采 30–50 份中文章程做中文留出集~~：🟡 **采集已完成、盲判进行中**
-   （2026-09-13）。中文 25 份上轮全用光，`build_test` precision 61% 只有 in-sample（§18）；
-   本轮新采回来 **1016 份**中文 AGENTS.md（新管线 `work/discover_cn.py` → `work/fetch_cn.py`，
-   落在 `data/raw/cn/`，与 v0.5 语料库零重叠），随机抽 50 份作留出集。
-   **剩余工作＝盲判 8 份（已判 42/50，a1–a9）**：按 `work/audit/v0.6-cn-worksheet.md` 顺序读原文（**不要先跑规则**），
-   每批写一个 `work/audit/v0.6-cn-calls-aN.json`（格式抄 a1），跑
-   `.venv/bin/python work/audit/cn_vs_rule_v0.6.py` 出对照；覆盖度会显示在报告首行。
-   建议由**人**判（中文正是 §16 B 组交给用户判的那类；本轮 50 份合计 343KB 原文，
-   智能体判要跨多个会话）。
+2. ~~v0.6 首选：新采 30–50 份中文章程做中文留出集~~：✅ **已闭环 2026-09-13**
+   —— 新采 **1016 份**中文 AGENTS.md（新管线 `work/discover_cn.py` → `work/fetch_cn.py`，
+   落在 `data/raw/cn/`，与 v0.5 语料库零重叠），随机抽 50 份、**逐份盲判 50/50 做满**
+   （`work/audit/v0.6-cn-calls-a1..a10.json`），结果 **precision 88% / recall 73%**
+   （现行口径；文档口径 95% / 74%），已写入 `LIMITATIONS.md` §21。
+   两类暴露最明显：`agent_meta` recall 26%（"第二人称规定"写法整类漏）、`gotchas` 双向最弱。
+   **规则要不要改属人裁定（D32），本轮一字未改。**
 3. ~~错标归因（只记录，不建议改分类器）~~：✅ **已闭环 2026-09-13**
    —— `environment` 5 处（`owncloud/notes`、`leon-ai/leon`、`NateBJones-Projects/OB1`、
    `deanpeters/Product-Manager-Skills`、`coleam00/Archon`）与 `boundaries` 5 处
