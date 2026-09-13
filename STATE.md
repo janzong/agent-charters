@@ -3,7 +3,9 @@
 > **给任何接手的智能体：先读这份，再动手。**
 > 本文件的存在目的只有一个：**让判断力可以继承，而不只是让产物可以继承。**
 > 最后更新：2026-09-13（数据集 **v0.5** / 规则集 **ruleset_v0.1.8**；**100 份人工核对已全部闭环**，
-> 四块改动落地；基座 511 → 516；`build_test` 82.8% 与 `boundaries` 85.7% 并列第一）
+> 四块改动落地；基座 511 → 516；`build_test` 82.8% 与 `boundaries` 85.7% 并列第一。
+> 同日：**留出集 55 份盲判完成**（precision 92% / recall 70%，§19），已提交 `0839634`、
+> Gitee + GitHub 双端 `ls-remote` 实测一致）
 
 ---
 
@@ -147,6 +149,21 @@ agent-charters compare <你的AGENTS.md>
 - ⏳ 扩展文件类型（`CLAUDE.md` / `.cursorrules` / `copilot-instructions.md`）
 - ⏳ 留 v0.1.9 的两项（实测后否决，数字见 `work/audit/v0.1.8-changelist.md` §A/B.3）：
   h1 守卫、模块名型标题守卫；以及"全文兜底门放宽"（会让 8 份补标签）
+
+### 本次会话（09-13）留下的下一步队列（按性价比）
+
+1. **三站补一条留出集评论**（智能体可写文案、人负责贴）：正文数字仍是 87%/84.7%，
+   评论区才是定稿。补一句话「留出集 55 份：precision 92% / recall 70%，与 in-sample 差 3–5pp」
+   —— 这是「可复算、不粉饰」人设最便宜的一次兑现。文案口径同 `work/share-paste/make_comment.py`。
+2. **v0.6 首选：新采 30–50 份中文章程做中文留出集**。中文 25 份全在上轮用光，
+   中文的 `build_test` precision 61% 至今只有 in-sample，无法留出验证（§18）。
+3. **错标归因（只记录，不建议改分类器）**：`environment` 留出集 57%（in-sample 77%），
+   5 处错标＝`owncloud/notes`、`leon-ai/leon`、`NateBJones-Projects/OB1`、
+   `deanpeters/Product-Manager-Skills`、`coleam00/Archon`；`boundaries` 5 处错标＝
+   `morganlinton/Albatross`、`youssefvdel/qwengate`、`shikokuchuo/secretbase`、
+   `okwasniewski/MiniSim`、`yashdev9274/supercli`。按 D11 / §3.2，高精确率低召回是刻意取舍。
+4. **工具真判据仍未验**：用 `compare` 真的写一次 rmas-v3 的 `AGENTS.md`，把输出当第二个公开案例。
+5. **英文渠道（HN 等）建议新写短文**，直接给 v0.5 + 留出集数字，别带三站的更正尾巴。
 
 ### 需要人类做的事（智能体做不了）
 
