@@ -1,0 +1,31 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 8 批（工单序号 14、15、18、20、21）。判读顺序＝v0.6-cn-worksheet.md 的序号顺序。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a8",
+ "files": {
+  "VisActor/VRender": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "《1 项目概览》（VRender 是 VisActor 生态底层可视化渲染库、Rush monorepo、仓库同时包含引擎/动画/整合包/React 绑定）＝概览；《2 主要包与职责》（六个包各自职责与『先看哪个包』的判断）＋《3.1 架构与组织》（Rush 管理）＋《3.2 图形与状态系统》（D3 重构后的静态真值主路径、shared-state ownership）＝架构；《4 测试与验证入口》（rush compile/rushx test 逐包、动画与 shared-state 的专项验证清单）＋《3.1》提交前 `rush lint-staged` hook＝构建测试；《3.4 性能与调用方契约》整节（不在热路径堆兜底、区分架构语义缺失与补丁式防御、高频路径新增逻辑的成本约束）＝风格（工程约定）；Rush 包管理器、各包 `rushx` 入口、《5》的知识库与规范源文档入口＝环境（工具链）；《3.4》多处『不要为了防御任意外部误用而…增加 clone/遍历/fallback』『不应把旧结构仅作为 fallback 留在仓库中』＋《6》『混有本地辅助文件…不应默认进仓』＝禁令；《3.2》『旧语义与新语义冲突时不要凭历史实现印象回退』＋《6》『不要因为看到旧代码痕迹就假设旧语义仍然有效』『区分 core 运行时问题 / 上层测试语义滞后 / React 绑定层适配问题』＝坑；《5.1 面向 agent 的项目知识库》按任务类型的阅读路线＋《6》『给后续 agent 留长期有效的信息应更新正式文档…而不是重新引入“记忆文件”』＝AI 行为。无分支/提交/PR 流程。"
+  },
+  "XxxXTeam/tempmail-sdk": {
+   "call": ["structure", "style", "workflow", "environment", "boundaries", "agent_meta"],
+   "borderline": [],
+   "why": "这是一份**与仓库无关的通用 agent 提示词模板**（占位符 `[专业领域]` 未填），全文没有一句项目自身的介绍——所以没有一览类内容。《架构与模块化原则》三节（模块化优先、文件结构、模块设计目标：高内聚/低耦合/可替换/可测试）＝架构；《编码与语言规范》（JSON/UTF-8 无 BOM、代码与日志保持原语言）＋《开发规则》的 KISS/YAGNI/SOLID/DRY 原则＋《Claude-style 编码行为规则》（简洁优先、局部修改）＝风格；《工作流程与输出要求》四阶段（理解→规划→执行→汇报，汇报必须含成果/原则应用/问题/下一步）＋《错误处理》降级与失败策略（Context7→Fetch→离线、429 退避 20 秒、5xx 重试一次）＝流程；《服务优先级》列 Serena/Context7/cclsp/Playwright/Fetch 各工具的用途与调用顺序＝环境（工具链）；『禁止 GBK / ANSI』『编辑约束』里的 destructive git 命令禁令＋CTF 一节『不要枚举无关用户目录、个人账号、凭据库』＝禁令；《Codex Operating Prompt》整段（`You are Codex, based on GPT-5.4`、Personality/Values/Interaction Style、默认简体中文回复、结果先行不諂媚）＋《开发规则》开头的角色设定＋工具调用规范（rg 优先、并行调用、apply_patch 编辑）＋CTF 沙箱契约与证据优先级＝AI 行为。无坑类内容。"
+  },
+  "anghunk/cwd": {
+   "call": ["structure", "build_test", "style", "workflow", "environment", "boundaries"],
+   "borderline": ["overview"],
+   "why": "《项目结构》逐子项目列到文件级（cwd-api 的 src/index.ts、src/api、schemas/comment.sql；cwd-admin 的 views/api/styles/locales；docs 与 docs/widget）＝架构；《运行命令》《测试命令》（pnpm/npm dev/build、后端 vitest-pool-workers、无测试脚本的子项目至少跑 build）＝构建测试；《代码风格》（.prettierrc 具体项、TS 严格类型、JSDoc、Hono `Context<{Bindings}>`、D1 `prepare().bind()`、vue-i18n key 同步、样式组织位置）＝风格；《完成标准》＋《Review 标准》（改动范围一致、测试或构建已运行、前端桌面与窄屏已验证、Review 优先安全/兼容性/数据影响）＝流程；Cloudflare Workers + D1/KV/R2 绑定、wrangler.jsonc（示例文件）、pnpm 与 npm 的区分、Cloudflare 密钥＝环境；《禁止事项》七条（不在根目录新增依赖或臆造脚本、不提交 node_modules/构建产物/密钥、不直接改发布产物、不绕过鉴权与 XSS 过滤、不改变后端字段语义、不删迁移/备份、不把用户内容写进 v-html）＋代码风格节里的 SQL 注入与 XSS 防护要求＝禁令。犹豫：overview——《项目结构》里带出了技术栈（Cloudflare Workers+Hono+D1、Vue 3+Vite），但通篇没有『这个项目是…、给谁用』式的范围说明，属于技术栈顺带提及。"
+  },
+  "binarywang/WxJava": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+   "borderline": ["gotchas"],
+   "why": "《项目概览》（微信生态 Java SDK、Maven 多模块、根项目要求 Java 8）＝概览；同节的模块清单（九个 SDK 模块 + spring-boot-starters/solon-plugins/wx-java-bom 各自职责）＝架构；《测试与验证》（TestNG、`mvn -pl <module> -am test` 与单类执行、跨公共模块扩大验证、完成前 git diff --check）＝构建测试；《代码风格与兼容性》（.editorconfig 空格 2/UTF-8/LF/行尾空格、Java 8 语言级别、Lombok、兼容性优先）＋《API 与实现约定》（Javadoc 要求、传输层字段名与微信一致）＝风格；《开发流程》六步＋《文档与依赖变更》＋《Git 与 Pull Request 规范》（目标分支 develop、commit/PR 说明动机与风险、不得擅自 push/合并/改写历史）＋《Review 指南》＝流程；Maven 多模块与父 POM/BOM 依赖管理、Java 8 编译目标、Spring Boot Starter 与 Solon 插件、Lombok＝环境；《安全与敏感数据》（禁止提交 secret/token/私钥/证书、日志不输出敏感字段）＋《Git 与 PR》『不得使用 git reset --hard』＋《API 约定》『不吞掉异常、不使用空 catch』＝禁令；《适用范围与指令优先级》（子目录更近的 AGENTS.md 优先、用户要求优先但冲突要先说明风险）＋《Review 指南》『必须使用简体中文』『技术标识符不翻译』＋《Agent 完成检查清单》＝AI 行为。犹豫：gotchas——只有『部分测试可能依赖微信凭据/网络/本地配置』『不得把跳过测试的构建描述为“测试通过”』两处注意事项，无独立坑节。"
+  },
+  "cablate/ClaudeCrab": {
+   "call": ["overview", "structure", "build_test", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "《專案是什麼》（基於 claude-agent-sdk 的 Discord-first 多代理 bot 框架、跑在 Windows、『目錄即代理』、production 由 Task Scheduler+VBS+start.ts 啟動）＝概览；《Core vs 外掛層》＋《文件金字塔》＋《SDK 雷區》提到的 agents/ 目錄與 patch 腳本＝架构；《Definition of Done》（npm run typecheck/lint/test:run 全綠）＝构建测试；《工作方式》＋《Definition of Done》第 2-4 条（文件同步、commit 訊息標註工作包、檔案刪除移到 docs/archive 或獨立 commit）＋《必須停下來問使用者》的例外清單＝流程；Windows 運行環境、Task Scheduler+VBS+start.ts 啟動鏈、config 模組（src/config.ts）取代 process.env 直讀、SDK 版本升級 SOP＝环境；《硬規則》七条（禁用 @anthropic-ai/sdk、DB 禁 hard delete、禁全域殺進程、不碰 production 啟動鏈、不新增 process.env 直讀、不寫個人化 hardcode、動 SDK 前先讀 SOP）＝禁令；《SDK 雷區摘要》整節（postinstall 直接 patch SDK、flag forwarding 漏傳 bug、CLI 2.1.119+ SEA binary 佈局、多處依賴 SDK 內部行為的 workaround）＝坑；《工作方式》七条（序列執行禁平行派發、先看實際資料再下結論、root cause 優先、精準 scope、全域同步、交付前驗證、誠實回報）＋《溝通》（一律繁體中文、結果先行、不諂媚）＝AI 行为。无代码风格/命名约定（沟通风格按口径属 AI 行为）。"
+  }
+ }
+}
