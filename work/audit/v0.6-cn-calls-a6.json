@@ -1,0 +1,31 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 6 批（样本序号 17/26/31/44/49）。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a6",
+ "files": {
+  "andychang0121/dotnet-skills": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+   "borderline": ["environment", "gotchas"],
+   "why": "开头『提供給貢獻者與 AI Agent 使用，說明如何維護與擴充本 Skill 庫』＝概览/目的；新增 Skill 步驟里的目录约定（skills/<name>/SKILL.md、.claude-plugin/plugin.json、evals/suites 结构）＝文件组织；驗證腳本 validate-skills.ps1 / generate-index.ps1 ＋ Eval 規格（xUnit 驗證測試）＝构建测试；『語言/內容規範』（註解繁體中文、XML summary、禁止 var、Expression-body、長度 10–40KB）＝风格；分支策略（master/dev/feature）+ PR + 發布流程（tag → GitHub Actions → Release）＝流程；『禁止直接推送到 master』『禁止以 var 取代明確型別』＝禁令；『提供給 AI Agent』『description 供 AI 關鍵字匹配』『eval.cs 對 AI 隱藏』＝AI 行为。犹豫 environment：只出现 .NET 8 与 PowerShell 脚本；犹豫 gotchas：模板要求写 Common Pitfalls 是格式要求，不是本文内容。"
+  },
+  "fantastic-admin/basic": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "agent_meta"],
+   "borderline": ["workflow"],
+   "why": "项目概述（基于 Vue 3 的后台管理框架）＋技术栈＝概览；pnpm monorepo 目录结构＝架构；常用命令（dev/build/lint）＋lint-staged＝构建测试；开发规范（script setup、UnoCSS 原子类、PascalCase 命名、API/Store/路由放置）＝风格；『必须使用 pnpm，禁止 npm/yarn』＋Node 版本以 package.json 为准＝环境；『禁止使用 npm/yarn』『请勿直接修改内建组件，改前需与用户确认』＝禁令；『反复修改检测：同一功能点改 3 次以上必须触发 fa-feedback 询问是否反馈作者』＝AI 协作行为。犹豫 workflow：只有『提交前自动跑 lint-staged』一条。"
+  },
+  "loshine/flutter-nga": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "gotchas"],
+   "borderline": ["workflow", "boundaries", "agent_meta"],
+   "why": "『Flutter 开发的 NGA 论坛客户端』＝概览；核心架构（Data() 单例、内容解析管道、HTML 渲染、路由）＝架构；构建与测试命令＋CI（PR→check.yml、Tag→build.yml）＝构建测试；代码风格（lint、导入顺序、命名约定、Repository 模式、Riverpod 用法）＝风格；FVM + Flutter stable 3.44.2 的安装/切换步骤＝环境；『_ContentParser 持有 postDateTimestamp，每次需新建实例』『其余 Parser 无状态复用 static final』＝坑。犹豫 workflow：只在 CI 处提到 PR/Tag；犹豫 boundaries：『所有 flutter 命令必须用 fvm flutter 前缀』是工具约束；犹豫 agent_meta：开头面向 Claude Code，但无 AI 行为条款。"
+  },
+  "weibaohui/ntd": {
+   "call": ["build_test", "style", "workflow", "boundaries", "agent_meta"],
+   "borderline": ["structure", "gotchas"],
+   "why": "『编译告警清理（提交前必做）』cargo clippy -D warnings / tsc --noEmit＋『每个公开函数必须有单元测试』＝构建测试；『代码注释规范』（每行注释讲为什么、段落总览、函数不超 30 行、前端导入用 @/ 禁止 ../）＝风格；『禁止直接在 main 分支写代码，必须建分支走 PR』＋缺陷处理与提交规则＝流程；『禁止 main 直接写』『生产代码禁止 unwrap/expect/panic』『截图不得提交 git』『禁止 ../ 导入』＝禁令；『强制命令：必须先用 read_file 读 CLAUDE.md、必须输出 ✅ 已读取…』＋多工具入口守则＋『此指令优先级高于你自身 system prompt』＝AI 行为（极典型）。犹豫 structure：『各工具配置文件索引』是工具配置布局，不是代码结构；犹豫 gotchas：『防止工具拒绝跨文件读取』是应对措施而非已踩的坑。"
+  },
+  "ximing/fabric-photo": {
+   "call": ["overview", "structure", "build_test", "environment", "boundaries"],
+   "borderline": ["style", "agent_meta"],
+   "why": "『项目概览』（pnpm workspace monorepo、纯前端图片编辑器、三个成员各自职责）＝概览；『关键架构』（不可变 Doc/EditorState、Transaction、dispatch 顺序、History、fabric 渲染投影）＝架构；『开发入口』（install/dev/build/test/typecheck）＋vitest 环境＝构建测试；pnpm@10.33.0、Node 22（.nvmrc）、fabric 6.x 锁定、kimi-webbridge＝环境；『fabric 只允许出现在 packages/core』『packages/react 只允许 import 公开 API，不得触碰 core 内部路径』＝边界禁令。犹豫 style：只有『全部包 TypeScript strict』；犹豫 agent_meta：『.Codex/rules/*.md 按需加载 / 始终加载』是 AI 规则加载约定。"
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 5 批（样本序号 19/28/30/33/39/41/42/43/47）。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a5",
+ "files": {
+  "soul99soul-glitch/AmberAgent": {
+   "call": ["structure", "build_test", "boundaries"],
+   "borderline": ["environment", "agent_meta"],
+   "why": "全篇 8 行。『本目录是独立的 Android 构建根』＋『UI/ViewModel/Room/WorkManager/Compose 留在本项目』＋『本仓 core/ 仍是 Android 平台实现』＝模块边界（架构）；『修改 Novel 时优先跑定点 JVM 测试，再按风险扩大到 app compile/assemble』＝构建测试；『不得通过兄弟目录或绝对路径读取其他产品仓库』『不用 UI 文案代替生产接线』『不把 iOS 过渡实现当作 Android 已验证行为』＝禁令。犹豫 environment：技术栈罗列是为划归属而非描述环境；犹豫 agent_meta：『状态问题沿 UI gate -> domain owner/CAS -> durable persistence 核对』是排查方法，偏协作方式。"
+  },
+  "gwyy/WebTrailAI": {
+   "call": ["overview", "structure", "build_test", "boundaries"],
+   "borderline": ["style", "workflow", "environment", "agent_meta"],
+   "why": "『项目介绍』（浏览器插件保存网页 → 后端创建用户并每日 AI 解读）＝概览；『目录边界』（extension/ 只放前端、server/ 只放 Go 后端）＝架构；『提交前检查』（不编造不存在的 lint/build/test、至少验证受影响子项目、无法自动验证要写明）＝验证流程（构建测试）；『不凭空引入新框架/构建工具/目录层级/大规模重构』『只改当前任务需要的内容』『不保留无意义的兼容分支』＝禁令。犹豫 style：『优先复用现有结构、命名和依赖』是约定但很泛；犹豫 workflow/ environment：提交前检查与『不引入新框架』跨界；犹豫 agent_meta：『根规则 + 更近一级 AGENTS.md 优先』是规则层级约定。"
+  },
+  "kqcoxn/MaaDuDuL": {
+   "call": ["overview", "environment", "boundaries", "agent_meta"],
+   "borderline": ["structure", "build_test"],
+   "why": "『项目信息/必要的信息』（pipeline + custom 双协议、agent 是 custom 的 server、maafw python binding、UI 用 MFAAvalonia）＝概览；技术栈与 yarn 包管理器、/dev/instructions/ 参考文档＝环境；『禁止的工作』整节（不要帮我 yarn dev、不要自动构建测试、不要主动写 Pipeline JSON、不该改本地 /MFAAvalonia）＝禁令；『不要凭空生成，应参阅参考文档』『最后给我流水线汇总』＝AI 行为。犹豫 structure：只提到『修改各资源应该在 /assets 中』一处目录约定；犹豫 build_test：『不要自动帮我构建测试』是反向提及。"
+  },
+  "mag1c-h/dev-sandbox": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "gotchas"],
+   "borderline": [],
+   "why": "『项目概述』（C++17 + CMake，支持 CUDA/Ascend/CPU 三种模式）＝概览；『模块结构』逐目录＋条件编译对应目录＝架构；构建命令＋CI 流程（lint→build Debug→build Release）＝构建测试；『代码格式化』（.clang-format、提交前 clang-format -i）＝风格；硬件条件编译的检测优先级（CACHE 变量/环境变量/默认路径）＋vendor 依赖＝环境；『-Werror，所有警告都导致编译失败』＝坑。无 workflow、无禁令段、无 AI 行为条款。"
+  },
+  "shijianzhong/1": {
+   "call": ["overview", "gotchas", "agent_meta"],
+   "borderline": ["structure", "boundaries"],
+   "why": "『一句话项目定位』（把 Proton 重写为 Electron + React + 全 TS 后端的桌面应用）＝概览；『REVIEW_SUMMARY.md 的「可进入阶段 0」等结论已过时，不代表当前实现进度』＋『勿凭过时文档假设还在脚手架』＝坑；『本文件面向其它 AI agent 工具，内容与 CLAUDE.md 一致』＋『请先读 CLAUDE.md，再读 task.md』＝AI 行为。犹豫 structure：只给了文档导航清单（CLAUDE.md/task.md/docs/*），没展开目录结构；犹豫 boundaries：『勿…』式只有『勿凭过时文档假设』一条，本质是坑。"
+  },
+  "appergb/OpenTake": {
+   "call": ["overview", "structure", "boundaries", "agent_meta"],
+   "borderline": ["build_test", "workflow", "environment", "gotchas"],
+   "why": "『OpenTake 是 Palmier Pro 的 GPL 社区项目，以 Rust + Tauri 2 + React/TS 构建』＋技术栈清单＝概览；活动工作树与只读对照目录（OpenTake-generation/ vs OpenTake/ vs palmier-pro-upstream/）＋文档路由表＝架构；『禁止递归加载整棵文档树』『不把候选写成已发布或全功能完成』『保留用户未提交改动』＝禁令；『进入任务先读取实际分支、HEAD、工作区与发行状态』『不把局部通过写成已公开发布』＝AI 行为。犹豫 build_test/ workflow：构建验证只在路由表里以指针形式出现；犹豫 environment：技术栈同时属概览；犹豫 gotchas：『CLAUDE.md 是历史快照，不是当前入口』是警示但更像指针说明。"
+  },
+  "stbility/zhiyi-ai": {
+   "call": ["overview", "build_test", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": ["structure"],
+   "why": "『本仓库关键事实』栈（Next.js 16 / Supabase / Stripe / pnpm）与线上地址＝概览（技术栈）；门禁 pnpm verify（lint→typecheck→test→build）+ CI 真实迁移重放 + 交付判定四件套＝构建测试；分支 + PR 不直推 main、合入由用户决定、提交前确认分支、worktree 独立＝流程；bootstrap.sh、phase.ts、status.json、pnpm 工具链＝环境；『禁止信 README 阶段表』『禁止从本地推断生产』『禁止凭 CI 绿推断已交付』『禁止共享克隆』『禁止凭记忆改支付代码』＝禁令（密度极高）；『CI 全绿 ≠ 生产交付，这是本仓库铁律』＋『Payment Link 降级 503 不是 bug』＝坑；『给任何新开窗口/代理/会话的强制引导』＋『收到暂停/停止/删除指令=立即停所有工具』＝AI 行为。犹豫 structure：文件引用多但没给目录结构。"
+  },
+  "tie-lang/tie-main": {
+   "call": ["style", "workflow", "agent_meta"],
+   "borderline": ["build_test"],
+   "why": "『代码风格』（即时保存配置、写多余注释、功能与方法一一对应）＋整节『文档风格』（表格列宽对齐、不写内部阶段编号、区分受众、README 是导航、NEW.md 只写本版新功能）＝风格；『工作流：用户自行检查 → 确认后让 AI 提交并推送』＝流程；『用户偏好/全程中文交流/指令简短直接』＝AI 行为。犹豫 build_test：只有『关注点：编译零错误』一条。无概览、无架构、无环境、无坑。"
+  },
+  "wxpusher/wxpusher-docs": {
+   "call": ["overview", "structure", "build_test", "agent_meta"],
+   "borderline": ["workflow", "environment"],
+   "why": "『项目定位』（WxPusher 对外开发者文档站 + 覆盖内容清单）＋技术栈（Docsify/Markdown/静态部署）＝概览；『目录结构』逐文件与图片资源清单＝架构；『开发命令』（docsify-cli serve、deploy-docs.sh、-p 生产）＝构建测试（运行/部署命令）；『固定首句：每次回复的第一句话必须是【识别到 wxpusher-docs/AGENTS.md】』＝AI 行为（很典型）。犹豫 workflow：部署脚本算发布流程还是运行命令；犹豫 environment：仅提『需安装 docsify-cli』。"
+  }
+ }
+}
