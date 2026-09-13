@@ -1,0 +1,46 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 10 批（工单序号 34、35、36、40、45、46、48、50，即剩余全部）。判读顺序＝v0.6-cn-worksheet.md 的序号顺序。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a10",
+ "files": {
+  "masonsxu/cloudwego-microservice-demo": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "开篇『AI 辅助开发规范文件，为 AI 编程助手提供项目上下文和开发约束』＋《项目概述》（Go 1.24+ 微服务、CloudWeGo 栈、gateway + identity_srv 两模块职责与端口）＝概览；《架构》四节（identity_srv 的 handler/biz-logic-dal-converter/models/wire/config 分层、gateway 的 handler/internal 分层与中间件执行顺序、authz_middleware 五条约束、IDL-First 流程）＋《关键文件速查》表＝架构；《常用命令》（podman kube play 全栈七步 + go test 单模块/单函数/覆盖率 + 代码生成三脚本）＋《格式化与 Lint》＝构建测试；《代码风格》（导入顺序 gci、接口无 I 前缀实现加 Impl、120 字符、测试命名 Test<Interface>_<Method>）＋《Wire 依赖注入规范》＝风格；《提交前检查规范》（四步 + pre-commit hook 安装 + 『本地检查 = CI 检查』）＋IDL-First 四步／Wire 生成＝流程；《配置管理》（环境变量 > .env > defaults.go、Logo 两个 S3 端点）＋《常用命令》的 Secret/ConfigMap/PVC 与四个 CHANGE_ME_*＋两个服务端口＝环境；《AI 行为约束·禁止自动启动服务》（严禁自动起长期运行服务）＋『禁止手动修改 kitex_gen/』『🚫 禁止使用 cwgo』『严禁出现部门/数据范围/用户名白名单等领域字段』＝禁令；《代码一致性规范》规则 1–4（全部来自历次 CI 失败复盘，含 etcd 版本回退的『反面教材』）＋《提交前检查规范》的常见 CI 失败原因＋《常用命令》『修改 POSTGRES_PASSWORD 后必须 --down --force 清 PVC，否则身份服务启动失败』＝坑；《AI 行为约束》整节＋《文档索引》（遇到场景先读对应文档）＋《可用 Skills》七个斜杠命令＝AI 行为。九类齐。"
+  },
+  "moyanj/lunaris": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas"],
+   "borderline": [],
+   "why": "《概述》（分布式 WASM 执行器：FastAPI 主节点 + Python/Rust/ESP32 三类工作节点 + WebSocket + Protobuf + wasmtime）＝概览；《项目结构》目录树＋《代码导航》任务→文件表＋《代码地图》Python/Rust 入口点符号表（含文件:行号）＋《独特设计》四节（双工作节点、持久化事件驱动、协议层、SDK 设计）＋《新增模块》＝架构；《命令/开发》（uv sync、主节点与工作节点启动、cargo build、proto/build.sh、Rust 单测）＋《前置条件》＝构建测试；《开发规范》Python/Rust 两节（类型注解、snake_case/PascalCase、绝对导入、cargo fmt、edition 2021、mimalloc）＝风格；《开发规范/提交》（简短祈使句 + 可选作用域，PR 描述行为变更并列验证命令）＝流程；《命令/环境变量》（WORKER_TOKEN、LUNARIS_WORKER_*）＋《前置条件》（protoc、Python>=3.9、Rust 工具链）＝环境；《反模式（本项目禁止）·绝对禁止》四条（硬编码令牌、编辑生成的 *_pb2.py、随意改 ExecutionLimits 默认值、无服务运行测试）＋《项目结构》『proto/ 生成的 protobuf 文件（禁止编辑）』＝禁令；《注意事项》五条（无 CI 配置、无测试目录、Cargo.toml 的 edition=\"2024\" 不存在应为 2021、testwasm 不是测试套件、测试散落根目录且需活跃服务）＝坑。无 AI 行为类内容（全篇是项目知识，没有一句规定助手该怎么说话或怎么协作）。"
+  },
+  "ndnhatvien/Awesome-Context-Engineering": {
+   "call": ["overview", "structure", "build_test", "style", "environment"],
+   "borderline": ["boundaries", "gotchas"],
+   "why": "《Project Overview》（ACE 是给 AI 代码助手用的语义检索引擎，混合搜索 + 上下文扩展 + Token 感知打包，经 CLI/MCP stdio/MCP HTTP 三种方式提供服务）＝概览；《Architecture》（pnpm workspace monorepo 与 packages/* 语言插件、索引与搜索两条 Core Pipeline、src/config.ts 的加载时序、12 个 Key Modules 表、Scanner 流水线六个文件、LanguageRuntime 插件系统、GraphExpander E1/E2/E3、Import Resolvers 支持 12 种语言、Smart TopK 四重保护、索引自愈的单调更新策略）＝架构；《Development Commands》（build/dev/fmt/tsc/test 五种测试口令/benchmark/7 个 CLI 命令）＋《本地绑定》（pnpm build + link --global）＝构建测试；《Code Conventions》（TS ESM 相对导入带 .js、tsup、核心流程必须有中文注释、CI 流水线顺序）＝风格；《环境变量》整节（EMBEDDINGS_*、RERANK_*、ACE_PROFILE、LOG_LEVEL）+ Node 由 .node-version 固定 22、pnpm＝环境。犹豫：boundaries——只有《Code Conventions》里『禁止直接读 process.env』一条禁令，没有独立禁令节；gotchas——《配置加载（关键时序）》标注 src/config.ts 必须最先加载、《索引自愈机制》强调先插后删以避免缺失窗口，属设计约束而非成篇的坑。无流程（无分支/提交/PR 规范）与无 AI 行为内容。"
+  },
+  "skywind3000/vim": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": ["workflow"],
+   "why": "开篇 blockquote『语言要求：本项目与用户交流请使用中文，技术术语保持原样』＋《项目概述》（个人 Vim/Neovim 配置仓库、跨平台、VimL/Lua/Python、许可证）＝概览接着 AI 行为；《架构概览》初始化文件链＋《目录结构》完整目录树（init/autoload/plugin/site/lua/tools 逐目录说明）＋《核心概念》（初始化流程六步、插件分组系统、Autoload 命名空间约定、AsyncTask 任务系统、快捷键前缀体系）＋《重要文件速查》表＋《依赖关系图》＝架构；《测试》（tools/test/ 下 :source test_xxx.vim 手动测、无自动化框架、配色用 dump_colors.vim）＝构建测试；《编码规范》（VimL 的 s:/g: 前缀与 Tab 缩进、特性与平台检查、Lua 目录分工、Python 模块分工）＋《新功能开发指南》十条新增位置的约定＝风格；《跨平台注意事项》（路径分隔符、中文 Windows 回退 GBK、Alt/Meta 兼容、Fish 转 sh、WSL 终端修复、MSYS 检测）＝环境；《不应修改的文件》（第三方 plug.vim / user.vim / commentary.vim、.old 归档、lib/*.py 谨慎改）＝禁令；《跨平台注意事项》整节＋《核心概念》的初始化顺序隐式依赖＝坑；《内置插件参考文档》『强制规则：修改或调用下列插件代码前必须先阅读对应参考文档』＋QuickUI 迭代必读两份文档＋开篇语言要求＝AI 行为。犹豫：workflow——《新功能开发指南》只是『新东西放哪』的落点指引，全文没有分支/提交/PR/发布规范。"
+  },
+  "whtoo/How_to_implment_PL_in_Antlr4": {
+   "call": ["structure"],
+   "borderline": ["overview", "build_test", "gotchas"],
+   "why": "这份文件是一份**参考资料汇编**（开头《更新概述》自述『在 AGENTS.md 中添加 EP21 的优化参考资源章节』），正文是循环优化/SSA/寄存器分配/数据流分析四组论文与 LLVM/GCC 实现链接、六张《技术关键点汇总表》（子要点 + 参考来源 + 优先级 + 实现状态）、《已实现组件清单》（组件→文件→行数→测试覆盖→状态，如 DominatorTree.java 530 行 28 个测试）与《参考资源索引》——只有『结构』是坐实的：组件清单与关键点表实际上描述了编译器的模块构成与内部划分。犹豫：overview——通篇没有一句『这个项目是什么/给谁用』，只能从 Java 文件名推断是在实现编译器；build_test——《测试覆盖统计》只报 117 个测试 100% PASS 与逐类测试数，没有任何构建/测试命令；gotchas——文末更新日志提了一句『修复 DominatorTree.compute() 中的 IndexOutOfBoundsException（节点ID不连续）』，是修完的记录而非给读的人的提醒。没有编码规范、禁令、流程、环境或 AI 行为内容。"
+  },
+  "wind0ws/MyToolbox": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "开篇『用中文与开发者交流』＋《1 项目性质》（Android 库项目、交付 :toolbox 的 AAR、:app 仅演示、技术栈 Gradle 8.7/AGP 8.6.1/Kotlin 2.0.20/SDK 21-34/NDK 四个 ABI）＝AI 行为接着概览；《3 项目结构》三节（:toolbox 各包职责含日志门面调用链、原生层 CMake 与 liblcu_a.a 与新增 JNI 三步、测试边界）＋《7 文档组织与知识库索引》目录树与知识库索引＋《2 任务→知识库映射》表＝架构；《4 常用命令》（assembleRelease/testDebugUnitTest/connectedDebugAndroidTest、测试基线比对脚本 check_test_baseline.py、质量闸门 /quality-gate）＝构建测试；《6 约定》（SDK 版本目标、静态方法与私有构造、m/s 字段前缀、库内用 android.util.Log 而 SLog 是门面、单文件可复制性、中文注释）＝风格；《2 工作流（必读）》六步（环境确认→查映射表→理解代码→形成方案→验证交付→知识沉淀）＋《7 文档维护》（单一信息源优先级、发现文档与代码不符先核实代码、架构决策进 adr、不设 .ai/work 与 docs）＝流程；《1 项目性质》技术栈＋《7》的两条克隆后必做 git 配置（core.symlinks / core.hooksPath）＋quality-gate 工具链＝环境；《5 强制约束》六条（JNI 必先读 jni-conventions、native handle 字段必须 volatile 且 close 幂等、构造函数禁『启动线程 + 可失败操作』、不要给 RingBuffer 加锁、不要删 @Keep、新增 jni_xxx.c 必须登记 CMakeLists）＝禁令；同节六条本身就是坑（liblcu_a.a 不校验入参、加锁破坏 SPSC 全部价值、release minify 会混淆反射类、漏登记导致 UnsatisfiedLinkError）＋《3 测试边界》『6 个预存在失败是正常基线』＝坑；《2 工作流》整节（AI 自治流程、知识沉淀 SOP）+《7 文档维护》的单一信息源判决＝AI 行为。九类齐。"
+  },
+  "xcanwin/KeepChatGPT": {
+   "call": ["structure", "build_test", "style", "workflow", "agent_meta"],
+   "borderline": ["overview", "boundaries", "environment"],
+   "why": "《协作偏好》（主要用中文沟通、回复简洁优先给可执行结论、不提供时间预估、未明确要求不自动 git commit）＝AI 行为；《项目结构与模块组织》逐文件职责（Userscript 主文件、中英西三份 README、两个 tools 脚本、Jest 测试目录、temp/ 被 gitignore、assets/）＝架构；《构建、测试与开发命令》（两个 python3 工具脚本、rg 查版本号、git log 看提交风格）＋《测试指引》（npm test / npm run dev、i18n 与文档产物核对、多语言一致性核对）＋《TDD 模式》（先补测试再改主文件）＝测试与构建；《编码风格与命名约定》（4 空格缩进保留分号、避免新构建链、贴近现有代码的命名、优先小步改动）＝风格；《TDD 模式》＋《提交与 PR 指引》（中文动词短语提交、单一改动单一提交、PR 至少含背景/范围/验证步骤/影响面）＋《变更执行检查清单》＝流程。犹豫：overview——开篇只说『本指引面向 KeepChatGPT 仓库协作』，没有项目是什么的说明（只从文件名与『Userscript』推断是个油猴脚本）；boundaries——『提交信息不得包含 Co-Authored-By 或任何 AI 署名行』『避免无关重构』是禁令式句子，但没有禁令节；environment——只出现 npm/Jest/python3 与 temp/ 目录，无环境搭建或版本要求。"
+  },
+  "zhangjunmengyang/quant-research-platform": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+   "borderline": ["gotchas"],
+   "why": "开篇『This file provides guidance to Codex / 本文件为 Codex 提供项目指导说明』＋《工作模式 (最重要)》（核心原则：你是调度者不是执行者、拆解任务分发给 SubAgent、审核结果；反模式：自己逐个读文件应用 Explore agent；并行执行多条 Task）＝AI 行为；《项目概述》（量化因子加工厂——币圈交易因子的系统性提取、文档化和分析平台）＝概览；《核心架构》分层图＋《业务域》九个域表（目录/职责/知识层级）＋知识层级 Data→Artifact→Knowledge→Wisdom＋依赖方向 routes→services→core＝架构；《快速命令》macOS/Linux 与 Windows 两套（make start/stop/status/logs/test、uv run python scripts/dev.py）＝构建测试；《关键约定》（API 路径不带头尾斜杠、Schema 复数、Service 单数、前端类型镜像 Pydantic）＋《代码规范》（ruff + 类型注解、biome 避免 any、`<type>: <description>`）＝风格；《文档维护 (重要)》变更类型→需更新文档表＋《开发任务》任务→文档路径表＋《研究任务》三个 Skill＋《PR 规范》＝流程；《服务端口》表（Frontend 5173 / API 8000 / 九个 MCP 端口 / PostgreSQL / Redis）＋ MCP 基础设施＝环境；《核心架构》『禁止修改 backend/domains/engine/core/』＋《关键约定》『ECharts：禁止 ResizeObserver』＋《PR 规范》默认拒绝死代码/本机依赖/私有资产/危险临时方案/跨主题大 PR＝禁令；《工作模式》的『不重复造轮子』『不实现临时方案』反模式清单＋『用 aiohttp 手写 LLM 调用（应使用 mcp_core/llm/）』作为反面例子＋《文档维护》『文档是给未来的 Codex 和开发者看的』＝AI 行为。犹豫：gotchas——只有《关键约定》里『ECharts 禁止 ResizeObserver』一条像已知坑，没有独立坑节或症状描述。"
+  }
+ }
+}
