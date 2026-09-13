@@ -52,6 +52,7 @@
 | 留出集补充评论 | ⏳ **文案已就绪，待人贴**（2026-09-13）：`zhihu-comment-03.txt`（708 字符）/ `oschina-comment-03.txt`（464 字符，≤500 限）/ `juejin-comment-02.txt`（485 字符）。内容＝留出集 55 份盲判 precision 92% / recall 70%（§19），并自陈三个边界（单标注者、无中文、完全一致仅 12.7%）。事实源＝`SHARE.md` §7.5–7.7。⚠️ 措辞已按实测修正：可用池 422 = 516 − **94**（不是 516 − 106，见 §18 新增算术关系） |
 | 错标归因 | ✅ **已闭环**（2026-09-13）：10 处错标（`environment` 5 / `boundaries` 5）全部落在两个机制——**标题词多义 5 处**（`dependency`/`tool`/`setup`/`config`/`rules`）+ **正文命中 5 处**（4 处「句式像禁令、语义不是禁令」+1 处配置文件名出现在流程句里）；证据都只 1–2 条。产物 `work/audit/v0.5-holdout-mislabel-attribution.md`（脚本 `mislabel_attribution.py`）。按 D11/§3.2 只归因不改规则 |
 | 口径自披露 | ⚠️ **待人裁定**（2026-09-13）：§19 与两份 `work/audit/*.md` 写「犹豫单列、不计入错标」，但脚本主口径是 `rule - call`（**犹豫被计入错标**），且 in-sample 的宽松口径从未打印。现行 92%/70% vs 文档口径 97%/71%。**未改任何对外数字、规则、脚本行为**，只记进 §20 |
+| 中文留出集（v0.6） | 🟡 **采集中段**（2026-09-13）：检索 15 个中文关键词 → 1065 个新仓库 → 抓到 **1046** 份 AGENTS.md（**1016 份判 `zh`**，是 v0.5 中文样本 25 份的 40 倍）｜随机抽 **50** 份作留出集（seed `20260913`）｜**盲判 3/50**，产物 `work/audit/v0.6-cn-{sample,worksheet,vs-rule}`、脚本 `work/{discover_cn,fetch_cn,cn_sample}.py`。⚠️ 框偏向中文（97% 判 zh 是检索方式的产物，不是 GitHub 真实分布）；续判只需建 `v0.6-cn-calls-a2.json` 后重跑 `cn_vs_rule_v0.6.py` |
 | 100 份人工核对 | ✅ **已闭环**（发现 1–56）。四块改动全部落地：①围栏语言标记门 ②删词与收紧 ③补词（净增 119/净掉 2）④收紧（净增 1/净掉 36）+ 指针反证闸。清单 `work/audit/v0.1.8-changelist.md` |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
@@ -164,8 +165,15 @@ agent-charters compare <你的AGENTS.md>
    （源＝`SHARE.md` §7.5–7.7，经 `work/share-paste/make_comment.py` 抽取，三份均过字数限制）。
    内容＝留出集 55 份 precision 92% / recall 70%，与 in-sample 差 3–5pp，并主动交代
    单标注者/无中文/完全一致 12.7% 三个边界。**只剩"人贴"这一步。**
-2. **v0.6 首选：新采 30–50 份中文章程做中文留出集**。中文 25 份全在上轮用光，
-   中文的 `build_test` precision 61% 至今只有 in-sample，无法留出验证（§18）。
+2. ~~v0.6 首选：新采 30–50 份中文章程做中文留出集~~：🟡 **采集已完成、盲判进行中**
+   （2026-09-13）。中文 25 份上轮全用光，`build_test` precision 61% 只有 in-sample（§18）；
+   本轮新采回来 **1016 份**中文 AGENTS.md（新管线 `work/discover_cn.py` → `work/fetch_cn.py`，
+   落在 `data/raw/cn/`，与 v0.5 语料库零重叠），随机抽 50 份作留出集。
+   **剩余工作＝盲判 47/50**：按 `work/audit/v0.6-cn-worksheet.md` 顺序读原文（**不要先跑规则**），
+   每批写一个 `work/audit/v0.6-cn-calls-aN.json`（格式抄 a1），跑
+   `.venv/bin/python work/audit/cn_vs_rule_v0.6.py` 出对照；覆盖度会显示在报告首行。
+   建议由**人**判（中文正是 §16 B 组交给用户判的那类；本轮 50 份合计 343KB 原文，
+   智能体判要跨多个会话）。
 3. ~~错标归因（只记录，不建议改分类器）~~：✅ **已闭环 2026-09-13**
    —— `environment` 5 处（`owncloud/notes`、`leon-ai/leon`、`NateBJones-Projects/OB1`、
    `deanpeters/Product-Manager-Skills`、`coleam00/Archon`）与 `boundaries` 5 处
