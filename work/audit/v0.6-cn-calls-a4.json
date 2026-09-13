@@ -1,0 +1,26 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 4 批（样本序号 25/29/37/38）。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a4",
+ "files": {
+  "everettjf/typemore": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment"],
+   "borderline": ["boundaries"],
+   "why": "『本仓库是 Tauri 桌面应用，前端为 React + TypeScript』＝概览；第1节项目结构与各目录职责＝架构；第2节常用命令＋第5节测试与验证（bun run build / cargo check / cargo test）＝构建测试；第3节代码风格（strict、缩进、PascalCase/camelCase/UPPER_SNAKE_CASE）＝风格；第6节提交与 PR 规范＝流程；bun/cargo/Tauri 工具链＋第4节前端库优先级＝依赖。犹豫 boundaries：只有『仅在库无法满足产品需求时再添加自定义 CSS』一条弱约束，无明显禁令句式。无坑、无 AI 行为条款。"
+  },
+  "he0119/smart-home-flutter": {
+   "call": ["overview", "structure", "build_test", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "『项目概览』（智慧家庭 Flutter 客户端，不支持 iOS，面向 Android/Web/Windows）＋lib 逐目录职责＝概览＋架构；常用命令（pub get/analyze/test/build_runner/run -t）＝构建测试；conventional commit 中文描述＋分支名习惯＋PR 标题＝流程；Riverpod/GoRouter/GraphQL/json_serializable 技术栈＝环境；『不要手改 *.g.dart、app_localizations*.dart、mocks.mocks.dart』『不要默认加 codex/ 或 [codex] 前缀』＝禁令；『改了带 part 的 provider/model 要重跑 build_runner』＝坑；『不要默认加 codex/ 前缀』明确针对 AI 命名习惯＝AI 行为。无独立代码风格条款（风格类内容散在约定里）。"
+  },
+  "roseforljh/KunBoxForWindows": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "gotchas"],
+   "borderline": [],
+   "why": "技术栈清单（Tauri 2 + Rust / React 18 + TS + Vite / Tailwind / Radix / Zustand / Framer Motion）＝概览；项目结构目录树＝架构；常用命令（npm/cargo 两套）＋完整开发流程三步＝构建测试；开发约定（遵循现有风格、TS 严格模式、函数式组件 + Hooks、Tailwind 优先、前后端 API 同步）＝风格约定；『环境说明：本项目在 Windows PowerShell 下运行』＋工具链＝环境；『PowerShell 不支持 &&，错误方式如下』＝坑（明确标了错误写法）。无提交/PR 流程、无禁令段、无 AI 行为条款。"
+  },
+  "scottliyq/chain_monitor": {
+   "call": ["overview", "style", "environment", "boundaries", "agent_meta"],
+   "borderline": ["structure", "build_test"],
+   "why": "第1节项目基本信息（类型/领域/Python 版本/包管理）＝概览；第2节『代码风格强约束（AI 必须遵守）』（public API 100% 类型注解、async 主流、禁止 print 用 structlog、DI/Repository 分层、禁止 from __future__、禁止宽泛 except、禁止 os.path 用 pathlib）＝风格；conda 包管理＋Python 3.10＋必须先激活 py31evm 才能跑命令＝环境；『明确禁止的写法（AI 不要生成）』＋『不要创建除 README.md 以外的 md 文件』＝禁令；『必须先回答 yes sir』『必须看到 (py31evm) 提示才可继续』『改完必须更新 README.md』＝AI 行为。犹豫 structure：分层（core/domain/repositories/services）只出现在示例代码里，没有目录结构说明；犹豫 build_test：只在命令清单里带出 pytest，没有测试约定。"
+  }
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 3 批（样本序号 9/16）。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a3",
+ "files": {
+  "LeoninCS/GoClub": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas"],
+   "borderline": [],
+   "why": "开头自述是面向 Go 面试准备的 Hugo 静态文档站＋站点地址＝概览；项目结构目录树＋主题 submodule＝架构；校验脚本 check_slugs.py / pr-check / shortlink-sync / daily-question-sync workflows＝构建测试（CI）；URL 短链与 slug 命名规则（只允许小写字母数字连字符、目录名必须英文）＝命名/格式约定；git hook 生成短链、新增内容标准流程、发布与 alias 保留＝流程；Hugo/主题 submodule/python3 脚本＝工具链；『不要手工改动已发布页面的 shortlink』『content/ 下目录名必须是英文』＝禁令；『首次 clone 必须 git submodule update --init，否则 Hugo 报 partial 缺失』『中文文件名 percent-encode 一个汉字变 9 字符』＝坑。无 AI 行为条款。"
+  },
+  "alingse/ankiany": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+   "borderline": [],
+   "why": "『项目概述』（基于 Claude SDK 的 Anki 卡片生成器、核心功能）＝概览；项目结构目录树（main.py/tools.py/tests）＝架构；uv run pytest、py_compile、ruff check/format 的质量检查流程＋Git 提交规范＝构建测试与流程；文件命名约定（snake_case/kebab-case）＋ruff format＝风格；uv 包管理器与『所有 Python 命令必须 uv run 执行』＋核心依赖包清单＝环境；『❌ 不要直接使用 python / ruff』＋『永远使用 uv 命令』＝禁令；开头『本文档为 Claude AI Agent…重要知识点和最佳实践』＋Agent 工作规范（必须执行质量检查流程、用 Glob/Grep/Read 而非 bash、TodoWrite 规划）＝AI 行为。未见坑类内容。"
+  }
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 2 批（样本序号 4/6/8/10/13）。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a2",
+ "files": {
+  "ENyerere/molink": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas"],
+   "borderline": ["agent_meta"],
+   "why": "项目概述＋技术栈＝概览；单仓多项目结构树＋后端 app 目录说明＝架构；构建与运行命令＋『测试』一节（自述当前无测试基础设施，给了验证方式）＝构建测试；代码风格与约定（中文注释、TS strict、ESLint、函数组件、Tailwind 语义类、API 走 src/api）＝风格；yarn/版本/端口/.env.example/REDIS_PASSWORD＝环境；安全注意事项（SECRET_KEY 必须走环境变量、密码不进代码、不要装回死依赖）＝禁令；『package.json 是 type:module 但 tailwind.config.js 用 CommonJS，这是现状，不要「修复」它』＝坑。犹豫 agent_meta：文件开头自述面向 AI 编码代理，但没有针对 AI 的行为/语气规则。无 workflow（有『提交前跑 lint』属质量门，不是分支/PR/发布）。"
+  },
+  "HA7CH/ai-native-company": {
+   "call": ["overview", "structure", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": ["build_test"],
+   "why": "开头『让小团队在一台 Mac mini 上部署一人一 AI bot＋共享 markdown vault』＋当前状态 M0/M1＝概览；文档地图（逐文件职责）＋『每 bot 一个 cwd 四合一』＝文件组织/架构；『开发流程：分支→PR→Codex review→验证→squash merge（不直接 push main）』＝流程；Mac mini/cc-connect/官方 CLI/TS/pin 版本/OAuth 配置项＝环境；『铁律：泄密防线』（_research 绝不 commit、转公开必跑脚本、措辞约束）＝禁令；『cc-connect 下 --add-dir 不透传』＋『脚本是绊线不是证明』＝坑；本文件是 Codex 版指引、bot 单位/role 是模板、只驱动官方 CLI、Codex review＝AI 行为。犹豫 build_test：只有 check-public.sh 一个校验脚本，没有构建/测试命令段。"
+  },
+  "JintaoLee-Roger/cigvis": {
+   "call": ["style", "workflow", "boundaries", "agent_meta"],
+   "borderline": [],
+   "why": "全篇 565 字节，四段各一条：『对外 API 注意兼容性』＝代码约定（风格）；『超过 3 步先建 task-plan.md、中断重启先读它、每步完成即打勾』＝流程；『发现潜在 bug 不要顺手改，记录到 notes.md 交我决定』＝禁令/卫生；『用中文回复』＝AI 行为。无概览/架构/构建测试/环境/坑。"
+  },
+  "MUKAPP/CustomLand": {
+   "call": ["overview", "structure", "build_test", "style", "environment"],
+   "borderline": ["boundaries", "gotchas"],
+   "why": "项目概述（Android 应用＋包名/最低 SDK/语言/UI）＝概览；项目结构目录树＝架构；构建命令＋测试命令＝构建测试；代码风格（Kotlin 惯用法、View Binding、协程替代 GlobalScope）＝风格；依赖库清单/最低 SDK/refreshVersions＝环境。犹豫 boundaries：『不用 findViewById』『避免 GlobalScope』是否式写法但属风格约定，不是禁令；犹豫 gotchas：『无障碍服务需用户手动启用』是使用约束，未明说踩过的坑。"
+  },
+  "PotterXma/douyinsync": {
+   "call": ["build_test", "boundaries", "agent_meta"],
+   "borderline": ["structure", "workflow", "environment"],
+   "why": "『测试』一节（pip install -r requirements-dev.txt、python -m pytest tests/、CI workflow＋Python 3.10–3.13 矩阵）＝构建测试；『勿使用 ~/.cursor/skills-cursor/ 存放本项目自定义技能』＝禁令；『与用户对话默认简体中文』＝AI 行为。犹豫 structure：只有 docs/source-tree-analysis.md 指针与 .cursor/skills/ 目录说明，正文没展开目录结构；犹豫 workflow：只提到 dependabot 提 PR，无分支/提交约定；犹豫 environment：只有一条 pip install 开发依赖。无概览、无风格、无坑。"
+  }
+ }
+}
