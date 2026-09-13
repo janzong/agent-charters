@@ -1,0 +1,26 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 7 批（工单序号 5、7、11、12）。判读顺序＝v0.6-cn-worksheet.md 的序号顺序。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a7",
+ "files": {
+  "Genshin-bots/gsuid_core": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "《Project overview》（FastAPI+WebSocket+APScheduler 单进程、不是 Bot 而是插件宿主/AI 中枢、默认端口 8765、Python 版本）＝概览；《Repository map》目录树 + ai_core 子模块职责表 + 《五 项目核心模块概览》 + 《三 3.1》数据库基类继承体系＝架构；《Setup commands》（uv 安装/启动/检查，实机评测必须打已启动且加载全插件的 core）+《Testing》（pytest 离线无 LLM、脚手架正反双向、docstring/covers 改动的专项测试）＝构建测试；《一 1.1–1.8》与《二/三/四/七/八》的成文编码约定（禁 try-except 兜底 / cast / type: ignore / getattr 兜底 / Any、类型提示规范、col() 包裹列、rowcount 用 CursorResult 守卫、全异步、Logger、`#` 注释≤2 行且每行≤88 字）＝风格；uv + Python 3.12、ruff line-length=120、pyright basic 与排除面、GSUID_LOCAL_TEST_MODE/LOCAL_TEST_TOKEN/NO_PROXY 等评测环境变量、《六 配置管理》插件配置类与资源路径、Security notes 的 WS_TOKEN/TRUSTED_IPS＝环境；《一 绝对红线》九条（含 1.9 禁止人格锁定/能力锁定、1.7 前缀缓存红线）+《八 8.4 禁止混用》+『密钥与 token 只走配置/环境，不要写进仓库』＝禁令；《八》『⚠️ 这是高频混淆点…混用会导致运行时错误』+《3.5.1》『陷阱：select().where(bool) 恰好不报错，不要依赖前者的宽松』＝坑；开篇『按需读 SKILL.md，不要一次把所有 references 塞进上下文』『源码是唯一事实源』+《Skills》任务→按需加载表 + 文末『不要把整本 references 一次读完』＝AI 行为。无分支/提交/PR/发布流程。"
+  },
+  "Haoxincode/MoonBash": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "agent_meta"],
+   "borderline": ["gotchas"],
+   "why": "《Project Overview》（MoonBash 是什么、just-bash 重写、零依赖纯内存 POSIX Shell、当前阶段与 523/523 通过率）＝概览；《Project Structure & Module Organization》（docs/tests/src 布局）、《Architecture: 巨核与薄壳》三层（MoonBit 巨核 / FFI 薄壳 / TS Facade）、《Implementation Notes》的 src/lib 模块布局＝架构；《Build, Test, and Development Commands》（moon build/check、vp run test:safe、构建流水线）、《Testing Guidelines》、《Test Suite Details》（spec/comparison/security/agent-examples 四类）＝构建测试；《Coding Style & Naming Conventions》（2 空格、双引号、分号、describe/it/expect、测试文件命名后缀规则）＝风格；《Commit & Pull Request Guidelines》（祈使句短主题、PR 需含目的/变更/受影响测试/重录 fixture）＝流程；社区包接管表（grep/sed/jq/tar/diff/gzip…各自必须使用哪个包）+『零运行时依赖、不得 import npm』＝环境；《Ecosystem-First Principle》禁止事项四条（禁手写正则引擎/排序/重复造轮子/把纯计算推给 JS FFI）+《Testing Guidelines》『Do not modify files under tests/ unless explicitly requested』＝禁令；MoonBit Language Skills（必读）『编写或修改任何 .mbt 前必须先阅读 skill 文档』+ 使用要求（用 moon check 而非 moon build、用 moon test --filter、用 moon ide 语义化工具）+ Key Design Docs 里『实现任何新命令前必须先阅读 ECOSYSTEM_COMMAND_MAPPING.md』＝AI 行为。犹豫：gotchas——全文无独立坑节，只有『use vp run test:safe to avoid OOM/stale artifacts』『avoid machine freezes from Node OOM』这类作为推荐命令理由出现的一句话提醒，够不上独立坑内容。"
+  },
+  "Marven11/EtherGhost": {
+   "call": ["overview", "structure", "build_test", "workflow", "environment", "gotchas", "agent_meta"],
+   "borderline": ["boundaries"],
+   "why": "《项目简介》（兼容蚁剑/冰蝎的 PHP webshell 管理器）+《主要功能》能力清单＝概览；《Webshell表示与连接逻辑》（SessionInfo→SessionInterface→具体实现类的层级、类清单与连接流程、注册表与装饰器）+《SQLite使用》（三张数据表）＝架构；《依赖与Poetry》（poetry install/run）、《项目打包》（poetry build、PyInstaller、build.sh/bat）、《前端构建》（Vite、产物落在 ether_ghost/public/）＝构建测试；《查看issue时》《提交pr时/后》《等待循环》《pr被关闭时》《pr被合并时》整段（PR 关联 issue、sleep 十分钟等 CI、每轮重新规划、关闭后新建 PR、合并后等 issue 关闭）＝流程；Poetry/pyproject 依赖管理 + 核心运行时依赖表 + 开发依赖 mypy + DATA_FOLDER 三平台路径 + settings 表配置项 + 启动参数表＝环境；《查看CI》整节＝坑（『CI运行状态返回空列表』三条原因与排查、『CI因为网络失败』用空 commit 重跑、重复三遍的『重新检查本地与远程 head sha 是否一致』）；《查看issue时》起的全程第二人称指令（『你总是查看 issue 评论』『你必须详细设计』『你永远耐心等待 ci、永远不做 pr 轰炸』）＝AI 行为。犹豫：boundaries——只有『不要单独提交构建产物，也不要遗漏构建产物的提交』与『打开下一个 pr 前总是关闭上一个 pr』两条禁令式句子，且都落在提交/PR 纪律内，已按 workflow 计，未单列禁令。"
+  },
+  "NSObjects/go-template": {
+   "call": ["overview", "structure", "build_test", "style", "boundaries", "agent_meta"],
+   "borderline": ["workflow", "environment"],
+   "why": "《项目方向》『这是一个 module-first 的 Go API 模板，不是 generator-first/OpenAPI-first/layer-first』＝概览；架构词定义（business module / platform / capability / composition root 及其目录）+ 业务模块标准结构（domain→usecase→adapters→http）+《依赖和装配》《interface 规则》《HTTP API 规则》《Store 和外部资源》的模块边界与分层约束＝架构；《验证》（make test/lint/build/verify、并发改动跑 go test -race、改依赖跑 go mod tidy、git diff --check）+《测试》（行为变化必须有测试、优先表驱动与 t.Run、失败信息含 got/want、t.Helper、覆盖边界与外部失败）＝构建测试；《错误处理》《注释》《并发和资源》《测试》的成文编码约定（错误必须处理并用 %w 带上文、不重复 log 与 return、导出符号必须有注释、不为代码复述写废话注释、goroutine 必须有退出路径）＝风格；《新项目规则》与《禁止事项》两节（不双轨/不 deprecated wrapper/不 compat 分支、不新增 utils/helpers/common 包、不新增全局 service locator 与 DI container、不忽略 error、不在业务逻辑 panic、不裸 time.Sleep、不留临时代码）+ 各处『不要/不要让 domain 依赖…』＝禁令；开篇『本文件是本仓库的项目约束，修改代码前必须先理解当前实现』+《修改前必须查看》清单 +《完成前自检》十二项最终回复前核对＝AI 行为。犹豫：workflow——仅《文档》一节要求『改动影响使用方式时同步更新 README/configs/README 等』，无分支/提交/PR 规则；environment——《修改前必须查看》只点到 go.mod/Makefile/.golangci.yml 这些文件名，没有依赖清单或环境搭建内容。"
+  }
+ }
+}
