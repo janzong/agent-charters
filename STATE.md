@@ -7,7 +7,9 @@
 > 同日：**留出集 55 份盲判完成**（precision 92% / recall 70%，§19），已提交 `0839634`、
 > Gitee + GitHub 双端 `ls-remote` 实测一致。
 > 追加：三站**留出集补充评论**文案已就绪（`work/share-paste/{zhihu,oschina}-comment-03.txt`、
-> `juejin-comment-02.txt`），**待人贴**）
+> `juejin-comment-02.txt`），**待人贴**。
+> 同日二件：**留出集错标归因**完成（`LIMITATIONS.md` §20），并自披露一处
+> **文档口径与实现不符**（主口径是否把「犹豫」计入错标）——**待人裁定，未改任何数字**）
 
 ---
 
@@ -48,6 +50,8 @@
 | 口径裁决 | ✅ 2026-09-12 由人定四条定义边界（`TAXONOMY.md`「口径裁决」）：风格收 Git 规范 / 环境收版本号 / 构建测试收"该不该跑" / **AI行为不收标题里的 agent 字样**。前三条实测对语料库影响 0 份（纯定义），第四条 −35 份 |
 | 数字更正 | ✅ **三站均已贴**（2026-09-13，用户确认）：`zhihu-comment-02.txt`（597 字符）/ `oschina-comment-02.txt`（496 字符，≤500 限）/ `juejin-comment-01.txt`（464 字符），按 **v0.5 定稿**（82.8% / 85.7% 并列）。⚠️ 三站评论区都走 JS/私域接口，本轮**未能自动复核**正文，按用户确认记录；内容源＝`SHARE.md` §7，由 `work/share-paste/make_comment.py` 抽取 |
 | 留出集补充评论 | ⏳ **文案已就绪，待人贴**（2026-09-13）：`zhihu-comment-03.txt`（708 字符）/ `oschina-comment-03.txt`（464 字符，≤500 限）/ `juejin-comment-02.txt`（485 字符）。内容＝留出集 55 份盲判 precision 92% / recall 70%（§19），并自陈三个边界（单标注者、无中文、完全一致仅 12.7%）。事实源＝`SHARE.md` §7.5–7.7。⚠️ 措辞已按实测修正：可用池 422 = 516 − **94**（不是 516 − 106，见 §18 新增算术关系） |
+| 错标归因 | ✅ **已闭环**（2026-09-13）：10 处错标（`environment` 5 / `boundaries` 5）全部落在两个机制——**标题词多义 5 处**（`dependency`/`tool`/`setup`/`config`/`rules`）+ **正文命中 5 处**（4 处「句式像禁令、语义不是禁令」+1 处配置文件名出现在流程句里）；证据都只 1–2 条。产物 `work/audit/v0.5-holdout-mislabel-attribution.md`（脚本 `mislabel_attribution.py`）。按 D11/§3.2 只归因不改规则 |
+| 口径自披露 | ⚠️ **待人裁定**（2026-09-13）：§19 与两份 `work/audit/*.md` 写「犹豫单列、不计入错标」，但脚本主口径是 `rule - call`（**犹豫被计入错标**），且 in-sample 的宽松口径从未打印。现行 92%/70% vs 文档口径 97%/71%。**未改任何对外数字、规则、脚本行为**，只记进 §20 |
 | 100 份人工核对 | ✅ **已闭环**（发现 1–56）。四块改动全部落地：①围栏语言标记门 ②删词与收紧 ③补词（净增 119/净掉 2）④收紧（净增 1/净掉 36）+ 指针反证闸。清单 `work/audit/v0.1.8-changelist.md` |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
@@ -162,11 +166,15 @@ agent-charters compare <你的AGENTS.md>
    单标注者/无中文/完全一致 12.7% 三个边界。**只剩"人贴"这一步。**
 2. **v0.6 首选：新采 30–50 份中文章程做中文留出集**。中文 25 份全在上轮用光，
    中文的 `build_test` precision 61% 至今只有 in-sample，无法留出验证（§18）。
-3. **错标归因（只记录，不建议改分类器）**：`environment` 留出集 57%（in-sample 77%），
-   5 处错标＝`owncloud/notes`、`leon-ai/leon`、`NateBJones-Projects/OB1`、
-   `deanpeters/Product-Manager-Skills`、`coleam00/Archon`；`boundaries` 5 处错标＝
-   `morganlinton/Albatross`、`youssefvdel/qwengate`、`shikokuchuo/secretbase`、
-   `okwasniewski/MiniSim`、`yashdev9274/supercli`。按 D11 / §3.2，高精确率低召回是刻意取舍。
+3. ~~错标归因（只记录，不建议改分类器）~~：✅ **已闭环 2026-09-13**
+   —— `environment` 5 处（`owncloud/notes`、`leon-ai/leon`、`NateBJones-Projects/OB1`、
+   `deanpeters/Product-Manager-Skills`、`coleam00/Archon`）与 `boundaries` 5 处
+   （`morganlinton/Albatross`、`youssefvdel/qwengate`、`shikokuchuo/secretbase`、
+   `okwasniewski/MiniSim`、`yashdev9274/supercli`）逐条读过原文，**全部落在两个机制**：
+   标题词多义 5 处 + 正文命中 5 处（详见 `LIMITATIONS.md` §20 与
+   `work/audit/v0.5-holdout-mislabel-attribution.md`）。**顺带撞出一处文档口径与实现不符**
+   ——主口径是否把「犹豫」计入错标（92%/70% vs 97%/71%），**待人裁定**，已记进 §20，
+   未改任何数字。按 D11 / §3.2，高精确率低召回是刻意取舍，本轮**无任何规则改动**。
 4. **工具真判据仍未验**：用 `compare` 真的写一次 rmas-v3 的 `AGENTS.md`，把输出当第二个公开案例。
 5. **英文渠道（HN 等）建议新写短文**，直接给 v0.5 + 留出集数字，别带三站的更正尾巴。
 
