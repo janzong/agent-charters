@@ -1,0 +1,31 @@
+{
+ "_note": "v0.6 中文留出集盲判 · 第 9 批（工单序号 22、23、24、27、32）。判读顺序＝v0.6-cn-worksheet.md 的序号顺序。只看原文，未看规则输出。判读时间 2026-09-13。",
+ "batch": "a9",
+ "files": {
+  "chennqqi/godnslog": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+   "borderline": ["environment"],
+   "why": "《项目结构与模块组织》开头一句（GODNSLOG 是 Go 后端 + 前端管理界面的安全工具，用于 DNS/HTTP OAST 回连验证…）＋《2.0 产品与实现重点》的定位（面向安全团队/扫描器/AI Agent 的自托管 OAST 证据中枢）＝概览；同节逐目录列出 Go 入口、server/models/cache、2.0 的 internal/cmd/cli/migration、frontend-next 与旧 Vue 前端的历史定位＝架构；《构建、测试与开发命令》（go build/test/run、cmd/mcp-server、frontend-next 的 npm 脚本、Dockerfile/DockerfileCN）＋《测试规范》（同目录 *_test.go、TestXxx、影响共享面时扩到 go test ./...、前端 Playwright/Jest）＝构建测试；《编码风格与命名约定》（gofmt、包名短小写、只有跨包 API 才导出、2.0 后端放 internal/<domain>/、Next.js+TS+Tailwind/shadcn 组织）＝风格；《提交与 PR 规范》（标题短聚焦单一变化、PR 含摘要/测试命令与结果/关联 issue/截图录屏）＝流程；《安全与配置注意事项》（不提交真实域名/Token/生产库/生成凭据/回连数据；DNS/Callback/Rebinding/Workflow/MCP APIKey 按最小权限+过期+审计）＋最小权限默认禁用高风险动作＝禁令；《codex 约定》空节后的《windsurf 约定》（执行前端 E2E 禁止会常驻报告服务的 Playwright 流程，只允许非交互式命令）＝AI 行为（针对具体 AI 工具的行为约束）。犹豫：environment——只有 Dockerfile 与敏感能力配置项的名称，没有工具链版本或环境搭建内容。无坑类内容。"
+  },
+  "cmyyx/cep": {
+   "call": ["overview", "structure", "build_test", "style", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": ["workflow"],
+   "why": "《技术栈（不可变）》表（Next.js 16 App Router、纯静态 SSG 到 Cloudflare、TS strict、Shadcn/UI + Tailwind v4、Zustand、pnpm 11）＝概览；《文件结构》目录树＋《状态管理 —— 单一入口》＋《页面布局高度链规范》（SidebarProvider h-svh → main → 页面根三层不可变结构）＝架构；《代码质量》（每个功能文件必须有测试、tsc --noEmit、eslint 0 错 0 警、node scripts/check-i18n.mjs 0 个 P0）＝构建测试；《设计系统》（字体/阴影替代边框/字重/圆角层级）＋《稀有度星级颜色》令牌表＋《组件规范》（一文件一组件、命名、Props 命名、超 2 层 prop drilling）＋《禁止使用 emoji》＋《国际化规则》（必须走 useTranslations、key 路径式）＝风格；Next.js 16 + pnpm 11 + Node ≥22.13 + Tailwind v4 + Cloudflare 托管＝环境；《UI 层 —— 零容忍规则》《纯静态站点约束》《禁止事项清单》（禁手写 CSS/内联 style/裸 HTML 交互元素/第三方 UI 库/useContext 全局状态/dangerouslySetInnerHTML/DOM 直操作/eval）＝禁令；《SelectValue 必须传 children render function》（底层是 Base UI 不是 Radix，否则退回显示原始 value）＋《页面布局高度链》『违反此规范的已知症状』三条＋顶部 nextjs-agent-rules『This is NOT the Next.js you know，可能与训练数据不同，写代码前先读 node_modules 里的 guide』＝坑；《Output style》整节（面向 ADHD 读者的 10 条输出规则、五条上限、无前言无收尾）＝AI 行为。犹豫：workflow——全文没有分支/提交/PR/发布流程，只有『PR 前必须通过 tsc』与新增错误码的三步 checklist 与 CI 门禁，够不上独立流程节。"
+  },
+  "deretame/Breeze": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "environment", "boundaries", "gotchas", "agent_meta"],
+   "borderline": [],
+   "why": "《1 项目概述》（Flutter 跨平台漫画阅读应用、支持第三方图源插件、五个平台分发）＋《1.1 核心定位》（不含内容、插件跑在 Dart→FRB→Rust→QuickJS 栈上）＋《2 技术栈》五节（Flutter 3.44.2/Dart ^3.9.2/Rust edition 2024/FRB 2.12.0/rquickjs/bloc/auto_route/objectbox/Sentry）＝概览；《3 仓库结构》完整目录树＋《3.1 典型 Feature 目录结构》＋《1.2 主要仓库》＋《10 常见修改入口》表＝架构；《5 构建与运行》（code_generate.dart、flutter run、逐平台构建脚本与产物、waifu2x CLI 三个脚本）＋《7 测试策略》＋《4.3 依赖初始化》＝构建测试；《6 代码风格与约定》（.editorconfig/UTF-8/LF、analysis_options 继承 flutter_lints、barrel 文件、Bloc vs Cubit、freezed、Rust cargo fmt 与 FRB 宏）＝风格；《8 部署与发布》（push-build / release / release_to_telegram / signpath-smoke 四条 workflow、发布前三步、Homebrew Cask、Telegram 通知）＝流程；《4.1 必需工具链》《4.2 推荐环境变量》表（JAVA_HOME / ANDROID_NDK_HOME / LIBCLANG_PATH）＋《8.3 敏感文件》git-crypt＋《8.4 Sentry 配置》＋《5.4 调试代理》＝环境；《3.2 生成文件位置》『以下文件由工具生成，请勿手动修改』＋《8.3》未解密前勿改加密文件＋《9 安全与合规》（TLS 默认关闭、插件沙箱可碰网络与文件系统、第三方内容合规、隐私）＝禁令；《4.4》直接调 flutter/dart 可能失败需改用 puro＋《5.3》iOS 模拟器 bindgen 的 -sim 后缀坑与 7zr 规避 GNU tar 路径问题＋《7》『当前项目几乎没有自动化测试』＝坑；开篇『本文档面向 AI 编程助手，若你第一次接触本项目请先阅读本文件再修改代码』＝AI 行为。九类齐。"
+  },
+  "finchtoys/finch-releases": {
+   "call": ["overview", "structure", "build_test", "style", "workflow", "boundaries", "agent_meta"],
+   "borderline": ["environment", "gotchas"],
+   "why": "《空间定位》（finch-releases 是 Finch App 的社区发布站，集中发布文档/官方扩展配置/技能/npm 包与社区贡献）＝概览；《目录结构》树＋《目录说明》逐个目录职责＋《社区推荐管理/数据文件》四个 JSON 数据源＋《分类体系》七个 id 表＝架构；《校验》命令（manage_registry.py 全量校验）＋《贡献规范》第 6 条 npm 包发布与 CI 触发＝构建测试；《贡献规范》（每个扩展/包单独 README、扩展目录须含 package.json+src/index.ts+i18n、命名小写连字符、SemVer 与 changelog、权限声明、格式规则）＝风格；《治理模式》《贡献规范》《发布流程（草案）》五步＋《社区推荐管理/管理方式》的 registry 增删改命令＋《注意事项》的索引同步＝流程；《注意事项》『本仓库不存放 Finch App 主程序源码』『小工具统一放 extensions/』『如需调整空间规则要同步更新 README』＝禁令/边界；《注意事项》『回复 Issue 必须使用 gh-bot-reply skill，以 finch-paia[bot] 身份回复，个人观点才用 puterjam 账号』＝AI 行为（明确规定 AI 用哪个身份做事）。犹豫：environment——只有 npm workspaces、publish-all.sh、CI 配置这些工具/脚本名称，无环境搭建；gotchas——《管理方式》里『Finch 暂未支持 deprecated 过滤，直接删』是一句已知限制，够不上独立坑内容。"
+  },
+  "m-RNA/Easy_EDA_PCB_Beautify": {
+   "call": ["structure", "build_test", "style", "workflow", "boundaries", "gotchas", "agent_meta"],
+   "borderline": ["overview", "environment"],
+   "why": "《项目结构与修改边界》逐路径列职责（src/ 主进程、iframe/settings.html 设置页须保持内联、extension.json 为菜单唯一来源、locales/、scripts/test_*.ts、docs/DEVELOPER_NOTES.md）＝架构；《测试与构建》（npm test/lint/build + 八个专项测试脚本 + 构建后检查 .eext 内容清单）＝构建测试；《嘉立创 EDA 关键约束》里的命名/默认值约定（圆角半径比率 10x、DRC 最大 60 轮、重铺上限 30 块；快捷键修饰键格式）＋《设置页要求》＝风格；《Git 提交》（一个目的一个提交、提交前查 git diff --cached、中文提交信息格式、已推送不得 amend）＋《版本与发布》（调试包递增版本不覆盖、发布前跑全量门禁、发布后核对三处同一提交）＋《基本要求》拆分提交＝流程；《基本要求》不覆盖用户已有修改、《项目结构与修改边界》不要重新引入运行时动态菜单注入、《嘉立创 EDA 关键约束》不要将类型声明中的全大写修饰键直接传运行时、顶部菜单不要重新加入『过渡线宽（全部）』＝禁令；《Windows 文本读取》（PowerShell 读中文必须显式 -Encoding UTF8，且不要仅凭乱码就改写文件/转编码/增删 BOM）＋《嘉立创 EDA 关键约束》里成串的宿主 API 坑（modify() 非原位替换、DRC 只能按对象类型识别覆铜不能按 ruleName 关键字、每轮圆角最多推进一次且末次后要再验、Shift+F-key 在 V3.2.148 不可靠）＝坑；开篇『本文件定义 JLC_EDA_Smooth 仓库的代理协作规则』＋《基本要求》『面向用户的最终回复使用中文』『大型或高风险修改先确认目标、约束和预期结果，小型低风险可说明假设后直接进行』＋『修改相关模块前应先阅读对应章节』＝AI 行为。犹豫：overview——只有项目名 JLC_EDA_Smooth 与扩展用途的零散描述，无『这个项目是…』式概览；environment——只出现 extension.json/.eext/npm 脚本，没有工具链版本或依赖/环境搭建内容。"
+  }
+ }
+}
