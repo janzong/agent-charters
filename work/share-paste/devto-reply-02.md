@@ -1,4 +1,4 @@
-# dev.to 回复 · reidmarlow（2026-09-14，**待人贴**）
+# dev.to 回复 · reidmarlow（2026-09-14 **已由人贴出**，API 复核作者回复时间 13:26:53Z）
 
 **贴在哪**：<https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 → `reidmarlow` 那条评论右下角 **Reply** → 粘贴下面 `---` 之后的内容。

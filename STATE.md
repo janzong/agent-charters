@@ -11,7 +11,7 @@
 > 同日二件：**留出集错标归因**完成（`LIMITATIONS.md` §20），并自披露一处
 > **文档口径与实现不符**（主口径是否把「犹豫」计入错标）——**待人裁定，未改任何数字**）
 > 09-14：英文短文**已在 dev.to 上线**（id `4649807`，12:23Z），发布后 18 分钟收到**首条非作者反馈**
-> （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**待人贴**（评论 API 只读）。
+> （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**已由人贴出**（12:49Z）。
 > 渠道裁决：**外网以 dev.to 为主**，HN 押后（hosts 绕过已落四台，见 `SHARE.md` §0）。
 > 09-14 二件：**动作 tag `v1` 已建并双端推送** —— 此前 README / `action.yml` 一直让消费方写
 > `uses: janzong/agent-charters@v1`，而两端远端**压根没有这条 tag**，那个引用会直接报错；
@@ -69,10 +69,11 @@
 | dev.to 首条外部反馈 | ✅ **09-14 12:41Z（发布后 18 分钟）**：`jo-do`（自称在跑一个「主要给 agent 用的 public board」）评论确认 85.7% / 13.6% 与其经验吻合，原话 *"The gotchas are the file"*，并称赞 rule-based 是 *"auditable beats clever"*。⚠️ **这是「外部读者」，不是「外部使用者」** —— 判据 6 要的是有人真跑 `compare`，不要把这条记成闭环。回复文案 `work/share-paste/devto-reply-01.md`（**已由人贴**，2026-09-14 12:49Z 确认上线，1319 字符、线程正确）|
 | dev.to 合集 | ✅ **09-14 建**：`AGENTS.md in the wild`（`collection_id 44219`）→ <https://dev.to/janzong/series/44219>，已含本文。实现＝`PUT /api/articles/<id>` 带 `series` 字段，首次自动建合集；**更新时必须继续带**，否则被摘（已写进 `publish_devto.py` 注释与 `SHARE.md` §5.5）|
 | dev.to 第 2 篇 | ✅ **09-14 上线**（id `4650835`）：*I looked at 558 AGENTS.md files: here's a 5-minute check for yours* → <https://dev.to/janzong/i-looked-at-558-agentsmd-files-heres-a-5-minute-check-for-yours-5cih>；tags `ai/agents/devtools/productivity`，同合集 `44219`（公网 200、四 tag 全渲染、合集生效）。主题＝读者自查，**零私库材料**；草稿源码 `work/share-paste/devto-article-02.md` |
-| dev.to 第 2 条外部反馈 | ✅ **09-14 13:04Z**：`reidmarlow` 提出环境漂移类失败（未钉版本的 CLI/未 mock 的服务限流）才是真摩擦点，**正好命中实测的 8% 桶**；回复 `work/share-paste/devto-reply-02.md`（**待人贴**）|
+| dev.to 第 2 条外部反馈 | ✅ **09-14 13:04Z**：`reidmarlow` 提出环境漂移类失败（未钉版本的 CLI/未 mock 的服务限流）才是真摩擦点，**正好命中实测的 8% 桶**；回复 `work/share-paste/devto-reply-02.md`（**已贴出 13:26Z**）|
 | dev.to 评论盯梢 | ✅ **09-14 装机**：`work/share-paste/watch_devto.py` + systemd user timer `devto-watch.timer`（每 30 分钟，**只在有新评论时发 Hermes 收件箱**，无变化静默）。**为什么需要**：两条外部反馈都在发布后 25 分钟内出现，而评论 API 只读、回复必须人贴 —— 漏了就是白丢。⚠️ 单元里必须带 `Environment=PATH=%h/.hermes/hermes-agent/venv/bin:...`（systemd PATH 不含 hermes，实测不加就找不到命令）。状态 `~/.local/state/devto-watch.json`、全文日志 `~/.local/state/devto-watch.log`；卸载 `systemctl --user disable --now devto-watch.timer`。详见 `SHARE.md` §5.5 |
 | dev.to 阅读量 | 09-14 当晚 22:1x：第 1 篇 **阅读 23 / 反应 1 / 评论 4**（2 条外部 + 2 条作者回复）；第 2 篇 **阅读 3 / 反应 0 / 评论 2** |
-| dev.to 第 3/4 条外部反馈 | ✅ **09-14 13:35Z / 13:42Z**（均在第 2 篇下）：`alexshev` 给出更干净的判据（"instruction 是否在关键时刻改变一次决策"）；**`raknaos` 真拿尺子量了自己的文件**并问两个具体问题——①清单有没有在 9/9 文件上跑过 ②坑的缺口是写作习惯还是复核习惯。两条都已**用数据实测作答**（见 SHARE.md §5.5），回复 `work/share-paste/devto-reply-03.md`（alexshev，944 字符）/ `devto-reply-04.md`（raknaos，1987 字符）**待人贴**。⚠️ `raknaos` 自称有 agent 文件 ⇒ 是**判据 6 的潜在人选**，回复末尾已请他跑一次 `compare` |
+| dev.to 回复闭环 | ✅ **2026-09-14 复核**：四条外部评论**全部有作者回复**（API `GET /api/comments?a_id=` 的 `children` 字段实读，不是"用户说已贴"）——`jo-do`←12:49:28Z、`reidmarlow`←13:26:53Z、`alexshev`←14:19:12Z、`raknaos`←14:19:46Z。四条回复文件的头注与本节各行的「待人贴」标记已同步订正（此前是**过期标记**，会诱导后续会话重复粘贴）。⚠️ 仍待人贴的是**留出集补充评论**三条（知乎/开源中国/掘金），与 dev.to 无关 |
+| dev.to 第 3/4 条外部反馈 | ✅ **09-14 13:35Z / 13:42Z**（均在第 2 篇下）：`alexshev` 给出更干净的判据（"instruction 是否在关键时刻改变一次决策"）；**`raknaos` 真拿尺子量了自己的文件**并问两个具体问题——①清单有没有在 9/9 文件上跑过 ②坑的缺口是写作习惯还是复核习惯。两条都已**用数据实测作答**（见 SHARE.md §5.5），回复 `work/share-paste/devto-reply-03.md`（alexshev，944 字符）/ `devto-reply-04.md`（raknaos，1987 字符）**均已贴出**（14:19:12Z / 14:19:46Z）。⚠️ `raknaos` 自称有 agent 文件 ⇒ 是**判据 6 的潜在人选**，回复末尾已请他跑一次 `compare` |
 | 评论盯梢（三个坑一晚踩完） | ⚠️→✅ **09-14 当晚连踩三次、全部修完**：①通知卡在 hermes 上被单元 `TimeoutStartSec=180` 杀掉，而 state 在通知**之前**就写好了 ⇒ 两条评论被静默吞掉（两小时后人工才发现）→ 改成「先落日志 → 通知成功才推进 state」，日志按 `id_code` 去重，超时 180→**420**（实测一次 `notify-hermes.sh` 真花 ~3.5 分钟，旧的 180 必然掐死它）；②**自家回复也会触发通知**（通知链路白跑一轮）→ 按文章作者名过滤，自家评论只记 state；③退出码 10「有新评论」被 systemd 记成 unit 失败 → 加 `SuccessExitStatus=10`。三条都有复验记录，详见 `SHARE.md` §5.5 |
 | dev.to 个人资料 | ✅ **09-14 已由人填并复核**（`GET /api/users/me` 实读）：`summary` 140 字符 = 备用文案原文、`website_url` = `https://github.com/janzong/agent-charters`、`github_username` = `janzong`。⚠️ API 无写路由，以后再改只能手点；文案留档 `work/share-paste/devto-profile-setup.md` |
 | 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |

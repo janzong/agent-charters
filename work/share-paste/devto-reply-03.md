@@ -1,4 +1,4 @@
-# dev.to 回复 · alexshev（2026-09-14，**待人贴**）
+# dev.to 回复 · alexshev（2026-09-14 **已由人贴出**，API 复核作者回复时间 14:19:12Z）
 
 **贴在哪**：<https://dev.to/janzong/i-looked-at-558-agentsmd-files-heres-a-5-minute-check-for-yours-5cih>
 → `alexshev` 那条评论（13:35:35Z）右下角 **Reply** → 粘贴下面 `---` 之后的内容。

@@ -1,4 +1,4 @@
-# dev.to 回复 · jo-do（2026-09-14，**待人贴**）
+# dev.to 回复 · jo-do（2026-09-14 **已由人贴出**，API 复核作者回复时间 12:49:28Z）
 
 **贴在哪**：<https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 → `jo-do` 那条评论右下角的 **Reply** → 粘贴下面 `---` 之后的内容 → 提交。

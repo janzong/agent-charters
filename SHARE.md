@@ -793,7 +793,7 @@ state 保持原样 ✓
 顺带确认了 420 秒超时是对的：实测一次 `notify-hermes.sh` 花了 **~3.5 分钟**（旧的 180 秒
 必然把它掐死——正是上面那个静默失败事故的成因）。
 
-### 第 2 篇的两条外部评论（2026-09-14，**待人贴回复**）
+### 第 2 篇的两条外部评论（2026-09-14，**回复已贴出 14:19Z**）
 
 1. **`alexshev` @ 13:35:35Z（309 字符）**：给出比我们更干净的判据 ——
    *"whether each instruction changes a decision at the moment it matters"*，
@@ -839,14 +839,14 @@ state 保持原样 ✓
 differently in a subshell or a rate limit on an unmocked internal service … it loops until context
 runs out because the repo itself contains no evidence of why the command broke"。**这正好命中实测的
 那 8% 桶**（`work/gotcha_origin.md`：58% 读代码可得 / 34% 不是坑 / 8% 只能靠经历）。
-回复文案 `work/share-paste/devto-reply-02.md`（**待人贴**），补了两点：①`13.6%` 这个数**高估**了
+回复文案 `work/share-paste/devto-reply-02.md`（**已贴出 13:26Z**），补了两点：①`13.6%` 这个数**高估**了
 真正被写下来的经验知识（章节罕见 + 内容大半不是坑）②机制=**自证失败 vs 非自证失败**。
 
 ### 首条外部反馈（2026-09-14 12:41Z，发布后 18 分钟）
 
 `jo-do` 评论（484 字符），大意：85.7% 禁令 / 13.6% 坑 这个比例和他在一个"主要给 agent 用的
 public board"上的观察一致；*"The gotchas are the file"*；称赞 rule-based 分类是
-*"auditable beats clever"*。**回复文案：`work/share-paste/devto-reply-01.md`（待人贴）**，
+*"auditable beats clever"*。**回复文案：`work/share-paste/devto-reply-01.md`（已贴出 12:49Z）**，
 回复里把那句"只被作者测过"如实交代，并请他在自己的 AGENTS.md 上跑 `compare`
 ——这正是判据 6 缺的那一格。
 
@@ -1059,3 +1059,15 @@ read -rsp 'dev.to key: ' K && printf '%s' "$K" > ~/.devto_api_key \
 200 = 还活着、401 = 已失效。
 **验证新 key 装好了**：`systemctl --user start devto-watch.service`（读文件里的 key；
 无新评论时静默退出 0），或 `python3 work/share-paste/watch_devto.py` 看读数表。
+
+**结局（2026-09-14 收口）**：那把**旧 key 已由人在 dev.to 上删除**，账号上只剩一把。
+本机落点与复核（都只报状态，不打印 key）：
+
+- `~/.devto_api_key` 24 字节（与当前这把 key 长度一致）、0600；`GET /api/users/me` → **200 `janzong`**。
+- 盯梢服务读同一份文件、跑通：`watch_devto.py` 打出读数表后"无新评论"退出。
+- **无残留**：`~/.bashrc` / `~/.profile` / `~/.bash_profile` / `~/.zshrc` / `~/.config/environment.d/*`、
+  仓库（排除 `.git`/`.venv`）、`~/.local/state`、`~/.config/systemd/user` 里都搜不到旧 key；
+  systemd 单元里**没有内联 key**（只 `Environment=PATH`，key 走文件）。
+
+⇒ **本机只留一把 key、链路单一**；下次再换只改这一个文件（`publish_devto.py` 与
+`watch_devto.py` 共用它），然后 `systemctl --user restart` 不需要（oneshot timer 每次重读）。
