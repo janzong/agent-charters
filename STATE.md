@@ -190,7 +190,13 @@ agent-charters compare <你的AGENTS.md>
    案例里有一条可复用做法：把草案放进**被描述仓库的镜像目录**（顶层软链 + 一个 `.git`），
    `refs` 就能真核验断链——实测 17 个指向 15 ✓ / 1 ~ / 2 ✗，其中 2 个 ✗ 是 `refs` 分不清
    「去读这个」与「别提交这个」（禁令清单里的路径），已记入案例。
-5. **英文渠道（HN 等）建议新写短文**，直接给 v0.5 + 留出集数字，别带三站的更正尾巴。
+5. ~~英文渠道建议新写短文~~：✅ **短文已写好 2026-09-14** —— `work/share-paste/devto-article.md`
+   （v0.5 + 英中两个留出集数字，不带三站更正尾巴；尾部带「找 2–3 个非作者使用者跑 `compare`」的公开请求）。
+   渠道选 **dev.to**（实测：Reddit 从 251 全线路超时；dev.to 直连 200 且有正式发文 API），
+   发布脚本 `work/share-paste/publish_devto.py`（默认发草稿，`--live` 才上线）。
+   **待人给 dev.to API key 才能发**（Settings → Extensions → DEV Community API Keys）。
+   ⚠️ 更正一条我 09-14 的口头结论：HN 主站**可达**（只 DNS 污染，pin `209.216.230.207` → 200），
+   此前说「IP 级封锁」是因为用了 AliDNS 给的过期 IP —— `SHARE.md` §0 的 hosts 说法是对的。
 
 ### 需要人类做的事（智能体做不了）
 

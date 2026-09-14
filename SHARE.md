@@ -49,7 +49,7 @@
 1. ✅ **知乎** —— 已发 2026-09-11（<https://zhuanlan.zhihu.com/p/2081788025013539447>）。链路可达，先用它把硬伤问出来
 2. ✅ **开源中国**（§4.5，2026-09-12 上线）与 ✅ **掘金**（§4.6，2026-09-12 上线）—— **V2EX 在本线路被 SNI 阻断，发不出去**，用这两个顶短帖位
 3. 隔 3–5 天再发 **HN** —— 它只是 DNS 污染，**加 hosts 就能发**（`209.216.230.207 news.ycombinator.com`，
-   IP 会变、发前复核）；Show HN 只有一次机会，等中文站把问题挖完再上
+   IP 会变、发前复核）。**2026-09-14 复验**：`--resolve news.ycombinator.com:443:209.216.230.207` → **200**；注意别用 AliDNS 给的 `174.37.54.20`（已过期，会 20s 超时）；Show HN 只有一次机会，等中文站把问题挖完再上
 4. 最后 **Reddit** —— DNS 污染 + SNI 阻断，**必须有代理**；没代理就跳过，别硬排
 
 **时间**：HN 在北京时间 **20:00–23:00**（美东上午）；Reddit 同理。
@@ -613,6 +613,26 @@ agent-charters compare 你的AGENTS.md
 > 产物在两种 PYTHONHASHSEED 下字节一致，且有测试守着。
 
 ---
+
+## 5.5 dev.to（英文，**机器可发** —— 2026-09-14 新增）
+
+**为什么是它**：HN / Reddit 从 251 发不出去（Reddit 全线路超时；HN 只是 DNS 污染，pin 对 IP 能 200，
+但发帖要网页登录）。**dev.to 从 251 直连 200，且有正式发文 API** ⇒ 目前唯一能"机器端到端发"的英文渠道。
+
+- 文章：`work/share-paste/devto-article.md`（front matter 里带 title / tags / published）
+- 脚本：`work/share-paste/publish_devto.py`（只用标准库；**默认发草稿**，`--live` 才上线）
+
+```bash
+export DEVTO_API_KEY=...                                       # 或写进 ~/.devto_api_key（只读不打印）
+.venv/bin/python work/share-paste/publish_devto.py --dry-run   # 先看会发什么，不联网
+.venv/bin/python work/share-paste/publish_devto.py             # 发草稿 → 打印 id / url
+.venv/bin/python work/share-paste/publish_devto.py --update <id>
+```
+
+- key：dev.to → Settings → Extensions → **DEV Community API Keys** → Generate
+- 口径：v0.5 数字 + 英中两个留出集（92%/70%、88%/73%），**不带三站更正尾巴**
+- 文章尾部带一条公开请求：**找 2–3 个非作者的使用者跑 `compare`** —— 这正是判据里缺的那一格
+- 纪律：dev.to 发文是平台支持的行为，但仍按"一次 2 个渠道、别同日到处贴"来
 
 ## 6. 发完之后
 
