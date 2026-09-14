@@ -847,6 +847,17 @@ public board"上的观察一致；*"The gotchas are the file"*；称赞 rule-bas
 顺手记一条**读者可能踩的坑**：国内网络直连 PyPI 拉 pandas/pyarrow（62 MB）**会断流/哈希不符**
 （2026-09-14 实测 3/3 失败），加 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 才稳（实测 9 秒）。
 
+### 可复用的下一步：GitHub Action（2026-09-14，`6fa8a8e`+`f5ae512`）
+
+`uses: janzong/agent-charters@v1` —— PR 里跑 `compare` + `refs`，结果进 job summary，
+**默认只报告不拦**（闸门由使用者在自己 workflow 里显式开，理由见 `STATE.md` D34）。
+本仓库自己也在用，徽章挂在 README 首屏。
+
+**对分享的用法**：这是回答"我怎么持续用上"的现成答案——回复评论时可以直接给这五行 YAML，
+比再让人手动跑一次命令更有粘性。**注意**：这也是唯一能自动落进别人仓库里的入口
+（判据 6 的"反复使用"），但目前**只有本仓库在跑**，别人装没装要看 GitHub 的
+`network/dependents` 或搜 `uses: janzong/agent-charters`。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破
