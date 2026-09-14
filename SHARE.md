@@ -62,6 +62,14 @@
    - Windows（240 / 云电脑）：编辑 `%SystemRoot%\System32\drivers\etc\hosts` 追加同一行，再 `ipconfig /flushdns`
    - 回滚：删掉那一行即可（251 上带 `# 2026-09-14 Codex` 注释便于定位；Windows 上就是裸行）
    - ⚠️ **HN 换 IP 后这个钉法会静默失效**——发帖前先复测一次，别在发布会场才发现打不开
+
+   🔴 **发 HN 时必须用 GitHub 链接，不要用 dev.to 链接**（2026-09-14 查证）：
+   HN 默认把 `dev.to` 的提交**直接标成 dead**（"dev.to submissions will appear as dead by default
+   in the 'New' queue"，2022-06-25 评论；另有 Ask HN 专帖《Why are most dev.to links submitted to HN dead?》
+   20 分 / 36 评）。配套证据：116 分 / 106 评的《The collapsing quality of dev.to (2021)》，
+   评论区原话"dev.to is almost entirely low-quality articles … not unexpected for HN to ban the site altogether"、
+   "i stopped frequenting the dev.to community because the average quality of articles just got so low"。
+   ⇒ **HN 提交 URL 一律指 GitHub 仓库**，dev.to 只做站外社区，两者别混。
 4. 最后 **Reddit** —— DNS 污染 + SNI 阻断，**必须有代理**；没代理就跳过，别硬排
 
 **时间**：HN 在北京时间 **20:00–23:00**（美东上午）；Reddit 同理。
@@ -661,6 +669,28 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
 - 文章尾部带一条公开请求：**找 2–3 个非作者的使用者跑 `compare`** —— 这正是判据里缺的那一格
 - 纪律：dev.to 发文是平台支持的行为，但仍按"一次 2 个渠道、别同日到处贴"来
 
+### 口碑与对外分发（2026-09-14 查证，源：HN Algolia + dev.to/about + Forem 源码）
+
+**名气**：英语世界最大的通用开发者社区之一，建在开源的 Forem 上；`dev.to/about` 原文确认
+"DEV has joined forces with Major League Hacking (MLH)"。但在**技术精英圈（HN）口碑偏负**：
+《The collapsing quality of dev.to (2021)》116 分 / 106 评，评论区直指"几乎全是低质文章"、
+"平均质量低到不值得我花时间"。⇒ **它的价值是"触达中位数开发者 + SEO"，不是"拿技术背书"**
+——对本项目（要的是中立的外部使用者，不是 HN 的赞）反而够用。
+
+**对外分发，实测只有一条自动通道**：
+
+| 通道 | 状态 | 证据 |
+|---|---|---|
+| **RSS**（`dev.to/feed/<用户名>`、`dev.to/feed/tag/<tag>`） | ✅ **通** | 实测均 200；用户 feed 里已含本篇文章，任何聚合器/机器人可消费 |
+| 站内首页 / Tag 流 / reactions / 评论 / 收藏 | ✅ 有 | 站内算法，无外部加权 |
+| **自动转发到 Twitter / X / Mastodon** | ❌ **没找到** | Forem 源码搜 `autoshare` **零命中**；社交字段（mastodon/twitter/github…）只是个人资料链接（`app/models/settings/general.rb`）。**不要指望发完自动扩散** |
+| 第三方聚合（daily.dev 等） | ❓ 未证实 | 拉到的页面提到 Medium 21 次、`dev.to` 0 次，但页面是 JS 渲染，**不打包票** |
+
+⇒ 结论：**dev.to 不负责把你推出去**。发文只是"有地方可被引用 + 进 RSS + 爬虫能抓"，
+真正的扩散仍要靠人把链接贴到别处（而 HN 又拒收 dev.to 链接，见 §0）。
+**可做的一件事**：在 dev.to 个人资料里把 GitHub 链接填上（Forem 支持 github 字段），
+读者看文章时不显示，但点进主页能看到仓库入口。
+
 ### 渠道裁决（2026-09-14 由人定）
 
 **外网以 dev.to 为主**，HN 押后（等中文站与 dev.to 把硬伤问出来，Show HN 只有一次机会）。
@@ -676,6 +706,10 @@ Reddit 无代理则跳过。
 | 点赞 / 关注 | ❌ 不能 | 无对应路由 |
 
 ⇒ **对外互动必须由人贴**。回复/评论文案写在 `work/share-paste/`，格式都是"复制即贴"。
+
+**2026-09-14 裁决：先维持粘贴流程**（评论量还小；自动化需在 Mac 上建专用 Chrome 配置并登录一次，
+属系统改动，等互动量上来再做。可行性已探明：Mac 有 Chrome + node v22 + npm 可达（官方源与 npmmirror 均 200）、
+251 有 Chrome 153 + `~/.cache/ms-playwright` 缓存，两条路都通）。
 
 ### 首条外部反馈（2026-09-14 12:41Z，发布后 18 分钟）
 
