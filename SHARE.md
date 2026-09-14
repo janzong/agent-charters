@@ -665,7 +665,7 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
   行尾打印的 `published=` 也已改成取 API 回执（原取自 front matter 字符串，会误报 `false`）。
 - **合集**：`AGENTS.md in the wild` → <https://dev.to/janzong/series/44219>（`collection_id 44219`，2026-09-14 建，
   已含本文；合集页实测 200 且含本文链接）。同主题文章在 front matter 带 `series:` 即自动进合集
-- **第二篇（2026-09-14 建草稿）**：id `4650835`，标题 *I looked at 558 AGENTS.md files: here's a 5-minute
+- **第二篇（2026-09-14 12:5x 上线）**：id `4650835`，标题 *I looked at 558 AGENTS.md files: here's a 5-minute
   check for yours*，tags `ai/agents/devtools/productivity`，源码 `work/share-paste/devto-article-02.md`。
   主题＝**读者自查**（不碰任何私库材料）：九类基线率 → 两个实测案例（`langchain-ai/deepagents` 7/9 缺
   `overview`+`gotchas`；`openai/openai-agents-python` 6/9 缺 `style`/`agent_meta`/`gotchas`）→
@@ -742,6 +742,14 @@ Reddit 无代理则跳过。
 ①`148 上 git pull 不补依赖` → "生产机上 `git pull` 不补依赖"；
 ②镜像核验段的 `/home/janz/workspace/rmas-v3/...` 路径与顶层条目清单 → 用通用占位。
 **核心结论（`compare` 认不出自己的槽位名 `agent_meta`、`refs` 镜像核验法）是工具通用的，可全发。**
+
+**第二条外部反馈（2026-09-14 13:04:20Z）**：`reidmarlow`（564 字符，第一篇下第 2 条顶层评论）。
+他独立提出**环境漂移类失败**才是多 agent 仓库真正的摩擦点——"an unpinned CLI tool behaving
+differently in a subshell or a rate limit on an unmocked internal service … it loops until context
+runs out because the repo itself contains no evidence of why the command broke"。**这正好命中实测的
+那 8% 桶**（`work/gotcha_origin.md`：58% 读代码可得 / 34% 不是坑 / 8% 只能靠经历）。
+回复文案 `work/share-paste/devto-reply-02.md`（**待人贴**），补了两点：①`13.6%` 这个数**高估**了
+真正被写下来的经验知识（章节罕见 + 内容大半不是坑）②机制=**自证失败 vs 非自证失败**。
 
 ### 首条外部反馈（2026-09-14 12:41Z，发布后 18 分钟）
 
