@@ -212,6 +212,24 @@ agent-charters compare <你的AGENTS.md>
    ⚠️ 更正一条我 09-14 的口头结论：HN 主站**可达**（只 DNS 污染，pin `209.216.230.207` → 200），
    此前说「IP 级封锁」是因为用了 AliDNS 给的过期 IP —— `SHARE.md` §0 的 hosts 说法是对的。
 
+### 推广摩擦清单（2026-09-14 定，按性价比）
+
+**判断**：当前卡点不是"内容不够"，而是**"看到 → 用上"之间有三道坎**（README 首屏讲 pandas、
+包不在 PyPI、没有"什么时候该用它"的场景）。所以最高杠杆不是再发文章。
+
+| # | 动作 | 状态 |
+|---|---|---|
+| 1 | **README 首屏改成工具优先**：安装 + 一条 `compare` + 真实输出（`openai/openai-agents-python` 6/9） | ✅ **09-14 完成**（`0da259a`，GitHub/Gitee 双端实读确认）｜两项自检：嵌入输出可复现、**不引用 `data/raw/` 路径**（该目录 gitignore，读者跑不出来） |
+| 2 | **发 PyPI**（`pipx install agent-charters`） | ⏳ **待人给 PyPI token**。名字实测空着（`pypi.org/pypi/agent-charters` → 404）。清空环境实测过 clone+venv 路径可用，但读者要 4 条命令 → 发完是 1 条 |
+| 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ⏳ 未开始。仓库**连 `.github/` 都没有**。命中判据 6 的"反复使用" |
+| 4 | 对语料库里 558 个仓库做"免费体检"外联 | ⏳ **需人裁定**（公开外联、有 spam 风险）。做法：挑 10 个、逐条个性化、给具体结论不写"来 star" |
+
+**不建议做的**：给章程打"质量分"——会诱导优化分数而非文件，与 `LIMITATIONS.md` 的克制冲突。
+
+**其它方向（启发）**：①gotchas 采集流水线（从 CI 失败日志/issue 挖坑，解决"没人写坑"）②纵向测量
+（已有 `baseline-2026-09-10.tsv` + `longitudinal.py`，等到 2026-12 才有数据，但是"机器批量写章程"
+唯一的测量方法）③跨文件类型一致性检测（同一仓库 `AGENTS.md` 与 `CLAUDE.md` 是否互相矛盾）
+
 ### 需要人类做的事（智能体做不了）
 
 - 对外分享：Show HN / Reddit / 知乎 / V2EX
