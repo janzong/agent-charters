@@ -665,6 +665,17 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
   行尾打印的 `published=` 也已改成取 API 回执（原取自 front matter 字符串，会误报 `false`）。
 - **合集**：`AGENTS.md in the wild` → <https://dev.to/janzong/series/44219>（`collection_id 44219`，2026-09-14 建，
   已含本文；合集页实测 200 且含本文链接）。同主题文章在 front matter 带 `series:` 即自动进合集
+- **第二篇（2026-09-14 建草稿）**：id `4650835`，标题 *I looked at 558 AGENTS.md files: here's a 5-minute
+  check for yours*，tags `ai/agents/devtools/productivity`，源码 `work/share-paste/devto-article-02.md`。
+  主题＝**读者自查**（不碰任何私库材料）：九类基线率 → 两个实测案例（`langchain-ai/deepagents` 7/9 缺
+  `overview`+`gotchas`；`openai/openai-agents-python` 6/9 缺 `style`/`agent_meta`/`gotchas`）→
+  "坑"为什么稀少（120 条人工标注：58% 读代码可得 / **34% 根本不是坑** / 8% 只能靠经历）→ 五问自查
+  → 工具用法 → 诚实的局限 → 请读者跑 `compare` 报告错标
+- ⚠️ **包不在 PyPI**（`pypi.org/pypi/agent-charters/json` → **404**）：对外文案里**不能写
+  `pip install agent-charters`**。正确路径＝clone + venv + `pip install .`
+  **2026-09-14 已在清空环境实测通过**（`mktemp -d` 新建目录 → SSH clone → venv → `pip install .`
+  （清华镜像，含 pandas/pyarrow 约 30–60s）→ **换到无关目录**跑 `compare`，输出正确 2/9）——
+  这条同时是"外部使用者路径可用"的第一份证据
 - 首次发布留档：id `4649807`，2026-09-14 12:23Z 上线 ——
   <https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 - 口径：v0.5 数字 + 英中两个留出集（92%/70%、88%/73%），**不带三站更正尾巴**
