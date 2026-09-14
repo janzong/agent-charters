@@ -2,6 +2,45 @@
 
 > **人写给 AI 智能体的书面规约**的结构化语料库。
 > 数据集 **v0.5** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
+> 附带命令行工具：把任意一份章程与其中 **516 份实质文件**的基线对比，看它缺了什么。
+
+## 30 秒试用：给你的 `AGENTS.md` 做一次体检
+
+`compare` 回答一个问题：**你的章程写了九类里的哪几类，缺的是语料库里写得最多的哪几类。**
+
+```bash
+git clone https://github.com/janzong/agent-charters   # 国内镜像：https://gitee.com/janzong/agent-charters
+cd agent-charters
+python -m venv .venv && .venv/bin/pip install .
+.venv/bin/agent-charters compare path/to/AGENTS.md
+```
+
+拿语料库里一份真实文件跑 —— `openai/openai-agents-python` 的 `AGENTS.md`（原文在
+[Release `v0.5`](https://github.com/janzong/agent-charters/releases/tag/v0.5) 里；
+`data/raw/` 不入库，所以输出里的路径长这样只是示意，你把自己仓库的文件路径填进去就是自己的结果）：
+
+```text
+### AGENTS.md  [34658B, en, 27 章节, rule]
+  overview        32.2%    ✓ x1
+  structure       59.1%    ✓ x2
+  build_test      82.8%    ✓ x3
+  style           54.5%    —
+  workflow        67.1%    ✓ x7
+  environment     45.0%    ✓ x1
+  boundaries      85.7%    ✓ x19
+  gotchas         13.6%    —
+  agent_meta      25.8%    —
+```
+
+34 KB、27 个章节、19 处禁令 —— **它仍然没写 `gotchas`**。整个语料库里只有 **13.6%** 的章程写了坑，
+而写下来的那些条目里 **34% 根本不是坑**（"记得装依赖"这类通用建议；120 条人工标注，
+见 [`work/gotcha_origin.md`](work/gotcha_origin.md)）。
+
+**它不给你的文件打分。**覆盖率是过程指标，不是质量指标 —— 填满九格不等于写好，
+理由写在 [`LIMITATIONS.md`](LIMITATIONS.md)。它指出的是**你跳过了哪一格**。
+
+> 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面是 clone 安装，
+> 首次装约 30–60 秒（拉 pandas / pyarrow）；这条路径已在清空虚拟环境里实测过。
 
 ## 这是什么
 
@@ -42,7 +81,7 @@
 > [Release `v0.5`](https://gitee.com/janzong/agent-charters/releases/tag/v0.5)）。数据集也可从
 > [GitHub Release `v0.5`](https://github.com/janzong/agent-charters/releases/tag/v0.5) 直接下载（parquet + jsonl）。
 
-## 快速开始
+## 快速开始：读数据集
 
 ```python
 import pandas as pd
@@ -78,9 +117,9 @@ print(len(sub))
 > **全文任意一处出现禁令语句** 85.7%（含正文的 `Do not …` 通式）。两个数都对，问法不同。
 > 详见 [`FINDINGS.md`](FINDINGS.md) §1。
 
-## 命令行工具
+## 命令行工具（完整参考）
 
-装好依赖后（或在仓库根目录直接 `.venv/bin/python -m agent_charters`）：
+上面是体检用的最短路径，这里是全集。装好依赖后（或在仓库根目录直接 `.venv/bin/python -m agent_charters`）：
 
 ```bash
 # 写章程之前：检查清单 + 可直接粘贴给生成器的提示词
