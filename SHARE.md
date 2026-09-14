@@ -778,6 +778,21 @@ state 保持原样 ✓
 丢失的两条评论已补写进 `~/.local/state/devto-watch.log`（补写前的 state/log 备份在
 `/tmp/devto-watch.{json,log}.bak`）。
 
+### ⚠️ 同一晚又踩到两处（2026-09-14 22:35，已修）
+
+换 key 后手动跑了一次真实 timer 路径，暴露出两个独立问题：
+1. **自家回复也会触发通知**：`alexshev`/`raknaos` 的回复发出后，脚本把**我自己的两条回复**
+   也当成"新评论"，一路 ping 进 Hermes 收件箱，通知链路白跑一轮（那一轮真花了 3.5 分钟）。
+   已修：按**文章作者名**过滤 —— 作者自己的评论只记进 state，不通知、不写日志。
+   复验：只把自家两条退回"未见过" → 输出「（无新评论）」、4.7 秒结束、state 正常回到 4 条 ✓
+   （对照：同样条件下刷新一条外部评论 → 40 秒、通知真发出 ✓）
+2. **退出码 10 被 systemd 记成失败**：脚本用 10 =「有新评论」，而 systemd 的 oneshot
+   把任何非 0 当失败，于是 `Failed with result 'exit-code'` —— 天天报红，**真正的失败反而看不见**。
+   已修：单元加 `SuccessExitStatus=10`。
+
+顺带确认了 420 秒超时是对的：实测一次 `notify-hermes.sh` 花了 **~3.5 分钟**（旧的 180 秒
+必然把它掐死——正是上面那个静默失败事故的成因）。
+
 ### 第 2 篇的两条外部评论（2026-09-14，**待人贴回复**）
 
 1. **`alexshev` @ 13:35:35Z（309 字符）**：给出比我们更干净的判据 ——
@@ -1018,3 +1033,24 @@ agent_meta 45%、environment 57%——都散在正文、没有专门章节，是
 另外：只有我一个标注者；中文留出集为 0（中文样本上轮用光）。
 复算：work/audit/holdout_vs_rule_v0.5.py（seed 20260913）。
 ```
+
+### 🔑 dev.to key 卫生（2026-09-14 第二次踩到，**照这个做**）
+
+**规则**：key 只存在于 `~/.devto_api_key`（0600）。**不要贴进对话框** ——
+对话内容会进模型上游的请求日志、也会落到本机 rollout 文件，而 dev.to 的 key
+是**账号级**的（能改/删文章），比一个只读 token 值钱得多。
+
+**为什么反复强调**：2026-09-14 同一天发生了两次 —— 先是一把 key 被贴进对话（随即轮换），
+然后**新 key 又被贴了一次**。第二次的代价是：同一账号上两把 key 同时有效，
+其中一把已经在对话历史里，必须再轮换一次并把旧的全部吊销。
+
+**自己写文件（key 不进对话、不进 shell 历史）**：
+```bash
+read -rsp 'dev.to key: ' K && printf '%s' "$K" > ~/.devto_api_key \
+  && chmod 600 ~/.devto_api_key && unset K && echo " 已写入 $(wc -c < ~/.devto_api_key) 字节"
+```
+**吊销旧 key**：<https://dev.to/settings/extensions> → *DEV Community API Keys* → 删掉不用的那几把。
+**判断某把 key 还活着**（只读调用，不打印 key）：`GET https://dev.to/api/users/me`，
+200 = 还活着、401 = 已失效。
+**验证新 key 装好了**：`systemctl --user start devto-watch.service`（读文件里的 key；
+无新评论时静默退出 0），或 `python3 work/share-paste/watch_devto.py` 看读数表。

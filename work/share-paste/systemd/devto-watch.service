@@ -17,4 +17,9 @@ ExecStart=%h/workspace/agent-charters/.venv/bin/python %h/workspace/agent-charte
 # 通知链最长路径：dev.to 两次 API（~15s）+ notify-hermes.sh 内部的 `timeout 300`
 # （watch_devto.py 的 subprocess timeout 是 330）。180 会先把通知掐死 ——
 # 2026-09-14 实测踩过：hermes 卡住 → systemd 杀服务 → 日志没写、通知没发，评论被静默吞掉。
+# 另实测一次 notify 真花了 ~3.5 分钟（hermes 那次特别慢），420 是留出来的余量。
 TimeoutStartSec=420
+# 脚本用 10 =「有新评论」作退出码（给 shell/CI 用来区分"有事"与"出错"）。
+# 不写这一行，systemd 会把"发现新评论"记成 unit 失败（2026-09-14 实测：
+# `Failed with result 'exit-code'`），于是 `systemctl status` 天天报红，真正的失败反而看不见。
+SuccessExitStatus=10

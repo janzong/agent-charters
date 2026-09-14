@@ -12,6 +12,8 @@
     python3 watch_devto.py --notify-hermes    # 有新评论时发一次 Hermes 收件箱
     python3 watch_devto.py --json             # 机器可读
 - 首跑只建立基线，不把历史评论当"新"，不通知。
+- **只通知别人的评论**：作者自己的回复不算（否则通知通道会为自己的回复白跑一轮）。
+- 退出码：0 无事 ｜ 10 有新评论（systemd 单元要写 `SuccessExitStatus=10`，否则算失败）。
 """
 from __future__ import annotations
 
@@ -123,16 +125,23 @@ def main() -> int:
         aid = str(a["id"])
         seen = set(state["comments"].get(aid, []))
         ids = [c.get("id_code") for c in by_article.get(aid, [])]
+        self_name = (a.get("user") or {}).get("username")
         for c in by_article.get(aid, []):
             # 首跑只建立基线：历史评论不算"新"，更不能触发通知
-            if not first_run and c.get("id_code") not in seen:
-                new_comments.append({
-                    "article_id": aid, "article_title": a.get("title"), "article_url": a.get("url"),
-                    "id_code": c.get("id_code"),
-                    "author": (c.get("user") or {}).get("username"),
-                    "created_at": c.get("created_at"),
-                    "text": text_of(c),
-                })
+            if first_run or c.get("id_code") in seen:
+                continue
+            # 自己发的回复不算"需要人回"的评论：它会一路 ping 到 Hermes 收件箱，
+            # 而那个通道要提醒的恰恰是"有人评论了、快去回"。
+            # 2026-09-14 实测：两条自家回复触发了一次通知，通知链路白跑 3 分钟。
+            if (c.get("user") or {}).get("username") == self_name:
+                continue
+            new_comments.append({
+                "article_id": aid, "article_title": a.get("title"), "article_url": a.get("url"),
+                "id_code": c.get("id_code"),
+                "author": (c.get("user") or {}).get("username"),
+                "created_at": c.get("created_at"),
+                "text": text_of(c),
+            })
         prev = state["articles"].get(aid, {})
         views, react, coms = a.get("page_views_count"), a.get("public_reactions_count"), a.get("comments_count")
 
