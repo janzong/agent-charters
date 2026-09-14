@@ -58,6 +58,16 @@ def text_of(c: dict) -> str:
     return " ".join(html.unescape(re.sub(r"<[^>]+>", " ", c.get("body_html") or "")).split())
 
 
+def logged_ids() -> set[str]:
+    """日志里已经写过的评论 id_code（用于重试时的去重）。"""
+    if not LOG.exists():
+        return set()
+    try:
+        return set(re.findall(r"\| ([0-9A-Za-z]+) =====$", LOG.read_text(encoding="utf-8"), re.M))
+    except OSError:
+        return set()
+
+
 def load_state() -> dict:
     if STATE.exists():
         try:
@@ -142,9 +152,26 @@ def main() -> int:
     if first_run:
         for a in arts:
             state["comments"][str(a["id"])] = [c.get("id_code") for c in by_article.get(str(a["id"]), [])]
-    if not args.no_state:
-        save_state(state)
 
+    # 顺序很关键：①先落日志（durable）②再通知（可能要调 hermes，慢）③最后才推进 state。
+    # 2026-09-14 踩过：通知卡在 hermes 上被 systemd 的 TimeoutStartSec 杀掉，
+    # 而 state 在通知之前就写好了 —— 结果日志没有、通知没发、评论被静默吞掉（两条，
+    # 隔了两个小时才被人发现）。任何一步被杀，下一轮都会重来一遍，最坏是重复通知，不是丢。
+    if new_comments:
+        # 日志按 id_code 去重：通知失败会整轮重试，重试不该把同一条评论写第二遍
+        seen_in_log = logged_ids()
+        fresh = [c for c in new_comments if c.get("id_code") not in seen_in_log]
+        if fresh:
+            try:
+                LOG.parent.mkdir(parents=True, exist_ok=True)
+                with LOG.open("a", encoding="utf-8") as f:
+                    for c in fresh:
+                        f.write(f"\n===== {c['created_at']} | {c['author']} "
+                                f"| 文章 {c['article_id']} | {c['id_code']} =====\n{c['text']}\n")
+            except OSError as e:
+                print(f"⚠️ 日志写入失败（不影响通知）：{e}", file=sys.stderr)
+
+    notify_ok = True
     if args.notify_hermes and new_comments:
         body = [f"dev.to 出现 {len(new_comments)} 条新评论（需要人贴回复；评论 API 只读，Codex 发不了）。"]
         for c in new_comments:
@@ -154,22 +181,24 @@ def main() -> int:
                     "（评论全文已落 ~/.local/state/devto-watch.log，通知里只有前 600 字符）。"
                     "约束：不要自动发评论 —— dev.to 评论 API 只读（`POST /api/comments` 在真实站上不存在）。")
         cmd = os.environ.get("DEVTO_WATCH_NOTIFY_CMD", str(NOTIFY))
+        # 必须比 notify-hermes.sh 自己的 `timeout 300` 大：让它自己超时并给出 rc，
+        # 而不是被我们掐断（掐断会连 stderr 一起丢，排查时看不见原因）。
         try:
-            out = subprocess.run([cmd, "\n".join(body)], capture_output=True, text=True, timeout=300)
+            out = subprocess.run([cmd, "\n".join(body)], capture_output=True, text=True, timeout=330)
             if out.returncode != 0:
                 print(f"⚠️ 通知失败 rc={out.returncode}: {out.stderr.strip()[:200]}", file=sys.stderr)
+                print("   （state 未推进，下一轮会重试；评论正文已落日志）", file=sys.stderr)
+                notify_ok = False
         except Exception as e:  # noqa: BLE001
             print(f"⚠️ 通知异常: {type(e).__name__}: {e}", file=sys.stderr)
+            print("   （state 未推进，下一轮会重试；评论正文已落日志）", file=sys.stderr)
+            notify_ok = False
 
-    if new_comments:
-        try:
-            LOG.parent.mkdir(parents=True, exist_ok=True)
-            with LOG.open("a", encoding="utf-8") as f:
-                for c in new_comments:
-                    f.write(f"\n===== {c['created_at']} | {c['author']} | 文章 {c['article_id']} =====\n"
-                            f"{c['text']}\n")
-        except OSError:
-            pass
+    # ③ 只有通知成功（或本来就不通知）才推进 state —— 否则下一轮重来
+    if not args.no_state and notify_ok:
+        save_state(state)
+    elif not notify_ok:
+        print("（本轮不算处理完成：state 保持原样，30 分钟后重试）", file=sys.stderr)
 
     if args.json:
         print(json.dumps({"articles": state["articles"], "new_comments": new_comments},

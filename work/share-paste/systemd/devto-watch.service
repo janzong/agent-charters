@@ -14,4 +14,7 @@ WorkingDirectory=%h/workspace/agent-charters
 # 安装：若 hermes 装在别处，改这一行
 Environment=PATH=%h/.hermes/hermes-agent/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ExecStart=%h/workspace/agent-charters/.venv/bin/python %h/workspace/agent-charters/work/share-paste/watch_devto.py --changed-only --notify-hermes
-TimeoutStartSec=180
+# 通知链最长路径：dev.to 两次 API（~15s）+ notify-hermes.sh 内部的 `timeout 300`
+# （watch_devto.py 的 subprocess timeout 是 330）。180 会先把通知掐死 ——
+# 2026-09-14 实测踩过：hermes 卡住 → systemd 杀服务 → 日志没写、通知没发，评论被静默吞掉。
+TimeoutStartSec=420

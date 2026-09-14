@@ -750,6 +750,58 @@ Reddit 无代理则跳过。
 - 验证记录：装在 2026-09-14 21:30，timer 已排程（下次 22:02）；首跑静默 rc=0；
   **systemd 内端到端**用假通知命令复现过一次"新评论 → 通知正文 → 状态自愈"
 
+### ⚠️ 盯梢的静默失败（2026-09-14 22:0x 踩到，已修）
+
+**现象**：第二篇文章来了两条评论（`alexshev` 13:35:35Z、`raknaos` 13:42:27Z），
+**没人被告知**——两小时后用户自己翻页面才看见。
+
+**根因（systemd 日志坐实）**：`journalctl --user -u devto-watch` 里
+`start operation timed out. Terminating.` ＋ `Failed with result 'timeout'`（22:02:15 → 22:05:15）。
+原实现的三步顺序是 **①推进 state ②调 hermes 通知 ③写日志**，而
+`notify-hermes.sh` 内部 `timeout 300` **大于**单元的 `TimeoutStartSec=180` ——
+hermes 那轮卡住，systemd 在 180 秒把服务杀了：**日志没写、通知没发，而 state 已经推进**，
+这两条评论从此永远不会再被看见。
+
+**三条修法**（都在本次提交里）：
+1. `watch_devto.py` 顺序改成 **①写日志（durable）②通知 ③只有通知成功才推进 state**；
+   任何一步被杀，下一轮整轮重来 —— 最坏是**重复通知**，不是静默丢。
+2. 日志按 `id_code` 去重（重试不会把同一条评论写第二遍）；日志头现在带 `| <id_code> =====`。
+3. 单元 `TimeoutStartSec` 180 → **420**（> `notify-hermes.sh` 内部 300 > `subprocess timeout` 330），
+   并给 `notify-hermes.sh` 一个比它自己更宽的窗口：**让它自己超时并给出 rc**，
+   而不是被 systemd 掐断（掐断连 stderr 一起丢，排查时看不见原因）。
+
+**复验**：假通知命令（`DEVTO_WATCH_NOTIFY_CMD=`）
+① 退出 0 → 日志写一次 + state 推进 ✓
+② 退出 1 → stderr 出「通知失败 rc=1 / state 未推进，下一轮会重试」，日志行数不变（去重生效）、
+state 保持原样 ✓
+③ 真实 timer 路径实跑一次：26 秒结束、无新评论静默 ✓
+丢失的两条评论已补写进 `~/.local/state/devto-watch.log`（补写前的 state/log 备份在
+`/tmp/devto-watch.{json,log}.bak`）。
+
+### 第 2 篇的两条外部评论（2026-09-14，**待人贴回复**）
+
+1. **`alexshev` @ 13:35:35Z（309 字符）**：给出比我们更干净的判据 ——
+   *"whether each instruction changes a decision at the moment it matters"*，
+   并主张"known failure modes + trigger/consequence/recovery"比一长串通用告诫有用。
+   → 回复 `work/share-paste/devto-reply-03.md`（944 字符）：承认他的措辞更好、
+   交底"这条我测不了（规则分类器只数类别）"，并补一个可查事实：语料库里 8 份 9/9 全中的文件，
+   最短的只有 **7.7 KB**（`dbeaver/dbeaver`）——九格填满 ≠ 每格都能改变一次决策。
+2. **`raknaos` @ 13:42:27Z（760 字符，本轮最值钱的一条）**：他**真拿尺子量了自己的文件**
+   （"I just re-read it against your ruler"），并问两个具体问题：
+   - 三仓库清单测试**有没有在已经 9/9 的文件上跑过**，还是只在不及格的样本上？
+     → **当晚实测**：`brief` 对 9/9 文件只打 `All nine categories covered - nothing to add.`
+     （`dbeaver/dbeaver` 7674B、`graykode/abtop` 21544B、`browser-use/browser-use` 38463B 三份）——
+     即**清单是地板不是审阅者**；顺带交底 `agent_meta` 那个洞（照 `brief` 槽位名写标题，
+     `compare` 会报 8/9，见 `work/case-rmas-v3.md` §3）。
+   - 坑的缺口是**写作习惯还是复核习惯**（把复盘当事后必产物的团队这一格得分更高吗）？
+     → 用唯一能测的代理变量实测：指向知识库/规则目录（`hard_route`）的章程
+     **24.7%（19/77）** 写了 `gotchas`，其余 **11.6%（51/439）** —— **2.12×**，
+     Fisher 双尾 **p=0.0037**，按体量四分位分层后四个分位都是前者更高（Q1 20.0/5.6｜Q2 10.0/7.3｜
+     Q3 26.3/13.6｜Q4 33.3/21.9）。边界：代理变量测的是"指向外部载体"的写法而非复盘制度；
+     横截面、方向未知；有 `gotchas` 一节 ≠ 里面写的是坑。
+   → 回复 `work/share-paste/devto-reply-04.md`（1987 字符），末尾请他把自己那份文件跑一次
+     `compare`（判据 6 缺的就是"非作者使用者"，他自称有 agent 文件）。
+
 ### 🔴 私库案例的外发口径（2026-09-14 定，**先看这条再写任何案例文**）
 
 `rmas-v3` 是**私库**（`gh api repos/janzong/rmas-v3` → **404**；对照 `agent-charters` → `private=false`）。

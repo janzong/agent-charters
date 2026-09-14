@@ -777,6 +777,22 @@ def test_longitudinal_self_diff_is_zero():
     assert "新增              0" in r.stdout
 
 
+def test_hard_route_gotchas_numbers_are_reproducible():
+    """对外回复里引用的 2.12× / p=0.0037 必须随时算得出来。
+
+    D25 的纪律：凡是对外说出口的比例，都要是算出来的、不是记下来的。
+    这两个数出在 2026-09-14 给 dev.to 读者的回复里，所以钉在这里——
+    数字变了测试就红，提醒改回复与 SHARE.md（而不是让它悄悄过期）。
+    """
+    import subprocess
+    r = subprocess.run([sys.executable, "work/hard_route_gotchas.py"], cwd=ROOT,
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    assert "2.12×" in r.stdout
+    assert "p = 0.0037" in r.stdout
+    assert "24.7%" in r.stdout and "11.6%" in r.stdout
+
+
 # --- 可重放性 -----------------------------------------------------------
 
 @pytest.mark.skipif(not MANIFEST.exists(), reason="data/raw 不在仓库里")
