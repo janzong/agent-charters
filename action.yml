@@ -1,7 +1,8 @@
 # agent-charters —— GitHub Action（复合动作，无 Docker，装了就能跑）
 #
 # 用途：把一份 `AGENTS.md` 与 558 份语料库的基线比一次 —— 九类里写了哪几类、
-# 指出去的路径还在不在。**不改你的文件**，只报告（除非你开 fail-on-*）。
+# 指出去的 **Markdown 指针**还在不在（`.sh` / `.py` / `.env` 这类裸文件名不在扫描范围内）。
+# **不改你的文件**，只报告（除非你开 fail-on-*）。
 #
 # 用法（消费方仓库的 workflow）：
 #   - uses: actions/checkout@v5
@@ -16,8 +17,9 @@
 name: agent-charters
 description: >-
   Compare an AGENTS.md against the 558-file corpus baseline (which of the nine
-  categories it covers, and what is missing), and check that every path it
-  points at still exists.
+  categories it covers, and what is missing), and check that its markdown
+  pointers (links, backticked .md/.txt paths, directory references) still exist.
+  Bare filenames such as .env or build.sh are not scanned.
 author: janzong
 
 branding:
@@ -42,9 +44,9 @@ inputs:
     default: ''
   fail-on-dangling:
     description: >-
-      Fail when the charter points at a path that does not exist. Off by default:
-      a path inside a prohibition list ("never commit .env") is not a broken
-      pointer, and the scanner cannot tell those two apart yet.
+      Fail when a markdown pointer in the charter does not exist. Off by default:
+      a directory inside a prohibition list ("never commit dist/") is not a
+      broken pointer, and the scanner cannot tell those two apart yet.
     required: false
     default: 'false'
   python-version:

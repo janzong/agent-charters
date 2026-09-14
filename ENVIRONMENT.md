@@ -366,3 +366,7 @@ git push origin main && git push gitee main && git push --tags
 5. **版权**：抓取的配置文件版权归原作者，**只发布衍生标注与统计特征，不发布全文**
 6. **可复现性**：LLM 抽取必须记录所用模型版本，否则半年后无法复现
 7. 敏感信息（内网 IP、口令、路径、人名）在提取阶段就要脱敏
+8. **`gh repo create --source=. --push` 走的是 HTTPS** —— 而本机这条组合是死的（见第 2 条）。
+   后果有欺骗性：仓库**被建成空仓**，`gh` 只报 `failed to run git: exit status 128`，
+   看起来像"push 没执行"而不是"推送失败"。2026-09-14 建 `agent-charters-action-test` 时踩到。
+   建完先 `git remote set-url origin git@github.com:<owner>/<repo>.git` 再 push

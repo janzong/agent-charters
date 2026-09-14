@@ -13,6 +13,10 @@
 > 09-14：英文短文**已在 dev.to 上线**（id `4649807`，12:23Z），发布后 18 分钟收到**首条非作者反馈**
 > （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**待人贴**（评论 API 只读）。
 > 渠道裁决：**外网以 dev.to 为主**，HN 押后（hosts 绕过已落四台，见 `SHARE.md` §0）。
+> 09-14 二件：**动作 tag `v1` 已建并双端推送** —— 此前 README / `action.yml` 一直让消费方写
+> `uses: janzong/agent-charters@v1`，而两端远端**压根没有这条 tag**，那个引用会直接报错；
+> 建完在**外部消费方仓库实跑验证**（D35）。同日发现并修掉 `refs` 的**对外措辞比实现宽**：
+> 它只认 Markdown 指针，`scripts/check.sh` / `.env` 这类裸文件名从不进候选（`LIMITATIONS.md` §23）。
 
 ---
 
@@ -44,10 +48,10 @@
 | 数据集 | ✅ **v0.5**（30 字段 / 516 份可统计，`ruleset_v0.1.8`）——**Release `v0.5` 已建**（GitHub + Gitee，2026-09-13；tag 指向 `84c17b9`，两端下载的 sha256 与仓库内逐字节一致）｜旧资产 `v0.2`/`v0.3` 仍在各自 Release（不静默替换，见 D18） |
 | 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.3.3**）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
 | 测试 | ✅ `pytest` **158 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组、D33 的"en 输出零汉字 + 中文文案冻结"、D34 的 Action 判定层 5 条、随包/发布两份语料逐字节一致）；**没有 `data/raw` 时 140 passed / 18 skipped**（新克隆与 CI 就是这个形态——已实测，跳过而不是红） |
-| CI / GitHub Action | ✅ **09-14 装机并首次跑绿**（`6fa8a8e`/`bb57b0f`，run `34855521055`）：三个 job 全 success —— `tests (py3.10)` **140 passed / 18 skipped**、`tests (py3.12)` 同样、`self-check` 打 8/9 并出 notice。⚠️ 真实 CI 里那 18 条跳过是**设计**（`data/raw` 不入库），不是漏跑；本地带 `data/raw` 是 **158 passed**：`tests` job 跑 py3.10/3.12 两套测试，`self-check` job 用**本仓库自己的 action** 检查本仓库的 `AGENTS.md`（`uses: ./`，即消费方路径 `uses: janzong/agent-charters@v1` 的同一链路）。判定层在 `agent_charters/gha.py`（可测）：①缺哪些类别 ②指向的路径还在不在；`fail-on-*` **默认关闭**（只报告），断链默认不拦——禁令清单里的路径不是断链（见 D34） |
+| CI / GitHub Action | ✅ **09-14 装机并首次跑绿**（`6fa8a8e`/`bb57b0f`，run `34855521055`）：三个 job 全 success —— `tests (py3.10)` **140 passed / 18 skipped**、`tests (py3.12)` 同样、`self-check` 打 8/9 并出 notice。⚠️ 真实 CI 里那 18 条跳过是**设计**（`data/raw` 不入库），不是漏跑；本地带 `data/raw` 是 **158 passed**：`tests` job 跑 py3.10/3.12 两套测试，`self-check` job 用**本仓库自己的 action** 检查本仓库的 `AGENTS.md`（`uses: ./`，即消费方路径 `uses: janzong/agent-charters@v1` 的同一链路）。判定层在 `agent_charters/gha.py`（可测）：①缺哪些类别 ②指向的路径还在不在；`fail-on-*` **默认关闭**（只报告），断链默认不拦——禁令清单里的路径不是断链（见 D34）；`refs` 只认 **Markdown 指针**，裸文件名不扫（§23）。**动作 tag `v1` 已发布，并在外部消费方仓库实跑通过**（2026-09-14，见 D35） |
 | 本仓库第一份 AGENTS.md | ✅ **09-14 写**（按 `brief` 的九槽清单正常写，不是为工具定制）。**自家工具当场抓到自家**：`compare` 报 **8/9**，缺的 `overview` 其实写了——标题「这是什么」不在词表里；`boundaries` 一度也漏（写的是「绝不」，规则里只有「禁止」家族）。归因 + 最小对照 → `LIMITATIONS.md` §22，**没有为了变绿改文档措辞**（那是迁就分类器，`work/case-rmas-v3.md` 已吃过一次同样的教训） |
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
-| 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/`v0.3`/`v0.5` 已对齐；**Release `v0.5` 已建**，资产哈希与仓库内逐字节一致；SSH 专用密钥 `id_gitee`） |
+| 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/`v0.3`/`v0.5` + 动作 tag `v1` 已对齐（双端 `ls-remote` 实测一致）；**Release `v0.5` 已建**，资产哈希与仓库内逐字节一致；SSH 专用密钥 `id_gitee`） |
 | 首发 | ✅ 2026-09-11 知乎《我把 558 份 AGENTS.md 全抓下来标了一遍》<https://zhuanlan.zhihu.com/p/2081788025013539447> |
 | 第二站 | ✅ **开源中国已上线**：<https://my.oschina.net/u/9764589/blog/19758304>（2026-09-12，未登录可访问）。更正状态：正文与平台 AI 摘要仍是 87%，两条更正评论（84.7% → **v0.5 最终版 82.8% / 85.7% 并列**）**均已贴**（2026-09-13，用户确认）。文案 `work/share-paste/oschina-comment-02.txt`（496 字符，≤500 限）。排版遗留不影响内容：5 个小标题只生效 3 个、代码块 0 个、正文 URL 未成超链接。 |
 | 第三站 | ✅ **掘金已上线**：<https://juejin.cn/post/7684156210712166442>（2026-09-12；未登录可访问；6 个小标题全部生效、2 个代码块正常、链接被 `link.juejin.cn` 重写属正常）。正文用的是 **84.7%（推算错的那版）** → **更正评论已贴**（2026-09-13，用户确认；v0.5 定稿版，文案 `work/share-paste/juejin-comment-01.txt`）。遗留：作者显示名仍是默认「用户66114510929」，建议设昵称+头像。 |
@@ -226,7 +230,7 @@ agent-charters compare <你的AGENTS.md>
 | 1 | **README 首屏改成工具优先**：安装 + 一条 `compare` + 真实输出（`openai/openai-agents-python` 6/9） | ✅ **09-14 完成**（`0da259a`，GitHub/Gitee 双端实读确认）｜两项自检：嵌入输出可复现、**不引用 `data/raw/` 路径**（该目录 gitignore，读者跑不出来） |
 | 2 | **让读者一条命令装上** | ✅ **09-14 完成（不注册 PyPI）**：`pipx install "git+https://gitee.com/janzong/agent-charters"` ——清空虚拟环境实测 **11.4s**、parquet 打在包里（424 KB）、换目录可跑，README 首屏已改。**PyPI 仍是唯一需要账号的路径**（PyPI 无匿名上传，实测 `upload.pypi.org/legacy` 从 251 返 200），**是否注册由人定**：不注册只损失「PyPI 搜索入口 + 版本化安装」，不影响读者一条命令用上工具 |
 | 2b | 发 PyPI（可选） | ⏳ 未定。名字确认空着（`pypi.org/pypi/agent-charters` → 404）。若做：**优先 Trusted Publishing（GitHub Actions，零 token）**，PyPI 官方帮助原话推荐 CI 走这条；备选＝账号级 API token 写到 `~/.pypi_token`（0600、不打印、不进会话） |
-| 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ✅ **09-14 完成**（`action.yml` 复合动作 + `.github/workflows/charter.yml`）。给外部仓库用：`- uses: janzong/agent-charters@v1` + `with: {path, fail-on-missing, fail-on-dangling}`；本仓库自己也在用（`uses: ./`）。**默认只报告不拦**（见 D34）。命中判据 6 的"反复使用"——但**别人仓库里跑起来才算数**，目前只有本仓库在跑 |
+| 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ✅ **09-14 完成**（`action.yml` 复合动作 + `.github/workflows/charter.yml`）。给外部仓库用：`- uses: janzong/agent-charters@v1` + `with: {path, fail-on-missing, fail-on-dangling}`；本仓库自己也在用（`uses: ./`）。**默认只报告不拦**（见 D34）。命中判据 6 的"反复使用"——但**别人仓库里跑起来才算数**——2026-09-14 用一次性外部消费方仓库（`janzong/agent-charters-action-test`）验证了 `@v1` 的解析、默认只报告（绿）、开启即拦（红+exit 1）三条行为（见 D35），**那是自建 fixture，不算判据 6** |
 | 4 | 对语料库里 558 个仓库做"免费体检"外联 | ⏳ **需人裁定**（公开外联、有 spam 风险）。做法：挑 10 个、逐条个性化、给具体结论不写"来 star" |
 | 5 | **CLI 输出中英双语**：英文渠道导来的读者不该在中文输出前止步 | ✅ **09-14 完成**（`b30a39f`，工具 0.3.3，138→150 测试）。默认跟 `LANG`/`LC_ALL`（非 zh 环境＝英文），`--lang en|zh` 可覆盖；中文输出与改造前**逐命令 diff 一致**（只有 `brief` 清单里的槽位问句由英文改回中文，见下） |
 
@@ -418,6 +422,40 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
 **日期**：2026-09-14
 
 ---
+
+### D35 ｜ 两套 tag 命名空间：`v1` 是动作 tag，`vX.Y` 是数据集 tag（2026-09-14）
+
+**决定**：仓库里同时存在两套 tag，语义不同、移动策略不同，**不要混用**：
+
+| tag | 含义 | 会移动吗 | 谁在用 |
+|---|---|---|---|
+| `v1` | **动作 / 工具 tag**：`action.yml` + 随包语料库 | **会**（GitHub Actions 大版本惯例；移动理由写进该 tag 的注解） | 外部仓库 `uses: janzong/agent-charters@v1` |
+| `v0.1` … `v0.5` | **数据集版本**：标注产物快照 | **不会**（不静默替换，见 D18） | 引数据的读者；各带 Release 与 sha256 |
+
+**为什么必需**：README / `action.yml` / `SHARE.md` 早就让消费方写 `@v1`，
+但两端远端**只有数据集 tag**，没有 `v1`—— 那个引用会直接报错（本轮开工前的真实状态）。
+2026-09-14 补建并双端推送：`v1` → 注解 tag 对象 `1b8fe95` → commit `d2303f4`（＝当时 HEAD，工具 0.3.3）。
+
+**验证（不看 `git push` 输出，看服务端真值与实跑）**：
+1. 服务端真值：双端 `git ls-remote --tags` 都是 `refs/tags/v1 1b8fe95` + `refs/tags/v1^{} d2303f4`；
+   `gh api .../git/ref/tags/v1` 解引用同样得 `d2303f4`。
+2. **外部消费方实跑**：一次性仓库 `janzong/agent-charters-action-test`（显式 fixture），
+   workflow 写 `uses: janzong/agent-charters@v1`，run `34858197698`：
+   - runner 日志 `Download action repository 'janzong/agent-charters@v1' (SHA:d2303f4a7bd…)` —— tag 真解析到该 commit；
+   - `report-only`（文档承诺的默认形态）**绿**，真输出 `coverage 3/9 categories`；
+   - `enforce`（`fail-on-missing: 'workflow,gotchas'`）**按设计红**：
+     `##[error]missing categories you asked to enforce: workflow, gotchas` + exit 1。
+3. **这不算判据 6**：fixture 是我们自己建的，不是"非作者的外部使用者"。
+
+**顺带踩的坑**（已记进 `ENVIRONMENT.md` §9.8）：`gh repo create --source=. --push` 走 HTTPS，
+而本机 git-over-HTTPS 到 GitHub 是死的 —— 仓库被建成**空仓**，`gh` 只报
+`failed to run git: exit status 128`。**新仓库先 `remote set-url` 成 SSH 再 push。**
+
+**移动规则（写给后续会话）**：改 `v1` 只改**动作相关的内容**（`action.yml`、`agent_charters/`、
+随包语料库）；纯记账（`STATE.md` / `SHARE.md` / `work/`）留在 main，不必跟着移 tag。
+移法：`git tag -f -a v1 -m "<为什么移>" <commit> && git push --force origin v1 && git push --force gitee v1`。
+
+**日期**：2026-09-14
 
 ## 6.5 实验结论：自动化对定位的影响（2026-09-10/11）
 

@@ -598,3 +598,50 @@ recall 70% → **73%**（+3pp）。两个语言的数字量级一致，**没有�
 而是"正文通道判定的是字面出现，不是语义"（§13 的"禁令通式假阳性 ≈3%"是同一个成因的量化）。
 所以本节的结论要这么说：**加词能补召回，但补不了"提到即命中"这个机制**；
 真要动规则，得先设计"提到"与"规定"的区分方式并实测，而不是往词表里塞词。**本轮仍然一字未改。**
+
+---
+
+## 23. `refs` 的扫描面比它的措辞窄：只认 Markdown 指针（2026-09-14）
+
+**发现路径**：给 `v1` action tag 做**外部消费方验证**（一次性测试仓库
+`janzong/agent-charters-action-test`）时，fixture 里写了 `bash scripts/check.sh`
+且该文件**故意不存在**，action 却报 **0 dangling path(s)**。查代码确认不是没跑：
+`agent_charters/refs.py` 的 `BACKTICK_PATH` 只匹配反引号里的 `.md` / `.mdc` / `.txt` 路径
+与 `目录/`，外加 `[文字](路径)` 形式的链接；`.sh` / `.py` / `.env` 这类裸文件名
+**从不进入候选集**（`find_refs` 收不到，`resolve_targets` 自然也不会判）。
+
+**为什么这是设计而不是疏漏**：这个模块的口径承接 `work/external_ref_scan.py` ——
+第一版「正文里出现任意 `.md` 路径」在 507 份上命中 **87%（442/507）**，抽验后判定为
+**假阳性机器**（README 列表、PR 模板、日志文件名全被算成"指向"）。收窄成
+「祈使转引」+「载体专名」之后才可用（`routes_outward` 54%）。**窄是刻意的代价。**
+
+**但对外措辞曾经比实现宽**（同日一并改掉）：`action.yml` 原文写
+"check that **every path** it points at still exists"，README 写「**逐条**核验章程指出去的
+路径还在不在」，而 `fail-on-dangling` 的说明还拿「绝不提交 `.env`」当例子——
+`.env` **根本不在扫描范围内**。实测（同一份章程）：
+
+| 写法 | 进候选？ | 结果 |
+|---|---|---|
+| 反引号 `` `docs/missing.md` `` | ✅ | `✗ docs/missing.md` |
+| 反引号 `` `data/raw/` ``（目录形态） | ✅ | `✗ data/raw/`（禁令清单误报，D34 记的就是这个） |
+| 反引号 `` `.env` `` | ❌ | 不进候选，**不报** |
+| 反引号 `` `scripts/check.sh` `` | ❌ | 不进候选（**旧 fixture 就是踩了这个**） |
+
+现在 README 与 `action.yml` 都改成"**Markdown 指针**"，并显式写明裸文件名不扫。
+
+**代价（仍未解决）**：一份章程指着不存在的 `scripts/build.sh`，action **不会**提醒你。
+要覆盖它就得放宽候选集，而放宽会立刻把上面那批假阳性放回来 —— 这个取舍没有免费答案，
+留给 `refs` 的口径修订（届时按 D23 跑两遍字节一致 + 补回归测试）。
+
+**复验命令**（三态各一条，都在 `--lang zh` 下）：
+
+```bash
+D=/tmp/refs-probe; mkdir -p "$D/.git" && printf 'ref: refs/heads/main\n' > "$D/.git/HEAD"
+printf '# P\n\n先读 `docs/missing.md`，别提交 `dist/`，也别碰 `scripts/check.sh`。\n' > "$D/AGENTS.md"
+.venv/bin/agent-charters refs "$D/AGENTS.md" --lang zh
+# → ✗ docs/missing.md / ✗ dist/   （2 个候选；`.sh` 不进候选）
+```
+
+**注意 `unverified` 这一态**：`base_dir` 没有 `.git` 时（例：把章程拷到 `/tmp` 单独跑）
+**不判断链**，对每个候选报 `unverified` —— 宁可说"验不了"，也不要误报
+（`work/case-rmas-v3.md` §5 记过这个假阳性：`/tmp` 被当仓库根，一份草案报出 16 个假断链）。
