@@ -630,6 +630,12 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
 ```
 
 - key：dev.to → Settings → Extensions → **DEV Community API Keys** → Generate
+  （脚本从 `DEVTO_API_KEY` 或 `~/.devto_api_key` 读；文件用 `0600`，两处都**不打印**）
+- ⚠️ 坑：`--live` 必须和 `--update <id>` 一起用才会发布 —— 2026-09-14 已修
+  （原条件写成 `--live and not --update`，配 `--update` 时会静默只建/更新成草稿）。
+  行尾打印的 `published=` 也已改成取 API 回执（原取自 front matter 字符串，会误报 `false`）。
+- 首次发布留档：id `4649807`，2026-09-14 12:23Z 上线 ——
+  <https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 - 口径：v0.5 数字 + 英中两个留出集（92%/70%、88%/73%），**不带三站更正尾巴**
 - 文章尾部带一条公开请求：**找 2–3 个非作者的使用者跑 `compare`** —— 这正是判据里缺的那一格
 - 纪律：dev.to 发文是平台支持的行为，但仍按"一次 2 个渠道、别同日到处贴"来

@@ -194,7 +194,11 @@ agent-charters compare <你的AGENTS.md>
    （v0.5 + 英中两个留出集数字，不带三站更正尾巴；尾部带「找 2–3 个非作者使用者跑 `compare`」的公开请求）。
    渠道选 **dev.to**（实测：Reddit 从 251 全线路超时；dev.to 直连 200 且有正式发文 API），
    发布脚本 `work/share-paste/publish_devto.py`（默认发草稿，`--live` 才上线）。
-   **待人给 dev.to API key 才能发**（Settings → Extensions → DEV Community API Keys）。
+   ✅ **已上线 2026-09-14 12:23Z**（id `4649807`）：
+   <https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
+   —— 公网 200，tags `ai/agents/opensource/data` 四枚全部渲染，description 与 og:title 正确。
+   key 走 `~/.devto_api_key`（0600，只读不打印）；**user 侧待办：发完后去 dev.to 轮换这枚 key**
+   （它已落在一次会话历史里）。
    ⚠️ 更正一条我 09-14 的口头结论：HN 主站**可达**（只 DNS 污染，pin `209.216.230.207` → 200），
    此前说「IP 级封锁」是因为用了 AliDNS 给的过期 IP —— `SHARE.md` §0 的 hosts 说法是对的。
 

@@ -89,7 +89,7 @@ def main() -> int:
     args = ap.parse_args()
 
     meta, payload = parse_front_matter(args.file.read_text(encoding="utf-8"))
-    if args.live and not args.update:
+    if args.live:
         payload["published"] = True
 
     if args.dry_run:
@@ -116,7 +116,7 @@ def main() -> int:
         body = e.read().decode("utf-8", errors="replace")[:500]
         print(f"HTTP {e.code}: {body}", file=sys.stderr)
         return 1
-    print(f"id={art.get('id')}  url={art.get('url')}  published={meta.get('published')}")
+    print(f"id={art.get('id')}  url={art.get('url')}  published={art.get('published')}")
     return 0
 
 
