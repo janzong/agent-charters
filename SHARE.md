@@ -873,6 +873,11 @@ public board"上的观察一致；*"The gotchas are the file"*；称赞 rule-bas
 （判据 6 的"反复使用"），但目前**只有本仓库在跑**，别人装没装要看 GitHub 的
 `network/dependents` 或搜 `uses: janzong/agent-charters`。
 
+**验证用的 fixture（别误认成真实用户）**：`janzong/agent-charters-action-test`
+是 2026-09-14 为验证 `@v1` 建的一次性消费方仓库（`STATE.md` D35）：两个 job ——
+`report-only` 走文档承诺的默认形态（绿）、`enforce` 故意要类别（红 + exit 1）。
+**它跑起来不算判据 6**。再要复验 tag：`gh workflow run charter.yml --repo janzong/agent-charters-action-test`。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破

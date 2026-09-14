@@ -434,7 +434,7 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
 
 **为什么必需**：README / `action.yml` / `SHARE.md` 早就让消费方写 `@v1`，
 但两端远端**只有数据集 tag**，没有 `v1`—— 那个引用会直接报错（本轮开工前的真实状态）。
-2026-09-14 补建并双端推送：`v1` → 注解 tag 对象 `1b8fe95` → commit `d2303f4`（＝当时 HEAD，工具 0.3.3）。
+2026-09-14 补建并双端推送：`v1` → 注解 tag 对象 `1b8fe95` → commit `d2303f4`（＝建 tag 当时的 HEAD，工具 0.3.3）。
 
 **验证（不看 `git push` 输出，看服务端真值与实跑）**：
 1. 服务端真值：双端 `git ls-remote --tags` 都是 `refs/tags/v1 1b8fe95` + `refs/tags/v1^{} d2303f4`；
@@ -446,6 +446,14 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
    - `enforce`（`fail-on-missing: 'workflow,gotchas'`）**按设计红**：
      `##[error]missing categories you asked to enforce: workflow, gotchas` + exit 1。
 3. **这不算判据 6**：fixture 是我们自己建的，不是"非作者的外部使用者"。
+
+**同日一次真实移动（顺便演示规则本身）**：同一轮改掉了 `action.yml` 里比实现宽的对外描述
+（见 §23）——那属于"动作相关内容" ⇒ `v1` 从 `d2303f4` 移到 `d8b2737`
+（注解 tag 对象 `1b8fe95` → `942adc4`，双端 `--force`）。**移动也复验了**：同一个消费方仓库
+`workflow_dispatch` 重跑（run `34858578663`），runner 日志
+`Download action repository 'janzong/agent-charters@v1' (SHA:d8b2737…)`，
+两个 job 结论不变（`report-only` 绿 / `enforce` 红 + exit 1），
+`gh api .../contents/action.yml?ref=v1` 读到的也是订正后的描述。
 
 **顺带踩的坑**（已记进 `ENVIRONMENT.md` §9.8）：`gh repo create --source=. --push` 走 HTTPS，
 而本机 git-over-HTTPS 到 GitHub 是死的 —— 仓库被建成**空仓**，`gh` 只报
