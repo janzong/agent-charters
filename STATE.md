@@ -42,8 +42,8 @@
 | 项 | 状态 |
 |---|---|
 | 数据集 | ✅ **v0.5**（30 字段 / 516 份可统计，`ruleset_v0.1.8`）——**Release `v0.5` 已建**（GitHub + Gitee，2026-09-13；tag 指向 `84c17b9`，两端下载的 sha256 与仓库内逐字节一致）｜旧资产 `v0.2`/`v0.3` 仍在各自 Release（不静默替换，见 D18） |
-| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8% |
-| 测试 | ✅ `pytest` **138 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"，以及本轮的指针反证闸三组） |
+| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.3.3**）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
+| 测试 | ✅ `pytest` **150 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组，以及 D33 的五条"en 输出零汉字 + 中文文案冻结"） |
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
 | 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/`v0.3`/`v0.5` 已对齐；**Release `v0.5` 已建**，资产哈希与仓库内逐字节一致；SSH 专用密钥 `id_gitee`） |
 | 首发 | ✅ 2026-09-11 知乎《我把 558 份 AGENTS.md 全抓下来标了一遍》<https://zhuanlan.zhihu.com/p/2081788025013539447> |
@@ -224,6 +224,7 @@ agent-charters compare <你的AGENTS.md>
 | 2b | 发 PyPI（可选） | ⏳ 未定。名字确认空着（`pypi.org/pypi/agent-charters` → 404）。若做：**优先 Trusted Publishing（GitHub Actions，零 token）**，PyPI 官方帮助原话推荐 CI 走这条；备选＝账号级 API token 写到 `~/.pypi_token`（0600、不打印、不进会话） |
 | 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ⏳ 未开始。仓库**连 `.github/` 都没有**。命中判据 6 的"反复使用" |
 | 4 | 对语料库里 558 个仓库做"免费体检"外联 | ⏳ **需人裁定**（公开外联、有 spam 风险）。做法：挑 10 个、逐条个性化、给具体结论不写"来 star" |
+| 5 | **CLI 输出中英双语**：英文渠道导来的读者不该在中文输出前止步 | ✅ **09-14 完成**（`b30a39f`，工具 0.3.3，138→150 测试）。默认跟 `LANG`/`LC_ALL`（非 zh 环境＝英文），`--lang en|zh` 可覆盖；中文输出与改造前**逐命令 diff 一致**（只有 `brief` 清单里的槽位问句由英文改回中文，见下） |
 
 **不建议做的**：给章程打"质量分"——会诱导优化分数而非文件，与 `LIMITATIONS.md` 的克制冲突。
 
@@ -379,6 +380,21 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
 **如何避免"为了数字好看而改定义"**：裁决 4 的方向是**减少**标签（提高 precision、牺牲 recall），
 且给出了未采纳的更宽口径与其数字（25.2%），留待 100 份人工核对的数据来定——**不凭"看起来像"删**。
 **日期**：2026-09-12
+
+### D33 ｜ 工具输出语言跟 locale，但"提示词语言"是另一件事（2026-09-14）
+**决定**：五个命令的文案全部搬进 `agent_charters/i18n.py`（65 条 × 中英），
+默认语言按 `LC_ALL` → `LC_MESSAGES` → `LANG` 判断（`zh*` → 中文，**其余含未设置 → 英文**），
+每个命令都能用 `--lang en|zh` 覆盖。**`brief` 是刻意例外**：它的 `--lang` 管的是
+**喂给模型的提示词**语言（默认 `en`——喂模型最稳，这是产品决定），
+所以 `render()` 拆成 `lang`（提示词）与 `ui_lang`（周边清单）；不给 `--lang` 时清单跟 locale。
+**理由**：对外渠道是英文（dev.to），读者照抄命令却看到硬编码中文＝把人挡在门口；
+但既有中文用户不该因为加英文而看到中文变形——所以中文文案与改造前**逐字一致**，
+并用「HEAD worktree vs 工作区」逐命令 diff 验证（`stats`/`compare`/`refs`/`show` 输出字节相同）。
+**唯一有意的中文变化**：`brief`「每一项该问什么」原来显示英文（单语言 hack 的副作用，
+中英混排），现在跟着 `ui_lang` 显示中文。
+**验收**：150 测试（其中 5 条断言 en 输出**零汉字/全角标点**、1 条冻结中文文案）；
+从 gitee 新装实测 9 秒 → `--lang en` 英文、zh locale 中文。
+**日期**：2026-09-14
 
 ---
 

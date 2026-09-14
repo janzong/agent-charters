@@ -58,6 +58,9 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 > 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面用 git 直装 ——
 > 实测约 10 秒，语料库 parquet 已打在包里（424 KB），换任意目录都能跑。
 > 首次装会拉 pandas / pyarrow，慢的话是这一步。
+> **国内网络**拉这两个大包（62 MB）时可能断流：2026-09-14 实测直连 PyPI **3/3 次**
+> 下载到的 wheel 哈希不符（`pip` 报 expected/got 不一致），换镜像则一次成功 ——
+> 加上 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
 
 ## 这是什么
 
