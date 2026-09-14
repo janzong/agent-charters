@@ -726,6 +726,30 @@ Reddit 无代理则跳过。
 属系统改动，等互动量上来再做。可行性已探明：Mac 有 Chrome + node v22 + npm 可达（官方源与 npmmirror 均 200）、
 251 有 Chrome 153 + `~/.cache/ms-playwright` 缓存，两条路都通）。
 
+### 评论盯梢（2026-09-14 装机，**只在有新评论时出声**）
+
+**为什么盯评论**：文章我能自动发，评论我发不了（API 只读）——评论是唯一"需要人动手、漏了就浪费"的信号。
+两条外部反馈都在发布后 25 分钟内出现，说明窗口很短。
+
+- 脚本：`work/share-paste/watch_devto.py`（纯标准库）
+  - `--changed-only`（timer 用的模式）：没新评论**完全不输出**，退出码 0 / 10（10＝有新评论）
+  - `--notify-hermes`：有新评论时发一次固定收件箱（走 `notify-hermes.sh`，自带敏感信息闸门）
+  - 状态 `~/.local/state/devto-watch.json`（记已见过的评论 id + 上次阅读/反应数）
+  - 评论全文落 `~/.local/state/devto-watch.log`（通知正文只带前 600 字符）
+  - **首跑只建立基线**，历史评论不算"新"、不通知（这条有 bug 已修：原实现首跑会把历史评论全当新的）
+- systemd user 单元：`work/share-paste/systemd/devto-watch.{service,timer}`，每 30 分钟一次
+  （`OnBootSec=3min` / `OnUnitActiveSec=30min` / `RandomizedDelaySec=120` / `Persistent=true`）
+- ⚠️ **单元里必须带 `Environment=PATH=...hermes venv...`**：systemd user 的 PATH 不含
+  `~/.hermes/hermes-agent/venv/bin`，而 `notify-hermes.sh` 用 `hermes` 命令——实测不加就找不到命令，
+  而且要到第一条评论出现才暴露。装完用 `systemctl --user show devto-watch.service -p Environment`
+  配合 `env -i PATH=... command -v hermes` 复验
+- 安装 / 卸载：
+  `cp work/share-paste/systemd/devto-watch.* ~/.config/systemd/user/ && systemctl --user daemon-reload && systemctl --user enable --now devto-watch.timer`
+  ｜ `systemctl --user disable --now devto-watch.timer`
+- 看历史：`journalctl --user -u devto-watch -n 30` ｜ 手动跑一次：`systemctl --user start devto-watch.service`
+- 验证记录：装在 2026-09-14 21:30，timer 已排程（下次 22:02）；首跑静默 rc=0；
+  **systemd 内端到端**用假通知命令复现过一次"新评论 → 通知正文 → 状态自愈"
+
 ### 🔴 私库案例的外发口径（2026-09-14 定，**先看这条再写任何案例文**）
 
 `rmas-v3` 是**私库**（`gh api repos/janzong/rmas-v3` → **404**；对照 `agent-charters` → `private=false`）。

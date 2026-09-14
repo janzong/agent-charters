@@ -1,0 +1,17 @@
+# dev.to 盯梢：只在**出现新评论**时出声（文章我能自动发，评论发不了，见 SHARE.md §5.5）
+# 安装：cp 到 ~/.config/systemd/user/ && systemctl --user daemon-reload &&
+#       systemctl --user enable --now devto-watch.timer
+# 手动跑一次：systemctl --user start devto-watch.service ; 看输出：journalctl --user -u devto-watch -n 30
+# 卸载：systemctl --user disable --now devto-watch.timer
+[Unit]
+Description=dev.to watcher (silent unless there is a new comment)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/workspace/agent-charters
+# systemd user 的 PATH 不含 hermes 的 venv → notify-hermes.sh 会找不到命令（实测）
+# 安装：若 hermes 装在别处，改这一行
+Environment=PATH=%h/.hermes/hermes-agent/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=%h/workspace/agent-charters/.venv/bin/python %h/workspace/agent-charters/work/share-paste/watch_devto.py --changed-only --notify-hermes
+TimeoutStartSec=180
