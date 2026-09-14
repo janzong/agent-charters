@@ -33,6 +33,10 @@ jobs:
       version: ${{ steps.check.outputs.version }}
     steps:
       - uses: actions/checkout@v5
+      # preflight 里要用 tomllib 读版本（py3.11+）——不依赖 runner 的默认 python3
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
       - id: check
         run: |
           set -euo pipefail

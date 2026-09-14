@@ -31,7 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # 只有跑测试才需要；运行本包不需要（pandas/pyarrow 才是运行时依赖）
-test = ["pytest", "pyyaml"]
+test = ["pytest", "pyyaml", "tomli; python_version < '3.11'"]
 
 [project.urls]
 Homepage = "https://github.com/janzong/agent-charters"

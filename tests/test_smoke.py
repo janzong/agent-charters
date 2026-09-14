@@ -1114,7 +1114,10 @@ def test_pyproject_version_matches_package_version():
     以及文档里写的"工具 0.3.3"取自 `__init__.py`；两者不一致时，**打出去的包和说自己是谁的数字
     对不上**，而且 PyPI 上的版本号一旦发布就不能重用（只能往上升）。发版前最容易漏的正是同步这两处。
     """
-    import tomllib
+    try:
+        import tomllib
+    except ModuleNotFoundError:   # py3.10：tomllib 还没进标准库（CI matrix 抓到的）
+        import tomli as tomllib
 
     from agent_charters import __version__
 
