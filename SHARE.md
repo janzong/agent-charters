@@ -715,6 +715,23 @@ Reddit 无代理则跳过。
 属系统改动，等互动量上来再做。可行性已探明：Mac 有 Chrome + node v22 + npm 可达（官方源与 npmmirror 均 200）、
 251 有 Chrome 153 + `~/.cache/ms-playwright` 缓存，两条路都通）。
 
+### 🔴 私库案例的外发口径（2026-09-14 定，**先看这条再写任何案例文**）
+
+`rmas-v3` 是**私库**（`gh api repos/janzong/rmas-v3` → **404**；对照 `agent-charters` → `private=false`）。
+所以"拿 rmas-v3 当第二个案例"这件事，有三层限制，别只记第一层：
+
+| 不能做 | 为什么 |
+|---|---|
+| 不放仓库链接 / 不写仓库名 | 私库链接对外是 404/403；写名字也只是暴露存在 |
+| **不整段外发章程正文**（`/tmp/rmas-v3-AGENTS.md`） | 这不是代码，是一张**内部生产系统地图**：主机代号 `148`、内部智能体 `Hermes`、内网端口 `18100/18180`（生产）与 `8002/4000`（本地）、`.env` 字段名（`SECRET_KEY`/`ADMIN_USERNAME`/`ADMIN_PASSWORD`/`DATABASE_URL`…）、生产库位置与 `deploy/`+`docs/DEPLOY.md` 流程、三处版本号不一致的具体数字 |
+| 不贴具体条目清单 | `.gitignore` 第 4 行的 `null`、根目录 `node_modules` 无 `package.json` 这类细节组合起来可反推项目结构 |
+
+**能发的是案例复盘**（`work/case-rmas-v3.md`），它讲的是**工具行为**不是项目：写成
+"a private FastAPI + React internal project" 这种抽象主体即可。全文只需脱敏两处：
+①`148 上 git pull 不补依赖` → "生产机上 `git pull` 不补依赖"；
+②镜像核验段的 `/home/janz/workspace/rmas-v3/...` 路径与顶层条目清单 → 用通用占位。
+**核心结论（`compare` 认不出自己的槽位名 `agent_meta`、`refs` 镜像核验法）是工具通用的，可全发。**
+
 ### 首条外部反馈（2026-09-14 12:41Z，发布后 18 分钟）
 
 `jo-do` 评论（484 字符），大意：85.7% 禁令 / 13.6% 坑 这个比例和他在一个"主要给 agent 用的
