@@ -4,7 +4,7 @@
 # 指出去的路径还在不在。**不改你的文件**，只报告（除非你开 fail-on-*）。
 #
 # 用法（消费方仓库的 workflow）：
-#   - uses: actions/checkout@v4
+#   - uses: actions/checkout@v5
 #   - uses: janzong/agent-charters@v1
 #     with:
 #       path: AGENTS.md
@@ -64,7 +64,7 @@ runs:
   using: composite
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ inputs.python-version }}
 

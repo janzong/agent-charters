@@ -18,8 +18,8 @@ jobs:
       matrix:
         python-version: ['3.10', '3.12']   # 声明的是 >=3.10，测两端
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install
@@ -31,7 +31,7 @@ jobs:
     name: this repo's own AGENTS.md
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # 自己用自己的 action —— 消费方路径（`uses: janzong/agent-charters@v1`）走的就是这条链路，
       # 所以 CI 每秒都在替外部使用者踩一遍坑（安装、语料库是否打进包、GITHUB_ACTION_PATH 解析）。
       - uses: ./
