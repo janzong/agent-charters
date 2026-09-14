@@ -80,17 +80,35 @@ def call(url: str, key: str, payload: dict, method: str) -> dict:
         return json.load(r)
 
 
+def current_published(article_id: str, key: str) -> bool:
+    """读回文章当前的 published 状态（只为'不改状态地更新'用）。"""
+    req = urllib.request.Request(
+        f"{API}/me/all?per_page=1000",
+        headers={"api-key": key, "Accept": "application/vnd.forem.api-v1+json",
+                 "User-Agent": "agent-charters-publisher/1.0"},
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        arts = json.load(r)
+    for a in arts:
+        if str(a.get("id")) == str(article_id):
+            return bool(a.get("published"))
+    raise SystemExit(f"在 /api/articles/me/all 里找不到 id={article_id}；"
+                     f"要改状态请显式加 --live 或 --draft")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--file", type=pathlib.Path, default=DEFAULT_FILE)
     ap.add_argument("--dry-run", action="store_true", help="只打印会发的正文信息，不联网")
     ap.add_argument("--live", action="store_true", help="发布（不加则只建草稿）")
+    ap.add_argument("--draft", action="store_true", help="明确打回草稿（下架）")
     ap.add_argument("--update", metavar="ARTICLE_ID", help="更新已有文章而不是新建")
     args = ap.parse_args()
+    if args.live and args.draft:
+        print("--live 和 --draft 互斥", file=sys.stderr)
+        return 2
 
     meta, payload = parse_front_matter(args.file.read_text(encoding="utf-8"))
-    if args.live:
-        payload["published"] = True
 
     if args.dry_run:
         print(f"file        : {args.file}")
@@ -107,6 +125,14 @@ def main() -> int:
         print(f"没有 API key：设环境变量 {KEY_ENV}，或把 key 写进 {KEY_FILE}（只读不打印）。",
               file=sys.stderr)
         return 2
+
+    # 显式定状态：新建默认草稿；更新默认**保持现状**（别因为漏字段把线上文章打回草稿）
+    if args.live:
+        payload["published"] = True
+    elif args.draft:
+        payload["published"] = False
+    elif args.update:
+        payload["published"] = current_published(args.update, key)
 
     url = f"{API}/{args.update}" if args.update else API
     method = "PUT" if args.update else "POST"

@@ -626,8 +626,17 @@ agent-charters compare 你的AGENTS.md
 export DEVTO_API_KEY=...                                       # 或写进 ~/.devto_api_key（只读不打印）
 .venv/bin/python work/share-paste/publish_devto.py --dry-run   # 先看会发什么，不联网
 .venv/bin/python work/share-paste/publish_devto.py             # 发草稿 → 打印 id / url
-.venv/bin/python work/share-paste/publish_devto.py --update <id>
+.venv/bin/python work/share-paste/publish_devto.py --update <id>              # 改文，**状态不变**
+.venv/bin/python work/share-paste/publish_devto.py --update <id> --live       # 改文并发布
+.venv/bin/python work/share-paste/publish_devto.py --update <id> --draft      # 改文并下架
 ```
+
+**状态是怎么定的（2026-09-14 定稿）**：新建默认草稿；`--update` 默认**保持现状**
+（先 `GET /api/articles/me/all` 读回当前 `published` 再原样发回），`--live` / `--draft` 显式覆盖，
+两者互斥。为什么不用"省略 `published` 字段"：省略时平台取什么默认值未知，而草稿↔发布的往返会
+**换 slug**（首发 ID `4649807` 的草稿期 URL 尾是 `-temp-slug-2057155`，发布后才定成 `-34gb`），
+一旦被动下架再上线就可能把已分享出去的链接打坏。所以状态一律显式写死。
+另注：PUT 的回执里 `published` 恒为 `null`（平台行为），**判断状态要看列表端点**，别信回执。
 
 - key：dev.to → Settings → Extensions → **DEV Community API Keys** → Generate
   （脚本从 `DEVTO_API_KEY` 或 `~/.devto_api_key` 读；文件用 `0600`，两处都**不打印**）
