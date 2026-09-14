@@ -220,7 +220,8 @@ agent-charters compare <你的AGENTS.md>
 | # | 动作 | 状态 |
 |---|---|---|
 | 1 | **README 首屏改成工具优先**：安装 + 一条 `compare` + 真实输出（`openai/openai-agents-python` 6/9） | ✅ **09-14 完成**（`0da259a`，GitHub/Gitee 双端实读确认）｜两项自检：嵌入输出可复现、**不引用 `data/raw/` 路径**（该目录 gitignore，读者跑不出来） |
-| 2 | **发 PyPI**（`pipx install agent-charters`） | ⏳ **待人给 PyPI token**。名字实测空着（`pypi.org/pypi/agent-charters` → 404）。清空环境实测过 clone+venv 路径可用，但读者要 4 条命令 → 发完是 1 条 |
+| 2 | **让读者一条命令装上** | ✅ **09-14 完成（不注册 PyPI）**：`pipx install "git+https://gitee.com/janzong/agent-charters"` ——清空虚拟环境实测 **11.4s**、parquet 打在包里（424 KB）、换目录可跑，README 首屏已改。**PyPI 仍是唯一需要账号的路径**（PyPI 无匿名上传，实测 `upload.pypi.org/legacy` 从 251 返 200），**是否注册由人定**：不注册只损失「PyPI 搜索入口 + 版本化安装」，不影响读者一条命令用上工具 |
+| 2b | 发 PyPI（可选） | ⏳ 未定。名字确认空着（`pypi.org/pypi/agent-charters` → 404）。若做：**优先 Trusted Publishing（GitHub Actions，零 token）**，PyPI 官方帮助原话推荐 CI 走这条；备选＝账号级 API token 写到 `~/.pypi_token`（0600、不打印、不进会话） |
 | 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ⏳ 未开始。仓库**连 `.github/` 都没有**。命中判据 6 的"反复使用" |
 | 4 | 对语料库里 558 个仓库做"免费体检"外联 | ⏳ **需人裁定**（公开外联、有 spam 风险）。做法：挑 10 个、逐条个性化、给具体结论不写"来 star" |
 

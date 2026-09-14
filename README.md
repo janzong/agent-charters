@@ -9,10 +9,15 @@
 `compare` 回答一个问题：**你的章程写了九类里的哪几类，缺的是语料库里写得最多的哪几类。**
 
 ```bash
-git clone https://github.com/janzong/agent-charters   # 国内镜像：https://gitee.com/janzong/agent-charters
-cd agent-charters
-python -m venv .venv && .venv/bin/pip install .
-.venv/bin/agent-charters compare path/to/AGENTS.md
+# 一条命令，不经过 PyPI，直接从仓库装（国内走 gitee 这条，实测约 10 秒）
+pipx install "git+https://gitee.com/janzong/agent-charters"
+
+# 海外 / 没有 pipx：
+pipx install "git+https://github.com/janzong/agent-charters"
+#   或者用 venv：
+#   python -m venv .venv && .venv/bin/pip install "git+https://github.com/janzong/agent-charters"
+
+agent-charters compare path/to/AGENTS.md
 ```
 
 拿语料库里一份真实文件跑 —— `openai/openai-agents-python` 的 `AGENTS.md`（原文在
@@ -39,8 +44,9 @@ python -m venv .venv && .venv/bin/pip install .
 **它不给你的文件打分。**覆盖率是过程指标，不是质量指标 —— 填满九格不等于写好，
 理由写在 [`LIMITATIONS.md`](LIMITATIONS.md)。它指出的是**你跳过了哪一格**。
 
-> 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面是 clone 安装，
-> 首次装约 30–60 秒（拉 pandas / pyarrow）；这条路径已在清空虚拟环境里实测过。
+> 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面用 git 直装 ——
+> 实测约 10 秒，语料库 parquet 已打在包里（424 KB），换任意目录都能跑。
+> 首次装会拉 pandas / pyarrow，慢的话是这一步。
 
 ## 这是什么
 
