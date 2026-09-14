@@ -2,6 +2,7 @@
 title: I labeled 558 AGENTS.md files. Here's what they say — and what almost nobody writes down
 tags: ai, agents, opensource, data
 published: false
+description: 558 AGENTS.md files, labeled against 9 categories and measured on held-out samples: 85.7% ban something, 13.6% write down a gotcha — and a third of those aren't gotchas.
 ---
 
 **TL;DR** — I collected **558 `AGENTS.md` files** from public repos and labeled each one against a 9-category

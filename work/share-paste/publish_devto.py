@@ -62,6 +62,8 @@ def parse_front_matter(text: str) -> tuple[dict, str]:
         raise SystemExit("front matter 里缺 title")
     if meta.get("canonical_url"):
         payload["canonical_url"] = meta["canonical_url"]
+    if meta.get("description"):
+        payload["description"] = meta["description"]
     return meta, payload
 
 
