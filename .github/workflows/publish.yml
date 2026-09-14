@@ -1,0 +1,105 @@
+# 发 PyPI —— Trusted Publishing（OIDC），**整个流程不存任何 token**
+#
+# 一次性人工前置（在 PyPI 网页做，字段照抄 SHARE.md §5.6）：
+#   https://pypi.org/manage/account/publishing/ → Add a new pending publisher
+#     PyPI Project Name : agent-charters
+#     Owner             : janzong
+#     Repository name   : agent-charters
+#     Workflow name     : publish.yml
+#     Environment name  : pypi
+#
+# 触发：① GitHub Release 发布（types: [published]）② 手动 workflow_dispatch。
+#
+# 三道闸，都是为了"别发错东西"：
+#   · Release 触发时，tag（去掉 v）必须与 pyproject.toml 的 version **逐字一致**；
+#   · 版本已在 PyPI 上 → 直接 skip（同一版本号只能传一次，重跑必然 400）；
+#   · 传之前先在 runner 上 `twine check --strict`，元数据不合规就停在这里。
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: preflight (version + already-published)
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: check
+        run: |
+          set -euo pipefail
+          version=$(python3 -c "import tomllib,pathlib;print(tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'])")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "pyproject version: $version"
+
+          if [ "${GITHUB_EVENT_NAME}" = "release" ]; then
+            tag="${GITHUB_REF_NAME#v}"
+            echo "release tag: ${GITHUB_REF_NAME} → 拿掉 v 得 ${tag}"
+            if [ "$tag" != "$version" ]; then
+              echo "::error::tag ${GITHUB_REF_NAME} 与 pyproject 的 version ${version} 不一致 —— 拒发"
+              exit 1
+            fi
+          fi
+
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            "https://pypi.org/pypi/agent-charters/${version}/json")
+          echo "查 PyPI：agent-charters ${version} → HTTP ${code}"
+          case "$code" in
+            200)
+              echo "::notice::agent-charters ${version} 已经在 PyPI 上了 —— 跳过上传"
+              echo "should_publish=false" >> "$GITHUB_OUTPUT" ;;
+            404)
+              echo "should_publish=true" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "::error::查 PyPI 拿到 HTTP ${code}，无法确认版本是否存在 —— 不冒这个险"
+              exit 1 ;;
+          esac
+
+  build:
+    needs: preflight
+    if: needs.preflight.outputs.should_publish == 'true'
+    name: build sdist + wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build
+        run: |
+          python -m pip install --quiet --upgrade build twine
+          python -m build
+      - name: Check the artifacts before they leave the runner
+        run: python -m twine check --strict dist/*
+      - name: Show what will be uploaded
+        run: ls -la dist/
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: [preflight, build]
+    if: needs.preflight.outputs.should_publish == 'true'
+    name: upload to PyPI (OIDC, no token)
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/agent-charters
+    permissions:
+      id-token: write   # Trusted Publishing 的全部机制：用本 job 的 OIDC 身份换一次性上传凭据
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      # 第三方 action，官方推荐跟 @release/v1（PyPA 持续打补丁）；要更严可改成钉死 SHA。
+      - uses: pypa/gh-action-pypi-publish@release/v1

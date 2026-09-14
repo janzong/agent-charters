@@ -1,18 +1,43 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-charters"
 version = "0.3.3"
-description = "人写给 AI 智能体的书面规约（AGENTS.md）的结构化语料库"
+description = "Structured corpus of AGENTS.md — the written rules humans hand to AI agents ｜ 人写给 AI 智能体的书面规约的结构化语料库"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "janzong", email = "287099612+janzong@users.noreply.github.com" }]
+keywords = ["agents", "agents-md", "agent-instructions", "corpus", "dataset", "llm", "prompt-engineering"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Documentation",
+]
 dependencies = [
     "pandas>=2.0",
     "pyarrow>=14",
 ]
+
+[project.optional-dependencies]
+# 只有跑测试才需要；运行本包不需要（pandas/pyarrow 才是运行时依赖）
+test = ["pytest", "pyyaml"]
+
+[project.urls]
+Homepage = "https://github.com/janzong/agent-charters"
+Repository = "https://github.com/janzong/agent-charters"
+Issues = "https://github.com/janzong/agent-charters/issues"
+Mirror = "https://gitee.com/janzong/agent-charters"
 
 [project.scripts]
 agent-charters = "agent_charters.cli:main"

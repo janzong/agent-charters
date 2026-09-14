@@ -1071,3 +1071,70 @@ read -rsp 'dev.to key: ' K && printf '%s' "$K" > ~/.devto_api_key \
 
 ⇒ **本机只留一把 key、链路单一**；下次再换只改这一个文件（`publish_devto.py` 与
 `watch_devto.py` 共用它），然后 `systemctl --user restart` 不需要（oneshot timer 每次重读）。
+
+---
+
+## 8. 发 PyPI（Trusted Publishing —— **不存任何 token**，2026-09-14 装机）
+
+**目标**：让 `pip install agent-charters` 直接可用（此前只有 `pip install git+https://…`，
+README 上那句"尚未发到 PyPI"就是它）。**顺带**：PyPI 是英文渠道读者最容易找到本项目的入口。
+
+**为什么不用 token**：PyPI 支持 **Trusted Publishing（OIDC）**——GitHub Actions 用 job 的
+OIDC 身份向 PyPI 换一次性上传凭据，仓库里**一个字都不用存**。相比 API token：
+不会有(token 落到对话/日志/`~/.pypirc`)的泄露面，也不用轮换。本项目已有过两次 key 卫生事故，
+这条直接绕开整类问题。
+
+### 8.1 一次性人工前置（只有这一步要人在网页做）
+
+1. 确认 PyPI 账号（本机实测 `https://pypi.org/user/janzong/` → **200**，账号已在）且**开了 2FA**（PyPI 强制）。
+2. 打开 <https://pypi.org/manage/account/publishing/> → **Add a new pending publisher**
+   （项目还没发过，所以是 *pending* publisher），**逐字照抄**：
+
+   | 字段 | 值 |
+   |---|---|
+   | PyPI Project Name | `agent-charters` |
+   | Owner | `janzong` |
+   | Repository name | `agent-charters` |
+   | Workflow name | `publish.yml` |
+   | Environment name | `pypi` |
+
+   ⚠️ 五个字段**任一不符就 403**（PyPI 只认这条精确匹配，报错信息很不友好）。
+
+### 8.2 触发（两种，都不用 token）
+
+- **GitHub Release**：发一个 tag 与 `pyproject.toml` 的 version 一致的 Release（`published` 时触发）；
+- **手动**：`gh workflow run publish.yml --repo janzong/agent-charters`。
+
+workflow 在 `.github/workflows/publish.yml`，三道闸：
+
+1. **tag 与版本必须逐字一致**（Release 触发时；不一致直接拒发）；
+2. **已在 PyPI 上就跳过**（同一版本号只能传一次，重跑必然 400；这道闸让 Release 可以随便发）；
+3. **上传前 `twine check --strict`**（元数据不合规就停在 runner 上，不进 PyPI）。
+
+### 8.3 发下一版
+
+1. 改 `pyproject.toml` 的 `version`（⚠️ **PyPI 上已发布的版本号不能重用**，只能往上升）；
+2. 提交、推双端；
+3. 要么发一个同名 Release，要么 `gh workflow run publish.yml`。
+
+### 8.4 本地预演（不想等 CI 时）
+
+```bash
+python3 -m venv /tmp/ac-buildenv && /tmp/ac-buildenv/bin/pip install build twine \
+  -i https://pypi.tuna.tsinghua.edu.cn/simple
+cd <repo> && /tmp/ac-buildenv/bin/python -m build --outdir /tmp/ac-dist .
+/tmp/ac-buildenv/bin/python -m twine check --strict /tmp/ac-dist/*
+```
+⚠️ **别在项目 `.venv` 里造**：仓库里有个 `build/` 目录，`importlib.util.find_spec("build")`
+会**误报"build 已装"**（实测踩过）。
+
+**审过一遍的产物长什么样**（0.3.3 本地实测）：wheel 只含 `agent_charters/`（9 个 .py + 4 份
+parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw/`、
+`STATE.md`/`SHARE.md` **都不在里面**；元数据 `Metadata-Version: 2.4` +
+`License-Expression: MIT` + 4 条 `Project-URL`。
+
+### 8.5 已知缺口（别当成已解决）
+
+- **PyPI 页面上的 long description 是中文 README**。英文渠道导来的读者会直接撞墙
+  （与 D33 的"英文渠道读者不该在中文输出前止步"同一个理由）。要么补一份英文 README
+  并让 `readme` 指向它，要么在 README 顶部加一段英文摘要 —— **本轮没做**。

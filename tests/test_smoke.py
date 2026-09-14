@@ -1105,3 +1105,46 @@ def test_prose_docker_compose_is_not_a_command():
     assert "build_test" not in _real_cats("langgenius__dify")
     cmd = "# A\n\n## 部署\n\n```bash\ndocker compose up -d\n```\n"
     assert "build_test" in analyze_text(cmd)["categories"]
+
+# --- 发版一致性（2026-09-14 发 PyPI 时加的防呆）------------------------------
+def test_pyproject_version_matches_package_version():
+    """`pyproject.toml` 的 version 与 `__version__` 必须一致。
+
+    为什么值得一条测试：发 PyPI 时版本号取自 `pyproject.toml`，而 `agent-charters --version`、
+    以及文档里写的"工具 0.3.3"取自 `__init__.py`；两者不一致时，**打出去的包和说自己是谁的数字
+    对不上**，而且 PyPI 上的版本号一旦发布就不能重用（只能往上升）。发版前最容易漏的正是同步这两处。
+    """
+    import tomllib
+
+    from agent_charters import __version__
+
+    meta = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert meta["project"]["version"] == __version__, (
+        f"pyproject {meta['project']['version']} != __version__ {__version__}")
+
+
+def test_publish_workflow_uses_trusted_publishing_without_any_token():
+    """发布 workflow 里**不许出现任何**凭据字段，且必须是 OIDC 的写法。
+
+    这条是给"以后有人图省事加个 `password: ${{ secrets.PYPI_TOKEN }}`"设的闸：
+    Trusted Publishing 的全部价值就在于仓库里没有可偷的长期凭据（本项目已经出过两次
+    key 卫生事故）。同时钉住 environment 名与 pending publisher 里填的那个一致。
+    """
+    import yaml
+
+    wf_path = ROOT / ".github" / "workflows" / "publish.yml"
+    assert wf_path.exists(), "发布 workflow 不见了"
+    raw = wf_path.read_text(encoding="utf-8")
+    wf = yaml.safe_load(raw)
+
+    triggers = wf.get("on", wf.get(True))
+    assert "release" in triggers and "workflow_dispatch" in triggers
+
+    publish = wf["jobs"]["publish"]
+    assert publish["permissions"] == {"id-token": "write"}, "Trusted Publishing 需要 id-token: write"
+    assert publish["environment"]["name"] == "pypi", "environment 名必须与 pending publisher 一致"
+    assert any("pypi-publish" in s.get("uses", "") for s in publish["steps"])
+
+    lowered = raw.lower()
+    for forbidden in ("password:", "secrets.pypi", "twine upload", "__token__"):
+        assert forbidden not in lowered, f"发布路径里出现了凭据类写法：{forbidden}"
