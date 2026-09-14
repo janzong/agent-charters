@@ -80,6 +80,9 @@ CI 是 `.github/workflows/charter.yml`：两个 Python（3.10 / 3.12）跑测试
 - **`refs` 分不清"去读这个"与"别提交这个"**：禁令清单里的路径会被报成断链。
   因此（a）本文件里对 gitignore 目录的提法不加反引号，只为让 action 的报告干净——
   这属于**迁就工具**，要修的是工具；（b）action 的 `fail-on-dangling` 默认关闭。
+  实测的一次：本文件开头列了 `CLAUDE.md` / `.cursorrules`（说明"语料库覆盖哪些文件类型"），
+  self-check 一开 `fail-on-dangling` 就红着报"`CLAUDE.md` 找不到"——**提到 ≠ 指向**，
+  `refs` 认的是字面路径，不认周围的句子在说什么（`LIMITATIONS.md` §22 第三例）。
 - **照 `brief` 的槽位名当标题写，`compare` 会漏判 `agent_meta`**（实测 5 组，其余八个槽位名都认得，见 `work/case-rmas-v3.md`）。
   也就是说本工具**不能用自己给的词汇去衡量自己**——写标题时用自然说法。
 - **本文件自己就是漏判的例子**：`compare AGENTS.md` 现在报 **8/9**，缺的 `overview`（标题「这是什么」）

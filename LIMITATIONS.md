@@ -577,6 +577,13 @@ recall 70% → **73%**（+3pp）。两个语言的数字量级一致，**没有�
 **可复现**：`.venv/bin/python -m agent_charters.cli compare AGENTS.md --lang en` → 7/9；
 上表的四条探针可用 `analyze_text` 逐条重跑（文本就在本节里）。
 
+**同一天撞到的第三个例子（`refs` 侧，"提到"被当成"指向"）**：给 action 写 self-check 时本来
+顺手开了 `fail-on-dangling: 'true'`，本地一跑就红——报 `AGENTS.md: CLAUDE.md` 找不到。
+而那句原文是"（`AGENTS.md`、`CLAUDE.md`、`.cursorrules`）**语料库覆盖哪些文件类型**"，
+是**提到**一个名字，不是把 agent 指过去读。这与"提到即命中"是同一个机制在另一条通道上的表现：
+`refs` 认的是**字面出现的路径**（反引号里的、markdown 链接里的），不认周围那句话在说什么。
+处置：self-check **不开**这个闸（`STATE.md` D34 的默认），并把这条写进 `AGENTS.md` 的坑清单。
+
 **追加观察（同日，写作过程中自己冒出来的）**：想给上面的结论加一句解释时，`boundaries`
 **又出现了**。最小对照：
 

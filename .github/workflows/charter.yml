@@ -37,4 +37,8 @@ jobs:
       - uses: ./
         with:
           path: AGENTS.md
-          fail-on-dangling: 'true'
+          # 这里**故意不**开 fail-on-dangling：本文件在概述里列了 `CLAUDE.md`、
+          # `.cursorrules` 这些"语料库覆盖哪些文件类型"的名字，也提到 gitignore 的
+          # data/raw、`.env`——它们是**提到**不是**指向**，而 refs 现在分不清这两者
+          # （本地实测：开 true 会让这个 job 红，报 `AGENTS.md: CLAUDE.md` 找不到）。
+          # 闸门要开也由使用者在自己的 workflow 里明确开（STATE.md D34）。
