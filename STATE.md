@@ -10,6 +10,9 @@
 > `juejin-comment-02.txt`），**待人贴**。
 > 同日二件：**留出集错标归因**完成（`LIMITATIONS.md` §20），并自披露一处
 > **文档口径与实现不符**（主口径是否把「犹豫」计入错标）——**待人裁定，未改任何数字**）
+> 09-14：英文短文**已在 dev.to 上线**（id `4649807`，12:23Z），发布后 18 分钟收到**首条非作者反馈**
+> （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**待人贴**（评论 API 只读）。
+> 渠道裁决：**外网以 dev.to 为主**，HN 押后（hosts 绕过已落四台，见 `SHARE.md` §0）。
 
 ---
 
@@ -56,7 +59,8 @@
 | 100 份人工核对 | ✅ **已闭环**（发现 1–56）。四块改动全部落地：①围栏语言标记门 ②删词与收紧 ③补词（净增 119/净掉 2）④收紧（净增 1/净掉 36）+ 指针反证闸。清单 `work/audit/v0.1.8-changelist.md` |
 | 判据完成度 | **5 / 6** |
 | 未闭环判据 | **至少 1 个非作者的外部使用者** |
-| 外部信号 | GitHub **1 star＝作者自己**（`gh api .../stargazers` 实查）、0 fork、0 外部事件；掘金 **阅读 3 / 粉丝 0**；OSC 阅读 1。**判据 6「非作者的外部使用者」仍未闭环** |
+| 外部信号 | GitHub **1 star＝作者自己**（`gh api .../stargazers` 实查 2026-09-14）、0 fork、0 watcher；掘金 **阅读 3 / 粉丝 0**；OSC 阅读 1；**dev.to**（09-14 12:23Z 上线）当晚 阅读 **1** / 反应 0 / **评论 1**。**判据 6「非作者的外部使用者」仍未闭环** |
+| dev.to 首条外部反馈 | ✅ **09-14 12:41Z（发布后 18 分钟）**：`jo-do`（自称在跑一个「主要给 agent 用的 public board」）评论确认 85.7% / 13.6% 与其经验吻合，原话 *"The gotchas are the file"*，并称赞 rule-based 是 *"auditable beats clever"*。⚠️ **这是「外部读者」，不是「外部使用者」** —— 判据 6 要的是有人真跑 `compare`，不要把这条记成闭环。回复文案 `work/share-paste/devto-reply-01.md`（**待人贴**，dev.to 评论 API 只读）|
 | 仓库 topics | ✅ 已加（agents-md / ai-agents / dataset / prompt-engineering / agent-instructions / llm） |
 | 分类准确率 | ✅ **两组留出集都已出**（2026-09-13）：英文 55 份（`work/audit/v0.5-holdout-vs-rule.md` / §19）precision **92% / recall 70%**（TP 221/FP 19/FN 93）；中文 50 份（`work/audit/v0.6-cn-vs-rule.md` / §21）precision **88% / recall 73%**（TP 228/FP 30/FN 86）。in-sample 100 份为 precision A 90% / B 80% / D 92%、recall A 75% / B 79% / D 84%（`v0.5-human-vs-rule.md` / §16，**上界**）。两组与 in-sample 差 3–5pp、方向一致 ⇒ v0.5 未过拟合。最弱：英文 `gotchas` recall 32–38%、留出集 `environment` 57%；中文 `agent_meta` recall 26%、`gotchas` precision 62%。v0.1 自述口径已被取代 |
 | 无标签率 | 1.6%（8 / 516，v0.1 时为 2.1% = 11 / 518） |
