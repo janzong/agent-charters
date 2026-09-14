@@ -9,6 +9,8 @@
     python3 work/share-paste/publish_devto.py                     # 发草稿，打印 id/url
     python3 work/share-paste/publish_devto.py --live              # 直接发布
     python3 work/share-paste/publish_devto.py --update 1234567     # 更新已有文章
+- front matter 支持的字段：title / tags / published / canonical_url / description / **series**
+  （`series` 是合集名，首次带它会自动建合集；后续更新**必须继续带**，否则合集会被摘掉）
 """
 from __future__ import annotations
 
@@ -64,6 +66,9 @@ def parse_front_matter(text: str) -> tuple[dict, str]:
         payload["canonical_url"] = meta["canonical_url"]
     if meta.get("description"):
         payload["description"] = meta["description"]
+    # series 必须每次都带上：dev.to 用 PUT 覆盖字段，漏掉会把已挂的合集摘掉
+    if meta.get("series"):
+        payload["series"] = meta["series"]
     return meta, payload
 
 
@@ -114,7 +119,10 @@ def main() -> int:
         print(f"file        : {args.file}")
         print(f"title       : {payload['title']}")
         print(f"tags        : {payload['tags']}")
-        print(f"published   : {payload['published']}")
+        if args.update and not args.live and not args.draft:
+            print("published   : (保持现状——要联网读回当前状态)")
+        else:
+            print(f"published   : {payload['published']}")
         print(f"body bytes  : {len(payload['body_markdown'])}")
         print(f"body lines  : {payload['body_markdown'].count(chr(10)) + 1}")
         print(f"key present : {bool(read_key())}")

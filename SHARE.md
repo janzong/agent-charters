@@ -663,6 +663,8 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
 - ⚠️ 坑：`--live` 必须和 `--update <id>` 一起用才会发布 —— 2026-09-14 已修
   （原条件写成 `--live and not --update`，配 `--update` 时会静默只建/更新成草稿）。
   行尾打印的 `published=` 也已改成取 API 回执（原取自 front matter 字符串，会误报 `false`）。
+- **合集**：`AGENTS.md in the wild` → <https://dev.to/janzong/series/44219>（`collection_id 44219`，2026-09-14 建，
+  已含本文；合集页实测 200 且含本文链接）。同主题文章在 front matter 带 `series:` 即自动进合集
 - 首次发布留档：id `4649807`，2026-09-14 12:23Z 上线 ——
   <https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 - 口径：v0.5 数字 + 英中两个留出集（92%/70%、88%/73%），**不带三站更正尾巴**
@@ -701,6 +703,8 @@ Reddit 无代理则跳过。
 | 动作 | 能不能脚本化 | 依据 |
 |---|---|---|
 | 建草稿 / 发布 / 改文 / 下架 | ✅ 能 | `POST`/`PUT /api/articles` |
+| **设合集（series）** | ✅ 能 | `PUT` 带 `series: <名字>`；首次自动建合集（本仓库→ `collection_id 44219`）。⚠️ 后续每次更新**必须继续带**，PUT 会覆盖字段 |
+| 改个人资料（Bio / GitHub / Website） | ❌ **不能** | API 只有 `GET /api/users/me`，无写路由。文案见 `work/share-paste/devto-profile-setup.md` |
 | 读文章状态、阅读量、评论 | ✅ 能 | `GET /api/articles/me/*`、`GET /api/comments?a_id=` |
 | **发评论 / 回复评论** | ❌ **不能** | `POST /api/comments` **返回 HTML 404——该路由在真实站上不存在**（Forem 文档里有，未部署）。三种 body 写法都试过，全 404 |
 | 点赞 / 关注 | ❌ 不能 | 无对应路由 |
