@@ -44,6 +44,17 @@ agent-charters compare path/to/AGENTS.md
 **它不给你的文件打分。**覆盖率是过程指标，不是质量指标 —— 填满九格不等于写好，
 理由写在 [`LIMITATIONS.md`](LIMITATIONS.md)。它指出的是**你跳过了哪一格**。
 
+**输出语言**：五个命令都出中英两版，默认跟 `LANG` / `LC_ALL` 走 —— `zh*` → 中文，
+其余（含没设置）→ **英文**。要指定就加 `--lang en` / `--lang zh`：
+
+```bash
+LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
+```
+
+（`brief` 的 `--lang` 管的是**喂给模型的提示词**语言，默认英文 —— 喂给模型最稳；
+不给 `--lang` 时周边的清单文案仍跟你机器的语言走。见
+[`agent_charters/i18n.py`](agent_charters/i18n.py)。）
+
 > 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面用 git 直装 ——
 > 实测约 10 秒，语料库 parquet 已打在包里（424 KB），换任意目录都能跑。
 > 首次装会拉 pandas / pyarrow，慢的话是这一步。

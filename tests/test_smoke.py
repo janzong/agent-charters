@@ -9,6 +9,7 @@
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -585,21 +586,30 @@ def test_brief_refs_rates_are_live(corpus):
     assert f"{hard}% 指向知识库或规则目录" in out
 
 
-def test_brief_gap_mode_only_asks_for_missing(tmp_path):
+# 提示词表头/整覆盖用词随 lang 变，测试不再写死某一种语言的字面量
+PROMPT_HEAD = {"en": "Paste-ready prompt", "zh": "可直接粘贴的提示词"}
+ALL_COVERED = {"en": "All nine categories covered", "zh": "九类全覆盖"}
+ASK_ALL_SLOTS = {"en": "Cover every one of the following slots",
+                 "zh": "以下每一项都必须显式写到"}
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_brief_gap_mode_only_asks_for_missing(tmp_path, lang):
     from agent_charters.brief import render
     f = tmp_path / "AGENTS.md"
     f.write_text("# AGENTS.md\n\n## Build\nRun `pytest`.\n\n## Structure\n`src/`.\n",
                  encoding="utf-8")
-    out = render([str(f)], lang="en")
+    out = render([str(f)], lang=lang)
     assert "✗" in out                                   # 缺口被标出
-    assert "Cover every one of the following slots" in out
+    assert ASK_ALL_SLOTS[lang] in out
     # 提示词里只应出现缺的项：已覆盖的 build_test 不该再被要求
-    prompt = out.split("可直接粘贴的提示词")[1]
+    prompt = out.split(PROMPT_HEAD[lang])[1]
     assert "- build_test" not in prompt
     assert "- workflow" in prompt
 
 
-def test_brief_full_coverage_says_so(tmp_path):
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_brief_full_coverage_says_so(tmp_path, lang):
     from agent_charters.brief import render
     f = tmp_path / "AGENTS.md"
     f.write_text("\n".join([
@@ -614,11 +624,9 @@ def test_brief_full_coverage_says_so(tmp_path):
         "## Gotchas 陷阱\nknown issue: upstream breaks if you do X; 踩坑 recorded here",
         "## Agent instructions\nyou are an assistant; your role; be concise; ask before acting",
     ]), encoding="utf-8")
-    out = render([str(f)], lang="en")
-    if "九类全覆盖" in out:
-        assert "没有要补的槽位" in out
-    else:                       # 有缺口就应给出针对性提示词，两者必居其一
-        assert "Cover every one of the following slots" in out
+    out = render([str(f)], lang=lang)
+    assert ALL_COVERED[lang] in out          # 这份夹具九类齐全，就该说"全覆盖"
+    assert ASK_ALL_SLOTS[lang] not in out    # 没有缺口就不该再要一遍提示词
 
 
 def test_brief_carries_the_measured_pitfall_warning():
@@ -634,6 +642,112 @@ def test_brief_carries_the_measured_pitfall_warning():
 def test_brief_is_deterministic():
     from agent_charters.brief import render
     assert render([], lang="zh") == render([], lang="zh")
+
+
+# --- 输出语言（i18n，2026-09-14）------------------------------------------
+#
+# 加英文是为了对外渠道（dev.to 等英文读者照抄命令能看懂），
+# 所以两条不变量必须钉死：①英文输出里不许混中文；②中文输出不许变形。
+
+CHINESE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff"      # 汉字（含扩展 A）
+                     r"\u3000-\u303f"                    # 、。「」等 CJK 标点
+                     r"\uff01-\uff60]")                  # 全角 ！？（）等
+
+
+def test_detect_lang_reads_posix_locale_vars():
+    from agent_charters.i18n import detect_lang
+    assert detect_lang({}) == "en"                                       # 没设 → 英文
+    assert detect_lang({"LANG": "zh_CN.UTF-8"}) == "zh"
+    assert detect_lang({"LANG": "en_US.UTF-8"}) == "en"
+    assert detect_lang({"LANG": "zh_CN.UTF-8", "LC_ALL": "en_US.UTF-8"}) == "en"
+    assert detect_lang({"LANG": "en_US.UTF-8", "LC_ALL": "zh_CN.GB18030"}) == "zh"
+    assert detect_lang({"LC_MESSAGES": "zh_TW.UTF-8"}) == "zh"            # LC_MESSAGES 也认
+    assert detect_lang({"LC_ALL": "zh_CN.UTF-8", "LANG": "en_US.UTF-8"}) == "zh"
+
+
+def test_zh_wording_is_frozen():
+    """中文文案是改造前逐字快照——加英文不该让中文用户看到任何变化。"""
+    from agent_charters.i18n import t
+    assert t("stats.header", "zh", ds=DATASET_VERSION, collected=558, sub=516,
+             snap="2026-09-13", ruleset="ruleset_v0.1.8") == (
+        f"语料库 {DATASET_VERSION} ｜ 抓取 558 份 ｜ 实质内容 516 份 "
+        "｜ 快照 2026-09-13 ｜ ruleset_v0.1.8\n")
+    assert t("stats.coverage", "zh") == "类别覆盖（实质文件）"
+    assert t("cmp.head", "zh", cat="类别", corpus="语料库") == f"{'类别':<14}{'语料库':>7}    你的文件"
+    assert t("cmp.total", "zh", mine=9, all=9) == "合计覆盖 9/9 类"
+    assert t("refs.missing", "zh", n=2) == "  ⚠ 2 个指向的路径找不到——指错方向比不指更糟。"
+    assert t("brief.prompt_head", "zh") == "可直接粘贴的提示词"
+    assert t("brief.prompt_none", "zh") == "  九类全覆盖，没有要补的槽位。"
+
+
+def test_every_string_has_both_languages():
+    from agent_charters.i18n import T
+    for key, entry in T.items():
+        assert set(entry) == {"en", "zh"}, key
+        assert entry["en"].strip() and entry["zh"].strip(), key
+
+
+@pytest.fixture
+def sample_charter(tmp_path):
+    f = tmp_path / "AGENTS.md"
+    f.write_text("# AGENTS.md\n\n## Build\nRun `pytest`.\n\n"
+                 "## Structure\n`src/` and `docs/notes.md`.\n", encoding="utf-8")
+    return str(f)
+
+
+@pytest.mark.parametrize("argv_tail", [
+    ["stats"],
+    ["compare", "{f}"],
+    ["refs", "{f}"],
+    ["show", "gotchas", "--limit", "2"],
+    ["brief", "{f}"],
+])
+def test_cli_en_output_has_no_chinese(argv_tail, sample_charter, capsys, monkeypatch):
+    """英文读者的落地上不该出现任何汉字/全角标点——这是加 i18n 的全部意义。"""
+    from agent_charters.cli import main
+    monkeypatch.setenv("LANG", "en_US.UTF-8")
+    monkeypatch.delenv("LC_ALL", raising=False)
+    monkeypatch.delenv("LC_MESSAGES", raising=False)
+    argv = [a.format(f=sample_charter) for a in argv_tail] + ["--lang", "en"]
+    assert main(argv) == 0
+    out = capsys.readouterr().out
+    hit = CHINESE.search(out)
+    assert not hit, f"{argv_tail} 里出现中文：{hit.group()!r}"
+
+
+def test_cli_lang_flag_overrides_locale(sample_charter, capsys, monkeypatch):
+    """默认跟 LANG 走；--lang 能强行覆盖——两个方向都要测。"""
+    from agent_charters.cli import main
+    monkeypatch.delenv("LC_ALL", raising=False)
+    monkeypatch.delenv("LC_MESSAGES", raising=False)
+    monkeypatch.setenv("LANG", "zh_CN.UTF-8")
+
+    assert main(["stats"]) == 0
+    assert "类别覆盖（实质文件）" in capsys.readouterr().out
+
+    assert main(["compare", sample_charter, "--lang", "en"]) == 0
+    out = capsys.readouterr().out
+    assert "corpus baseline:" in out and not CHINESE.search(out)
+
+    monkeypatch.setenv("LANG", "en_US.UTF-8")
+    assert main(["compare", sample_charter, "--lang", "zh"]) == 0
+    assert "语料库基线：" in capsys.readouterr().out
+
+
+def test_cli_brief_lang_is_the_prompt_language(sample_charter, capsys, monkeypatch):
+    """brief 的 --lang 管的是**提示词**（默认 en）；不给时周边清单跟 locale 走。"""
+    from agent_charters.cli import main
+    monkeypatch.delenv("LC_ALL", raising=False)
+    monkeypatch.setenv("LANG", "zh_CN.UTF-8")
+    assert main(["brief", sample_charter]) == 0
+    out = capsys.readouterr().out
+    assert "Analyze this repository and write an AGENTS.md at its root." in out  # 提示词是英文
+    assert "写章程的检查清单" in out                                             # 周边文案是中文
+
+    # 显式点名语言时，两处都用它——用户既然说了就别再猜
+    assert main(["brief", sample_charter, "--lang", "en"]) == 0
+    out = capsys.readouterr().out
+    assert "Charter checklist" in out and not CHINESE.search(out)
 
 
 # --- 纵向基线 -----------------------------------------------------------

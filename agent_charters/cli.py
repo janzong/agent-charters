@@ -5,6 +5,12 @@
   agent-charters compare FILE [FILE...]    把你的章程与语料库对比
   agent-charters show CATEGORY             看某类别的真实样本
   agent-charters refs FILE [FILE...]       看章程的外部引用与断链
+
+输出语言：默认按 `LANG`/`LC_ALL` 自动判断（`zh*` → 中文，其余 → 英文），
+每个命令都能用 `--lang en|zh` 覆盖。文案表在 `i18n.py`。
+
+`brief` 是唯一的例外：那里的 `--lang` 管的是**喂给模型的提示词**语言
+（默认 en），不给 `--lang` 时周边清单仍跟 locale 走。
 """
 
 import argparse
@@ -15,6 +21,7 @@ from pathlib import Path
 from . import __version__
 from .extract import (CATEGORIES, DATASET_VERSION, analyze_file,
                       category_coverage, load_corpus, substantive)
+from .i18n import detect_lang, t
 
 
 def _bar(pct: float, width: int = 28) -> str:
@@ -22,58 +29,63 @@ def _bar(pct: float, width: int = 28) -> str:
     return "█" * filled + "·" * (width - filled)
 
 
+def _lang(args: argparse.Namespace) -> str:
+    return args.lang or detect_lang()
+
+
 def cmd_stats(args: argparse.Namespace) -> int:
+    lang = _lang(args)
     df = load_corpus(args.data) if args.data else load_corpus()
     sub = substantive(df)
     ruleset = (df["ruleset_version"].iloc[0]
                if "ruleset_version" in df.columns else "ruleset_v0.1")
-    print(f"语料库 {DATASET_VERSION} ｜ 抓取 {len(df)} 份 ｜ 实质内容 {len(sub)} 份 "
-          f"｜ 快照 {df['retrieved_at'].iloc[0]} ｜ {ruleset}\n")
+    print(t("stats.header", lang, ds=DATASET_VERSION, collected=len(df),
+            sub=len(sub), snap=df["retrieved_at"].iloc[0], ruleset=ruleset))
 
-    print("类别覆盖（实质文件）")
+    print(t("stats.coverage", lang))
     print("-" * 58)
     cov = category_coverage(sub)
     for c, pct in sorted(cov.items(), key=lambda x: -x[1]):
         print(f"  {c:<13} {pct:>5.1f}%  {_bar(pct)}")
 
-    print("\n内容模式")
+    print("\n" + t("stats.mode", lang))
     print("-" * 58)
     total = len(sub)
     for mode, cnt in Counter(sub["content_mode"]).most_common():
         print(f"  {mode:<13} {cnt:>4}  {cnt * 100 // total:>3}%")
 
-    print("\n文档语言")
+    print("\n" + t("stats.doclang", lang))
     print("-" * 58)
-    for lang, cnt in Counter(sub["doc_language"]).most_common():
-        print(f"  {lang:<13} {cnt:>4}  {cnt * 100 // total:>3}%")
+    for doclang, cnt in Counter(sub["doc_language"]).most_common():
+        print(f"  {doclang:<13} {cnt:>4}  {cnt * 100 // total:>3}%")
 
-    print("\n体量")
+    print("\n" + t("stats.size", lang))
     print("-" * 58)
     b = sub["bytes"]
-    print(f"  中位数 {int(b.median())} B ｜ 均值 {int(b.mean())} B "
-          f"｜ 最大 {int(b.max())} B")
-    print(f"  平均标签数 {sub['categories'].map(len).mean():.1f}")
+    print(t("stats.bytes", lang, med=int(b.median()), mean=int(b.mean()), mx=int(b.max())))
+    print(t("stats.labels", lang, avg=sub["categories"].map(len).mean()))
     return 0
 
 
 def cmd_compare(args: argparse.Namespace) -> int:
-    corpus = substantive(load_corpus(args.data) if args.data else load_corpus())
+    lang = _lang(args)
+    df = load_corpus(args.data) if args.data else load_corpus()
+    corpus = substantive(df)
     cov = category_coverage(corpus)
     n = len(corpus)
 
-    snap = load_corpus(args.data).iloc[0]["retrieved_at"] if args.data else \
-        load_corpus().iloc[0]["retrieved_at"]
-    print(f"语料库基线：{n} 份实质文件（快照 {snap}）\n")
-    print(f"{'类别':<14}{'语料库':>7}    你的文件")
+    snap = df.iloc[0]["retrieved_at"]      # 原来这里把 parquet 又读了两遍
+    print(t("cmp.baseline", lang, n=n, snap=snap))
+    print(t("cmp.head", lang, cat=t("cmp.category", lang), corpus=t("cmp.corpus", lang)))
     print("-" * 52)
 
     all_mine: set[str] = set()
     for path in args.files:
         rec = analyze_file(path)
         all_mine.update(rec["categories"])
-        state = "pointer（无正文内容）" if rec["is_pointer"] else f"{rec['bytes']}B"
+        state = t("cmp.pointer", lang) if rec["is_pointer"] else f"{rec['bytes']}B"
         print(f"\n### {path}  [{state}, {rec['doc_language']}, "
-              f"{rec['section_count']} 章节, {rec['content_mode']}]")
+              f"{t('cmp.sections', lang, n=rec['section_count'])}, {rec['content_mode']}]")
         for c in CATEGORIES:
             mark = "✓" if c in rec["categories"] else "—"
             cnt = rec["category_counts"].get(c, 0)
@@ -82,103 +94,118 @@ def cmd_compare(args: argparse.Namespace) -> int:
 
     print("\n" + "=" * 52)
     absent = [c for c in CATEGORIES if c not in all_mine]
-    print(f"合计覆盖 {len(all_mine)}/{len(CATEGORIES)} 类")
+    print(t("cmp.total", lang, mine=len(all_mine), all=len(CATEGORIES)))
     if absent:
-        print("\n你没有、但语料库写得最多的：")
+        print("\n" + t("cmp.absent", lang))
         for pct, c in sorted(((cov[c], c) for c in absent), reverse=True):
-            print(f"  {c:<14} 语料库覆盖率 {pct:.1f}%")
+            print(t("cmp.cov_line", lang, c=c, pct=pct))
     else:
-        print("九类全覆盖——超过语料库平均（4.4 类）。")
+        # 平均标签数实时算——写死过一次（4.4），与语料库实际值不符
+        avg = corpus["categories"].map(len).mean()
+        print(t("cmp.full", lang, avg=avg))
     return 0
 
 
 def cmd_brief(args: argparse.Namespace) -> int:
     from .brief import render
     df = load_corpus(args.data) if args.data else None
-    print(render(args.files, lang=args.lang, df=df))
+    # 两件事分开：提示词默认英文（喂模型最稳），周边文案默认跟 locale；
+    # 显式给了 --lang 就两处都用它（用户既然点名了语言，别再猜）。
+    print(render(args.files, lang=args.lang or "en", df=df,
+                 ui_lang=args.lang or detect_lang()))
     return 0
 
 
 def cmd_show(args: argparse.Namespace) -> int:
+    lang = _lang(args)
     df = substantive(load_corpus(args.data) if args.data else load_corpus())
-    hit = df[df["categories"].map(lambda t: args.category in t)]
+    hit = df[df["categories"].map(lambda x: args.category in x)]
     if hit.empty:
-        print(f"没有文件命中类别 {args.category}")
+        print(t("show.none", lang, cat=args.category))
         return 1
-    print(f"类别 {args.category}：{len(hit)} 份命中，"
-          f"展示前 {min(args.limit, len(hit))} 份\n")
+    print(t("show.head", lang, cat=args.category, n=len(hit),
+            k=min(args.limit, len(hit))))
     # 按该类别的章节数降序——最能代表这个类别的排在前面
     hit = hit.assign(_n=hit["category_counts"].map(
         lambda d: d.get(args.category, 0))).sort_values("_n", ascending=False)
     for _, r in hit.head(args.limit).iterrows():
-        lang = r["repo_language"] if isinstance(r["repo_language"], str) else "-"
+        rl = r["repo_language"] if isinstance(r["repo_language"], str) else "-"
         lic = r["license"] if isinstance(r["license"], str) else "-"
         print(f"  {r['repo_full_name']:<40} {int(r['bytes']):>6}B  "
-              f"{lang:<12} {lic:<14} {args.category} x{int(r['_n'])}")
-    print(f"\n取原文：https://github.com/<repo>/blob/HEAD/{df['file_path'].iloc[0]}")
+              f"{rl:<12} {lic:<14} {args.category} x{int(r['_n'])}")
+    print(t("show.raw", lang, path=df["file_path"].iloc[0]))
     return 0
 
 
 def cmd_refs(args: argparse.Namespace) -> int:
     """看章程的外部引用：是自足的，还是把知识指去了别处。"""
     from .refs import find_refs, resolve_targets
+    lang = _lang(args)
     for f in args.files:
         text = Path(f).read_text(encoding="utf-8", errors="replace")
         rec = find_refs(text)
-        kind = ("知识库/规则目录" if rec["hard"]
-                else "祈使转引" if rec["imperative"] else "自足")
+        kind = (t("refs.kind.store", lang) if rec["hard"]
+                else t("refs.kind.imperative", lang) if rec["imperative"]
+                else t("refs.kind.self", lang))
         print(f"\n{f}")
-        print(f"  类型：{kind}   指向 {len(rec['targets'])} 个路径")
+        print(t("refs.type", lang, kind=kind, n=len(rec["targets"])))
         if not rec["routes_outward"]:
-            print("  未发现外部引用——该章程是自足的。")
+            print(t("refs.self", lang))
             continue
         res = resolve_targets(rec, Path(f).parent)
         order = {"missing": 0, "unverified": 1, "by_name": 2, "exists": 3}
-        for t, st in sorted(res, key=lambda x: order[x[1]]):
+        for target, st in sorted(res, key=lambda x: order[x[1]]):
             mark = {"exists": "✓", "by_name": "~", "missing": "✗",
                     "unverified": "?"}[st]
-            print(f"    {mark} {t}")
-        bad = [t for t, st in res if st == "missing"]
-        unv = [t for t, st in res if st == "unverified"]
+            print(f"    {mark} {target}")
+        bad = [x for x, st in res if st == "missing"]
+        unv = [x for x, st in res if st == "unverified"]
         if bad:
-            print(f"  ⚠ {len(bad)} 个指向的路径找不到——指错方向比不指更糟。")
+            print(t("refs.missing", lang, n=len(bad)))
         if unv:
-            print(f"  (基准目录不是仓库根，{len(unv)} 个指向无法核验——"
-                  f"若章程指向的是别的项目，这是正常的)")
+            print(t("refs.unverified", lang, n=len(unv)))
     return 0
 
 
+def _add_lang(sp: argparse.ArgumentParser) -> None:
+    sp.add_argument("--lang", choices=["en", "zh"], default=None,
+                    help=t("cli.lang_help", detect_lang()))
+
+
 def main(argv: list[str] | None = None) -> int:
+    ui = detect_lang()
     p = argparse.ArgumentParser(
         prog="agent-charters",
-        description="人写给 AI 智能体的书面规约语料库"
-                    f"（数据 {DATASET_VERSION} / 工具 {__version__}）")
-    p.add_argument("--data",
-                   help=f"自定义语料库 parquet 路径（默认用随包的 {DATASET_VERSION}）")
+        description=f"{t('cli.desc', ui)}（{DATASET_VERSION} / {__version__}）"
+                    if ui == "zh" else
+                    f"{t('cli.desc', ui)} ({DATASET_VERSION} / {__version__})")
+    p.add_argument("--data", help=t("cli.data_help", ui, ds=DATASET_VERSION))
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    s1 = sub.add_parser("stats", help="全局分布")
+    s1 = sub.add_parser("stats", help=t("cmd.stats", ui))
+    _add_lang(s1)
     s1.set_defaults(func=cmd_stats)
 
-    sb = sub.add_parser("brief",
-                        help="写章程前的检查清单 + 可直接粘贴的生成提示词")
-    sb.add_argument("files", nargs="*",
-                    help="可选：已有的章程文件，清单会标出你缺了哪些")
-    sb.add_argument("--lang", choices=["en", "zh"], default="en",
-                    help="提示词语言（默认 en：喂给模型最稳）")
+    sb = sub.add_parser("brief", help=t("cmd.brief", ui))
+    sb.add_argument("files", nargs="*", help=t("cmd.brief.files", ui))
+    sb.add_argument("--lang", choices=["en", "zh"], default=None,
+                    help=t("cmd.brief.lang", ui))
     sb.set_defaults(func=cmd_brief)
 
-    s2 = sub.add_parser("compare", help="把你的章程与语料库对比")
-    s2.add_argument("files", nargs="+", help="一个或多个章程文件")
+    s2 = sub.add_parser("compare", help=t("cmd.compare", ui))
+    s2.add_argument("files", nargs="+", help=t("cmd.compare.files", ui))
+    _add_lang(s2)
     s2.set_defaults(func=cmd_compare)
 
-    s4 = sub.add_parser("refs", help="看章程的外部引用与断链")
-    s4.add_argument("files", nargs="+", help="章程文件路径")
+    s4 = sub.add_parser("refs", help=t("cmd.refs", ui))
+    s4.add_argument("files", nargs="+", help=t("cmd.refs.files", ui))
+    _add_lang(s4)
     s4.set_defaults(func=cmd_refs)
 
-    s3 = sub.add_parser("show", help="看某类别的真实样本")
+    s3 = sub.add_parser("show", help=t("cmd.show", ui))
     s3.add_argument("category", choices=CATEGORIES)
-    s3.add_argument("--limit", type=int, default=10)
+    s3.add_argument("--limit", type=int, default=10, help=t("cmd.show.limit", ui))
+    _add_lang(s3)
     s3.set_defaults(func=cmd_show)
 
     args = p.parse_args(argv)

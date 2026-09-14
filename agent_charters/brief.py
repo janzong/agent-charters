@@ -99,14 +99,13 @@ REFS_ASK = (
     "files, say so explicitly - and make sure every path you point at exists.",
 )
 
-# 实验得出的生成侧要点
-GENERATOR_RULES = [
-    ("提示词必须点名每一个槽位", "未点名的槽位会被系统性跳过（workflow 0/11 → 点名后 3/3）"),
-    ("要求“没有证据就明说，不要猜”", "否则会编出不存在的命令"),
-    ("生成后立刻核对", "用 agent-charters compare 把结果与语料库基线对比"),
-    ("把人能补的那部分补上", "58% 的坑读代码可得，剩下 8% 只能问人（见 work/gotcha_origin.md）"),
-    ("指向别处就要保证指得对", "指错方向比不指更糟——agent 会照着不存在的文件找；"
-     "用 agent-charters refs 检查断链"),
+# 实验得出的生成侧要点（文案在 i18n.py，key 见下；数值不许在重构中丢）
+GENERATOR_RULE_KEYS = [
+    "brief.rule.name_slots",
+    "brief.rule.no_guessing",
+    "brief.rule.verify_after",
+    "brief.rule.human_part",
+    "brief.rule.point_right",
 ]
 
 OUTPUT_LANG = {"en": 1, "zh": 0}
@@ -122,74 +121,87 @@ def base_rates(df=None) -> dict[str, float]:
     return category_coverage(substantive(df if df is not None else load_corpus()))
 
 
-def render(files: list[str], lang: str = "en", df=None) -> str:
-    """打印清单（可选对比文件）并输出可粘贴的提示词。"""
+def render(files: list[str], lang: str = "en", df=None, ui_lang: str | None = None) -> str:
+    """打印清单（可选对比文件）并输出可粘贴的提示词。
+
+    两个语言参数是两件事，别合并：
+      * `lang`    —— **提示词**语言（`generator_prompt` 用；默认 en，喂给模型最稳）
+      * `ui_lang` —— **周边文案**语言（表头/清单/说明），默认跟 `lang`
+
+    CLI 里必须分开传：中文用户 `agent-charters brief` 拿到的还是中文清单
+    （改造前就是这样），但贴进模型的提示词仍默认英文。
+    """
+    from .extract import analyze_file
+    from .i18n import t
+
+    ui = ui_lang or lang
     cov = base_rates(df)
     out: list[str] = []
 
     mine: set[str] = set()
     if files:
-        from .extract import analyze_file
-        out.append("你提供文件的缺口")
+        out.append(t("brief.gaps_head", ui))
         out.append("-" * 58)
         for f in files:
             rec = analyze_file(f)
             mine |= set(rec["categories"])
             missing = [c for c in CATEGORIES if c not in rec["categories"]]
-            out.append(f"  {f}: {len(rec['categories'])}/{len(CATEGORIES)} 类，"
-                       f"缺 {', '.join(missing) if missing else '（无）'}")
+            out.append(t("brief.gap_line", ui, f=f, n=len(rec["categories"]),
+                         all=len(CATEGORIES),
+                         missing=", ".join(missing) if missing else t("brief.none_word", ui)))
         out.append("")
 
-    head = "写章程的检查清单" + ("（按语料库覆盖率排序）" if not files else "（✗ = 你没有的）")
-    out += [head, "-" * 58]
+    out += [t("brief.head_gap" if files else "brief.head_rates", ui), "-" * 58]
     for c, pct in sorted(cov.items(), key=lambda kv: -kv[1]):
-        mark = "" if not files else ("   " if c in mine else " ✗ ")
+        mark = "" if not files else ("   " if c in mine else " \u2717 ")
         out.append(f"  {mark}{c:<13}{pct:>5.1f}%  {_bar(pct)}")
     out.append("")
 
-    out += ["每一项该问什么", "-" * 58]
+    out += [t("brief.ask_head", ui), "-" * 58]
     for c, pct in sorted(cov.items(), key=lambda kv: -kv[1]):
-        out.append(f"  【{c} · 语料库 {pct}%】")
-        out.append(f"     {ASK[c][OUTPUT_LANG[lang]]}")
+        out.append(t("brief.slot", ui, c=c, pct=pct))
+        out.append(f"     {ASK[c][OUTPUT_LANG[ui]]}")
         if c == "gotchas":
-            out.append(f"     ⚠ {GOTCHA_ANTI[OUTPUT_LANG[lang]]}")
+            out.append(f"     \u26a0 {GOTCHA_ANTI[OUTPUT_LANG[ui]]}")
     out.append("")
 
-    out += ["生成侧要点（来自 n=11 对照实验）", "-" * 58]
-    for title, why in GENERATOR_RULES:
-        out.append(f"  · {title} —— {why}")
+    out += [t("brief.rules_head", ui), "-" * 58]
+    for key in GENERATOR_RULE_KEYS:
+        title, why = t(key, ui).split("|", 1)
+        out.append(t("brief.rule_line", ui, title=title, why=why))
     out.append("")
 
-    out += ["外部引用（结构信号，不在九类之内）", "-" * 58]
+    out += [t("brief.refs_head", ui), "-" * 58]
     routed, hard = refs_rates(df)
-    out.append(f"  {REFS_BASE[lang].format(routed=routed, hard=hard)}")
-    out.append(f"  该问：{REFS_ASK[OUTPUT_LANG[lang]]}")
+    out.append(f"  {REFS_BASE[ui].format(routed=routed, hard=hard)}")
+    out.append(t("brief.refs_ask", ui) + REFS_ASK[OUTPUT_LANG[ui]])
     if files:
+        kind_store = t("refs.kind.store", ui)
+        kind_imp = t("refs.kind.imperative", ui)
         for f in files:
             rec = find_refs(Path(f).read_text(encoding="utf-8", errors="replace"))
             if not rec["routes_outward"]:
-                out.append(f"  {f}: 未发现外部引用（章程是自足的）")
+                out.append(t("brief.file_self", ui, f=f))
                 continue
-            kind = "知识库/规则目录" if rec["hard"] else "祈使转引"
+            kind = kind_store if rec["hard"] else kind_imp
             res = resolve_targets(rec, Path(f).parent)
-            bad = [t for t, st in res if st == "missing"]
-            soft = [t for t, st in res if st == "by_name"]
-            line = f"  {f}: {kind}，指向 {len(rec['targets'])} 个路径"
+            out.append(t("brief.file_route", ui, f=f, kind=kind, n=len(rec["targets"])))
+            bad = [x for x, st in res if st == "missing"]
+            soft = [x for x, st in res if st == "by_name"]
+            unv = [x for x, st in res if st == "unverified"]
             if bad:
-                line += f"  ⚠ {len(bad)} 个找不到：{', '.join(bad[:4])}"
+                out.append(t("brief.file_missing", ui, n=len(bad), list=", ".join(bad[:4])))
             if soft:
-                line += f"  （{len(soft)} 个只在同名位置找到）"
-            unv = [p for p, st in res if st == "unverified"]
+                out.append(t("brief.file_byname", ui, n=len(soft)))
             if unv:
-                line += f"  （{len(unv)} 个无法核验：目录不是仓库根）"
-            out.append(line)
+                out.append(t("brief.file_unverified", ui, n=len(unv)))
     out.append("")
 
     targets = [c for c in CATEGORIES if (not files) or c not in mine]
-    out += ["可直接粘贴的提示词", "-" * 58]
+    out += [t("brief.prompt_head", ui), "-" * 58]
     if not targets:
-        out.append("  九类全覆盖，没有要补的槽位。")
-        out.append("  若要换一份仓库重写，直接跑：agent-charters brief")
+        out.append(t("brief.prompt_none", ui))
+        out.append(t("brief.prompt_other", ui))
     else:
         out += _indent(generator_prompt(targets, lang, files))
     return "\n".join(out)
