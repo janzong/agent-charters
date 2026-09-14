@@ -69,15 +69,28 @@
   recall 26%），这边是**机制**（中文正文通道为空）＋ 一个**工具自洽问题**（自己的槽位名
   不在自己的标题词表里）。
 
-## 5. `refs` 的两个观察
+## 5. `refs`：三个观察 + 一个能让它真核验的做法
 
-- **在仓库外跑只能给"验不了"**：把草案放在没有 `.git` 的目录里，`refs` 对 17 个指向全部输出 `?`
+- **在仓库外跑只能给「验不了」**：草案放在没有 `.git` 的目录里，`refs` 对 17 个指向全部输出 `?`
   （`unverified`）——这是 `work/usage_audit.md` U3 有意修的第四态，行为符合设计（宁可说验不了，
   不误报断链）。
-- **但"有没有 `.git`"这个判据会被一个空目录骗到**：本次 `/tmp` 下恰好存在一个**遗留的空 `.git`**
+- **「有没有 `.git`」这个判据会被一个空目录骗到**：本次 `/tmp` 下恰好存在一个**遗留的空 `.git`**
   （非本仓库创建），于是 `refs` 把 `/tmp` 当仓库根，对同一份草案报出 **16 个假断链**
-  （含 `README.md`、`CODEX.md`、`frontend/`）。**记下来不改**：门应该更严（例如要求 `.git`
-  非空，或把"被描述的仓库"作为显式参数传入），否则这类假阳性能重现。
+  （含 `README.md`、`CODEX.md`、`frontend/`）。门应该更严（例如要求 `.git` 非空、或把
+  「被描述的仓库」作为显式参数传入），否则这类假阳性能重现。**记下来不改**（D11 / D32）。
+- **能让它真核验的做法（本次用上了，建议写进工具文档）**：章程不必放进被描述的仓库——
+  做一个**镜像目录**即可：`mkdir -p /tmp/mirror-X/.git`，把被描述仓库的顶层条目 `ln -s` 进去，
+  草案放成该目录下的 `AGENTS.md`。`refs` 按 `base_dir`（草案所在目录）解析，于是能真核验。
+  实测：17 个指向 **15 ✓ / 1 `~` / 2 ✗**。
+- **其中 2 个 ✗ 是工具的真缺陷**：`dist/` 与 `.venv/` 出现在 boundaries 段「**不提交**这些」的
+  清单里——它们是**本来就不该存在**的路径。`refs` 分不清「去读这个」和「别提交这个」，
+  对禁令清单里的路径会一律报断链。**记下来不改**。
+- 剩下的 1 个 `~`（`tests/`）是**我该改的**：见下。
+
+**这一趟修掉了章程的一处真缺陷**：结构段原文写「新路由放 `api/`、业务逻辑放 `services/`、
+模型放 `models/`」——三个简写。`refs` 判 `~`（同名目录在 `backend/app/` 下、仓库根没有），
+这提示**真的 agent 会去仓库根找 `api/`**。已改成全路径。这是本次工具给出的、唯一一处
+内容级改进（`compare` 那处是措辞级）。
 
 ## 6. 判据怎么记
 
@@ -94,7 +107,15 @@
 cd ~/workspace/agent-charters
 .venv/bin/agent-charters brief --lang zh                 # 九槽清单 + 可粘贴提示词
 .venv/bin/agent-charters compare /tmp/rmas-v3-AGENTS.md  # 定稿：9/9
-.venv/bin/agent-charters refs /tmp/rmas-v3-AGENTS.md     # 受 /tmp/.git 影响 → 假断链
+
+# 让 refs 能真核验：镜像目录（顶层条目软链 + 一个 .git）
+M=/tmp/mirror-rmas-v3; mkdir -p "$M/.git"
+for e in CODEX.md MESSAGES.md README.md VERSION .env.example .gitignore \
+         backend frontend deploy docs scripts node_modules; do
+  ln -sfn "/home/janz/workspace/rmas-v3/$e" "$M/$e"
+done
+cp /tmp/rmas-v3-AGENTS.md "$M/AGENTS.md"
+.venv/bin/agent-charters refs "$M/AGENTS.md"             # 15 ✓ / 1 ~ / 2 ✗（见 §5）
 ```
 
 规则条数可复算（`ruleset_v0.1.8`）：
