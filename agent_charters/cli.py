@@ -33,6 +33,16 @@ def _lang(args: argparse.Namespace) -> str:
     return args.lang or detect_lang()
 
 
+def _missing_files(args: argparse.Namespace) -> list[str]:
+    """不存在的输入文件要报清楚，不要抛 traceback。
+
+    为什么值这几行：这个 CLI 现在被 GitHub Action 直接调用（`action.yml`），
+    而 Action 里最常见的手误就是路径写错（`path: docs/AGENTS.md`）。
+    抛 FileNotFoundError 的 traceback 会淹没整段日志，说人话的一行则一眼可见。
+    """
+    return [f for f in getattr(args, "files", []) if not Path(f).is_file()]
+
+
 def cmd_stats(args: argparse.Namespace) -> int:
     lang = _lang(args)
     df = load_corpus(args.data) if args.data else load_corpus()
@@ -69,6 +79,9 @@ def cmd_stats(args: argparse.Namespace) -> int:
 
 def cmd_compare(args: argparse.Namespace) -> int:
     lang = _lang(args)
+    if bad := _missing_files(args):
+        print(t("cli.no_such_file", lang, files=", ".join(bad)), file=sys.stderr)
+        return 2
     df = load_corpus(args.data) if args.data else load_corpus()
     corpus = substantive(df)
     cov = category_coverage(corpus)
@@ -108,6 +121,9 @@ def cmd_compare(args: argparse.Namespace) -> int:
 
 def cmd_brief(args: argparse.Namespace) -> int:
     from .brief import render
+    if bad := _missing_files(args):
+        print(t("cli.no_such_file", detect_lang(), files=", ".join(bad)), file=sys.stderr)
+        return 2
     df = load_corpus(args.data) if args.data else None
     # 两件事分开：提示词默认英文（喂模型最稳），周边文案默认跟 locale；
     # 显式给了 --lang 就两处都用它（用户既然点名了语言，别再猜）。
@@ -141,6 +157,9 @@ def cmd_refs(args: argparse.Namespace) -> int:
     """看章程的外部引用：是自足的，还是把知识指去了别处。"""
     from .refs import find_refs, resolve_targets
     lang = _lang(args)
+    if bad := _missing_files(args):
+        print(t("cli.no_such_file", lang, files=", ".join(bad)), file=sys.stderr)
+        return 2
     for f in args.files:
         text = Path(f).read_text(encoding="utf-8", errors="replace")
         rec = find_refs(text)

@@ -550,6 +550,38 @@ def test_published_checksums_match():
         assert got == digest, f"{name} 校验和不符（重新生成后需更新 SHA256SUMS）"
 
 
+def test_bundled_corpus_matches_the_published_one():
+    """随包副本与发布副本必须逐字节相同——同一个数据集在仓库里有两份。
+
+    `agent_charters/data/` 是 CLI 实际读的那份，`data/processed/` 是发布资产
+    （被 SHA256SUMS 钉住）。只测后者的话，"重新生成后忘了拷进包"会让工具继续
+    打印旧数字、而 Release 上是新的——两边各自都能通过校验，对外却是两套数。
+    """
+    bundled = ROOT / "agent_charters" / "data"
+    processed = ROOT / "data" / "processed"
+    assert bundled.exists() and processed.exists()
+    for f in sorted(bundled.glob("*.parquet")):
+        twin = processed / f.name
+        if not twin.exists():
+            continue
+        assert f.read_bytes() == twin.read_bytes(), (
+            f"{f.name}：随包副本与 data/processed 不一致（重新生成后要拷进两者）")
+
+
+def test_cli_reports_a_missing_input_file_instead_of_a_traceback(capsys):
+    """路径写错要报一行人话（exit 2），不要抛 FileNotFoundError。
+
+    这个 CLI 现在被 GitHub Action 直接调用，而 Action 里最常见的手误就是路径写错。
+    """
+    from agent_charters.cli import main
+    for argv in (["compare", "no-such-file.md", "--lang", "en"],
+                 ["refs", "no-such-file.md", "--lang", "zh"],
+                 ["brief", "no-such-file.md", "--lang", "en"]):
+        assert main(argv) == 2
+        err = capsys.readouterr().err
+        assert "no-such-file.md" in err
+
+
 def test_category_counts_are_dense(corpus):
     """九个类别必须全部在场、缺席为 0、顺序固定——稀疏 dict 会在 parquet 里变成 NaN。"""
     rec = analyze_text(ZH_CHARTER)
@@ -769,6 +801,8 @@ def test_baseline_matches_corpus(corpus):
 
 def test_longitudinal_self_diff_is_zero():
     """拿基线跟当前清单比，必须报 0 变化——这是脚本没写错的证据。"""
+    if not MANIFEST.exists():
+        pytest.skip("data/raw 不在仓库里（原文全文不入库），纵向脚本没有可比的对象")
     import subprocess
     r = subprocess.run([sys.executable, "work/longitudinal.py"], cwd=ROOT,
                        capture_output=True, text=True)
@@ -791,6 +825,69 @@ def test_hard_route_gotchas_numbers_are_reproducible():
     assert "2.12×" in r.stdout
     assert "p = 0.0037" in r.stdout
     assert "24.7%" in r.stdout and "11.6%" in r.stdout
+
+
+# --- GitHub Action 的判定层（agent_charters/gha.py，2026-09-14）---------------
+
+def _make_repo_charter(tmp_path, text):
+    """造一个"像仓库根"的目录（有 .git），否则 `refs` 一律报 unverified。"""
+    (tmp_path / ".git").mkdir(exist_ok=True)
+    f = tmp_path / "AGENTS.md"
+    f.write_text(text, encoding="utf-8")
+    return f
+
+
+def test_gha_skips_when_there_is_no_charter(tmp_path):
+    """没有章程文件时跳过而不是失败——否则 Action 会打断所有没写章程的仓库。"""
+    from agent_charters.gha import evaluate
+    r = evaluate([str(tmp_path / "nope.md")])
+    assert r.skipped and not r.failures and not r.problems
+
+
+def test_gha_fails_only_on_what_you_asked_to_enforce(tmp_path):
+    from agent_charters.gha import evaluate
+    f = _make_repo_charter(tmp_path, "# AGENTS.md\n\n## Build\nRun `pytest`.\n")
+    relaxed = evaluate([str(f)])
+    assert relaxed.missing and not relaxed.failures      # 默认只报告
+    strict = evaluate([str(f)], fail_on_missing=("gotchas",))
+    assert any("gotchas" in x for x in strict.failures)
+    other = evaluate([str(f)], fail_on_missing=("build_test",))
+    assert not other.failures                            # 已经写了的那类不该触发
+
+
+def test_gha_rejects_a_category_name_that_does_not_exist(tmp_path):
+    """`fail-on-missing` 写错类别名要报错，不能静默地"永不触发"。"""
+    from agent_charters.gha import evaluate
+    f = _make_repo_charter(tmp_path, "# AGENTS.md\n\n## Build\nRun `pytest`.\n")
+    r = evaluate([str(f)], fail_on_missing=("workfloww",))
+    assert r.problems and "workfloww" in r.problems[0]
+
+
+def test_gha_dangling_is_off_by_default_and_detects_inside_a_repo(tmp_path):
+    """断链默认不失败（禁令清单里的路径不是断链），但开了就要真能查出来。"""
+    from agent_charters.gha import evaluate
+    text = "# AGENTS.md\n\n## 详见\n先读 `docs/notes.md`，还有 `docs/missing.md`。\n"
+    f = _make_repo_charter(tmp_path, text)
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "notes.md").write_text("x", encoding="utf-8")
+
+    assert not evaluate([str(f)], fail_on_dangling=False).failures
+    strict = evaluate([str(f)], fail_on_dangling=True)
+    assert strict.dangling and any("path" in x for x in strict.failures)
+    assert strict.dangling[0].endswith("docs/missing.md")
+
+
+def test_gha_main_writes_the_step_summary(tmp_path, monkeypatch):
+    from agent_charters import gha
+    f = _make_repo_charter(tmp_path, "# AGENTS.md\n\n## Build\nRun `pytest`.\n")
+    summary = tmp_path / "summary.md"
+    out = tmp_path / "out.txt"
+    rc = gha.main({"CHARTER_FILES": str(f), "CHARTER_LANG": "en",
+                   "GITHUB_STEP_SUMMARY": str(summary), "GITHUB_OUTPUT": str(out)})
+    assert rc == 0                                       # 没开 fail-on-* 就不该红
+    body = summary.read_text(encoding="utf-8")
+    assert "Missing" in body and "process metric, not a quality score" in body
+    assert "missing=" in out.read_text(encoding="utf-8")
 
 
 # --- 可重放性 -----------------------------------------------------------
@@ -929,7 +1026,14 @@ def test_refs_still_reports_missing_inside_a_repo(tmp_path):
 # 所以下面一律直读 data/raw/full 的原文。
 
 def _real_cats(rel: str) -> set[str]:
-    """读 data/raw/full/<owner__repo>.md 的真实正文，返回类别集合。"""
+    """读 data/raw/full/<owner__repo>.md 的真实正文，返回类别集合。
+
+    `data/raw/` 是 gitignore 的（原文全文不入库），所以**在 CI / 新克隆里这些用例必须跳过**，
+    不能报错——否则第一次跑 GitHub Action 就会因为"读不到夹具"而全红，
+    看起来像分类器坏了，实际是夹具不在。跳过理由要写在 skip 里，别让人猜。
+    """
+    if not RAW.exists():
+        pytest.skip("data/raw 不在仓库里（原文全文不入库，只在作者机器上）")
     text = (RAW / f"{rel}.md").read_text(encoding="utf-8")
     return set(analyze_text(text)["categories"])
 

@@ -1,5 +1,7 @@
 # agent-charters ｜ 智能体章程语料库
 
+[![charter](https://github.com/janzong/agent-charters/actions/workflows/charter.yml/badge.svg)](https://github.com/janzong/agent-charters/actions/workflows/charter.yml)
+
 > **人写给 AI 智能体的书面规约**的结构化语料库。
 > 数据集 **v0.5** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
 > 附带命令行工具：把任意一份章程与其中 **516 份实质文件**的基线对比，看它缺了什么。
@@ -61,6 +63,40 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 > **国内网络**拉这两个大包（62 MB）时可能断流：2026-09-14 实测直连 PyPI **3/3 次**
 > 下载到的 wheel 哈希不符（`pip` 报 expected/got 不一致），换镜像则一次成功 ——
 > 加上 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
+
+## 放进 CI（GitHub Action）
+
+章程的失效方式不是"写错"，是**悄悄过期**：目录改名、脚本删掉、命令换了，章程还指着老路径，
+而 agent 会照着不存在的文件找。所以本仓库自带一个 action，每次 PR 都量一次：
+
+```yaml
+# .github/workflows/charter.yml
+name: charter
+on: [pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: janzong/agent-charters@v1
+        with:
+          path: AGENTS.md
+          # 可选：缺了这些类别就让 job 红（默认只报告，不拦）
+          fail-on-missing: 'workflow,gotchas'
+```
+
+它做两件事，都写进 job summary（不碰你的文件、不发评论）：
+**① 九类覆盖**对比 516 份基线，标出缺的是语料库里写得最多的哪几类；
+**② 外部引用**逐条核验章程指出去的路径还在不在。
+`fail-on-dangling` 默认**关闭**——禁令清单里的路径（"绝不提交 `.env`"）不是断链，
+而扫描器目前分不清"去读这个"和"别提交这个"，打开会误杀（见 [`LIMITATIONS.md`](LIMITATIONS.md) §22）。
+
+本仓库自己也在用（`uses: ./`，见 `.github/workflows/charter.yml`）——
+**而且它当场抓到了我们自己**：这份 `AGENTS.md` 被自家工具判成 8/9，
+缺的 `overview` 其实是写了，原因是中文自然措辞（标题「这是什么」）不在词表里。
+归因与最小对照记在 [`LIMITATIONS.md`](LIMITATIONS.md) §22，**没有为了变绿去改文档措辞**。
 
 ## 这是什么
 

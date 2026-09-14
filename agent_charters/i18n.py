@@ -30,6 +30,10 @@ T: dict[str, dict[str, str]] = {
         "en": "output language (default: auto from LANG — zh* → Chinese, otherwise English)",
         "zh": "输出语言（默认按 LANG 自动判断：zh* → 中文，其余 → 英文）",
     },
+    "cli.no_such_file": {
+        "en": "no such file: {files}",
+        "zh": "文件不存在：{files}",
+    },
     "cmd.stats": {"en": "Global distribution", "zh": "全局分布"},
     "cmd.brief": {
         "en": "Checklist before writing a charter + a paste-ready generation prompt",
