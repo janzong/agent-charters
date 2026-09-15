@@ -311,6 +311,35 @@ def test_v018_added_words_veto(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
 
 
+# O5（ruleset_v0.1.9，2026-09-15）：§22 两处召回缺口的补词——正文禁令家族补 `绝不`、
+# `overview` 标题词表补 `这是什么`。起因是本仓库自己的 `AGENTS.md` 被自家工具判成 8/9
+# （其中那个 boundaries 还是靠一句"解释缺口"的话里的"禁止"二字蒙到的）。
+# 实测（`work/audit/rule_gap_impact.py`，§22.1）：对 v0.5 **标签中性**——558 份逐份标签与
+# 内容模式零变化、516 份覆盖率不变（boundaries 85.7% / overview 32.2%，`--verify-v05` 复跑一致）；
+# 收益只落在将来采到的中文上（v0.6 中文 1046 份 +6 / +8，新增的 14 份逐条读过，14/14 真命中）。
+# 「绝对不能做」实测收益≈0（v0.6 只 1 份含它）⇒ **不收**，下面用反例钉住。
+# ⚠️ 这两条**不解决** §22 的"提到即命中"（一句*讨论*禁令措辞的话也会被算成一条禁令）。
+
+@pytest.mark.parametrize("text, expected", [
+    ("# A\n\n## 绝对不能做\n\n- 绝不提交原文全文。\n", "boundaries"),
+    ("# A\n\n## 安全\n\n- 凭证绝不提交，密钥绝不写进仓库。\n", "boundaries"),
+    ("# A\n\n## 这是什么\n\nagent-charters 是收集规约的项目。\n", "overview"),
+    ("# A\n\n## 这是什么项目\n\n- 一句话介绍。\n", "overview"),
+])
+def test_v019_added_words(text, expected):
+    assert expected in analyze_text(text)["categories"]
+
+
+@pytest.mark.parametrize("text, forbidden", [
+    # 标题词 `绝对不能做` 不进词表 ⇒ 光有这个标题（正文没有禁令句）不该出 boundaries
+    ("# A\n\n## 绝对不能做\n\n- 保持改动最小。\n", "boundaries"),
+    # 「这是什么」是子串匹配，别把「这不是什么」带进来
+    ("# A\n\n## 这不是什么\n\n- 本工具不是评测框架。\n", "overview"),
+])
+def test_v019_added_words_veto(text, forbidden):
+    assert forbidden not in analyze_text(text)["categories"]
+
+
 # O4（ruleset_v0.1.8）：收紧块。全库实测（558 份逐份 diff）**净增 1 / 净掉 34**
 # （章节级 −158 / +3）。34 个掉的逐份看过，**全部**是审计里点名过的假阳性：
 # `task` 4（Finishing a task / Required task lifecycle…）、`requirement` 8（PR/Testing/

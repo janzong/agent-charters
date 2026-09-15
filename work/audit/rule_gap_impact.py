@@ -113,7 +113,10 @@ def coverage(labels: dict[str, set[str]], repos: set[str]) -> dict[str, float]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dump", help="把新增命中「绝不」的上下文写到这个文件")
+    ap.add_argument("--dump", help="把新增命中的上下文写到这个文件（含原文片段，别放仓库）")
+    ap.add_argument("--verify-v05", action="store_true",
+                    help="改了规则之后跑这里：用当前规则重算 558 份，逐份对比已发布的 v0.5 标签，"
+                         "有差异就打印并退出码 1（例行检查：这次改词有没有动到已发布资产）")
     args = ap.parse_args()
 
     full, cn = load_full(), load_cn()
@@ -217,6 +220,40 @@ def main() -> int:
         label = "（现状）" if not ids else f"加 {'+'.join(ids)}"
         miss = [c for c in cats if c not in got]
         print(f"  {label:<10} {len(got & set(cats))}/9 类 ｜ 还缺：{', '.join(miss) or '无'}")
+
+    if args.verify_v05:
+        # 与 dump 分开：这条是"改完规则后的例行验证"，用**当前**规则重算，不再打补丁。
+        rows = [json.loads(l) for l in (ROOT / "data/processed" / "agent_charters_v0.5.jsonl")
+                .read_text(encoding="utf-8").splitlines()]
+        stored = {r["repo_full_name"]: r for r in rows}
+        cur = analyzed(full)
+        print(f"\n=== --verify-v05：当前规则（{tax.RULESET_VERSION}）对 v0.5 的标签中性检查 ===")
+        print(f"  已发布 {len(stored)} 份 ｜ 本次重算 {len(cur)} 份"
+              f"（键唯一性：{'OK' if len(cur) == len(full) else '有重名仓库，已按仓库名合并'}）")
+        bad = []
+        for repo, rec in sorted(cur.items()):
+            old_row = stored.get(repo)
+            if old_row is None:
+                bad.append((repo, "重算里有、已发布里没有", "", ""))
+                continue
+            new_cats, old_cats = set(rec["categories"]), set(old_row["categories"])
+            if new_cats != old_cats or rec["content_mode"] != old_row["content_mode"]:
+                bad.append((repo, "+".join(sorted(new_cats - old_cats)),
+                            "-".join(sorted(old_cats - new_cats)),
+                            f"mode {old_row['content_mode']}→{rec['content_mode']}"))
+        missing = sorted(set(stored) - set(cur))
+        for repo in missing:
+            bad.append((repo, "", "", "重算里没有（文件缺失？）"))
+        if bad:
+            print(f"  ❌ {len(bad)} 份有差异：")
+            for repo, added, removed, extra in bad:
+                print(f"     {repo:<58} +{added or '-':<14} -{removed or '-':<14} {extra}")
+        else:
+            print("  ✅ 逐份标签与内容模式**完全一致**——这次改动对 v0.5 是标签中性的。")
+        sub_cov = coverage({r: set(v["categories"]) for r, v in cur.items()}, substantive_repos())
+        print("  516 份实质文件覆盖率：" +
+              " / ".join(f"{c} {sub_cov[c]}%" for c in ("boundaries", "overview")))
+        return 1 if bad else 0
 
     if args.dump:
         # 注意：v0.5 全库的新增是 0，真正有新增的是 **v0.6 中文**那 6+8 份，
