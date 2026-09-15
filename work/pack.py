@@ -31,7 +31,8 @@ def main() -> None:
     out = Path(f"data/processed/agent-charters-{DATASET_VERSION}.parquet")
     df.to_parquet(out, index=False, compression="zstd")
     # 随包那份：jsonl.gz（纯标准库可读），解压后与 data/processed 的 jsonl 逐字节相同。
-    # mtime=0 + 固定压缩级别 ⇒ 同一份数据每次生成字节一致，校验和才有意义。
+    # mtime=0 是为了让 gz 里不带打包时间（否则每次打包字节都不同）。
+    # ⚠️ 别指望"同样输入压出同样字节"：gzip 的输出随 zlib 版本变（py3.10 与 py3.12 就不同）。
     pkg = Path(f"agent_charters/data/agent-charters-{DATASET_VERSION}.jsonl.gz")
     pkg.parent.mkdir(parents=True, exist_ok=True)
     pkg.write_bytes(gzip.compress(src.read_bytes(), compresslevel=9, mtime=0))

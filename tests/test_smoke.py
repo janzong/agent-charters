@@ -11,6 +11,7 @@
 import gzip
 import json
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -571,14 +572,22 @@ def test_bundled_corpus_matches_the_published_one():
         f"{bundled.name}：随包副本与 data/processed 不是同一份（重新生成后要拷进两者）")
 
 
-def test_bundled_corpus_is_reproducible_from_the_published_jsonl():
-    """再压一遍必须得到同样的字节——否则"随包副本"这个说法只在今天成立。"""
+def test_the_bundled_corpus_carries_no_timestamp():
+    """gzip 头里的 mtime 必须是 0——带了时间戳，每次打包的字节都不一样。
+
+    ⚠️ 这里**只**钉 mtime，不钉"再压一遍字节相同"：`gzip.compress` 的输出是 zlib 的
+    实现细节，**同一个输入在不同 Python 版本上会给出不同的合法 gzip 流**。
+    0.4.0 首次 CI 就在 py3.10 上红过一次（py3.12 绿）——被断言的是压缩帧，不是数据。
+    内容一致性由上面那条测试保证（解压后逐字节等于发布 jsonl）。
+    """
     src = ROOT / "data" / "processed" / f"agent_charters_{DATASET_VERSION}.jsonl"
     if not src.exists():
         pytest.skip("data/processed 不在仓库里（发布包精简版）")
-    bundled = ROOT / "agent_charters" / "data" / f"agent-charters-{DATASET_VERSION}.jsonl.gz"
-    again = gzip.compress(src.read_bytes(), compresslevel=9, mtime=0)
-    assert again == bundled.read_bytes()
+    raw = (ROOT / "agent_charters" / "data"
+           / f"agent-charters-{DATASET_VERSION}.jsonl.gz").read_bytes()
+    magic, method, _flags, mtime = struct.unpack("<HBBL", raw[:8])
+    assert magic == 0x8B1F and method == 8, "不是 gzip 流"
+    assert mtime == 0, "gzip 头带了时间戳——每次打包字节都会不同"
 
 
 def test_the_package_has_no_runtime_dependencies():

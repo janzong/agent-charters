@@ -1165,7 +1165,10 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 
 **关键约束：随包副本与发布副本仍是同一份数据** —— `agent-charters-v0.5.jsonl.gz` 解压后
 与 `data/processed/agent_charters_v0.5.jsonl` **逐字节相同**（测试钉住），压缩用
-`gzip.compress(..., mtime=0)` 所以重新打包字节可复现。
+`gzip.compress(..., mtime=0)` 所以 gz 里不带打包时间（不带时间戳那条由测试钉住）。
+⚠️ **别把"字节可复现"写进承诺**：`gzip.compress` 的输出是 zlib 的实现细节，同一个输入在
+不同 Python 版本上会给出**不同的合法 gzip 流** —— 0.4.0 首次 CI 就在 py3.10 上红了（py3.12 绿），
+因为我一开始写的断言是"再压一遍字节相同"。**要钉的是内容，不是压缩帧。**
 
 **复验**（干净 venv，`pip list` 里只有 `agent-charters==0.4.0`，`pandas`/`pyarrow` 均 `None`）：
 
