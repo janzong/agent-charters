@@ -15,11 +15,11 @@
   2. v0.6 新采的 1046 份中文：新增多少（这是"会不会只对英文友好"的对照）;
   3. 中文留出集 **50 份盲判**：新命中里有多少条**人判过"有"**（真召回），
      多少条人判"无"（那就是新引入的假阳性）—— 这是判"该不该加词"最硬的一条证据；
-  4. 新增 `boundaries` 的中文**上下文**：§22 说正文通道是"提到即命中"，
+  4. 新增 `boundaries` / `overview` 的**上下文**：§22 说正文通道是"提到即命中"，
      所以逐行打出来供人判断是"规定"还是"只是在讨论这个词"。
 
 用法：`.venv/bin/python work/audit/rule_gap_impact.py`
-      加 `--dump work/audit/rule-gap-contexts.txt` 把上下文写到文件。
+      加 `--dump /tmp/rule-gap-contexts.txt` 把上下文写到文件。
 """
 
 from __future__ import annotations
@@ -219,18 +219,29 @@ def main() -> int:
         print(f"  {label:<10} {len(got & set(cats))}/9 类 ｜ 还缺：{', '.join(miss) or '无'}")
 
     if args.dump:
-        out = []
-        with patched(("A",)):
-            new_full = analyzed(full)
-        for repo, rec in sorted(new_full.items()):
-            if "boundaries" not in set(rec["categories"]) - labels[repo]:
-                continue
-            path = dict(full)[repo]
-            for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-                if "绝不" in line:
-                    out.append(f"{repo}\t{line.strip()[:150]}")
+        # 注意：v0.5 全库的新增是 0，真正有新增的是 **v0.6 中文**那 6+8 份，
+        # 所以这里两个语料都要扫（早先只扫 v0.5 → 永远 0 行）。
+        word_for = {"boundaries": "绝不", "overview": "这是什么"}
+        out, hits = [], 0
+        for label, files_, base in (("v0.5", full, base_full), ("v0.6 中文", cn, base_cn)):
+            with patched(("A", "B")):
+                new = analyzed(files_)
+            for repo, rec in sorted(new.items()):
+                gained = set(rec["categories"]) - set(base[repo]["categories"])
+                cats = sorted(gained & set(word_for))
+                if not cats:
+                    continue
+                hits += 1
+                lines = dict(files_)[repo].read_text(encoding="utf-8", errors="replace").splitlines()
+                for cat in cats:
+                    word = word_for[cat]
+                    out.append(f"### {label}\t{repo}\t新增 {cat}")
+                    for i, line in enumerate(lines, 1):
+                        if word in line:
+                            out.append(f"    L{i}: {line.strip()[:200]}")
         Path(args.dump).write_text("\n".join(out) + "\n", encoding="utf-8")
-        print(f"\n新增 boundaries 的「绝不」上下文 {len(out)} 行 → {args.dump}")
+        print(f"\n新增命中（A/B）的文件 {hits} 份、上下文 {len(out)} 行 → {args.dump}")
+        print("⚠️ 这个 dump 含原文片段：只给人看，**别放进仓库**（与 `data/raw/` 同一道边界）。")
     return 0
 
 
