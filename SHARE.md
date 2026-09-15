@@ -1181,6 +1181,20 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 趁这次改文档一并订正；②`--data` 原先只认顶层位置（`agent-charters --data X stats`），
 写在子命令后面会报 `unrecognized arguments` —— 现在两个位置都能用。
 
+**发布实况**（run `34971331591`，三 job 全绿；CI `34971581434` 全绿）：
+
+| 项 | 值 |
+|---|---|
+| wheel | `agent_charters-0.4.0-py3-none-any.whl` **104,851 B** ｜ sha256 `9754f3716916…4b6f4c` |
+| sdist | `agent_charters-0.4.0.tar.gz` 138,190 B ｜ sha256 `10e9367b6217…f969a4` |
+| 元数据 | **`requires_dist` 里没有无条件依赖**，只剩 `extra == "parquet"` / `extra == "test"` 两组 |
+| 独立复验 | 从**默认索引** `pip install agent-charters==0.4.0`：**4.3 秒**装完，`pip list` 里只有 `agent-charters==0.4.0`（没有 pandas/numpy/pyarrow），换到无关目录 `stats`/`compare` 正常 |
+
+⚠️ **这条踩坑（CI 抓的）**：我先写了一条"再压一遍 gzip 字节必须相同"的测试 —— py3.12 绿、
+**py3.10 红**。`gzip.compress` 的输出是 zlib 的实现细节，同一个输入在不同 Python 版本上
+就是两个不同的合法 gzip 流。**要钉的是内容，不是压缩帧**；现在只钉"gz 头里没有时间戳"
+（与实现无关）。
+
 ### 8.6 首发实况（2026-09-15，`agent-charters 0.3.3`）
 
 **结论：已上线** —— <https://pypi.org/project/agent-charters/>。对外文案现在**可以**写
