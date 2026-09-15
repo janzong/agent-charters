@@ -1232,7 +1232,13 @@ Markdown 指针语法，PyPI 不渲染成链接）⇒ 真实链接全部绝对�
 （改 README 不会回写历史版本，要等下一版发布才同步）——属于已知且无害的陈旧。
 
 **复验这个页面的两个坑**（都踩过）：
-1. `https://pypi.org/project/agent-charters/` 的 **HTML 抓不到**——从 251 直连返回的是 Fastly
-   `Client Challenge`（3 KB 的 JS 挑战页，`len(html)=3036`、搜 `README.md` 得 0 次），
-   **别把它当成"页面里没有链接"**。要看渲染内容就走 JSON API。
+1. `https://pypi.org/project/agent-charters/` 的 **HTML 一律抓不到**——Fastly 反爬会回
+   `Client Challenge`（3 KB 的 JS 挑战页：`len(html)≈3038`、搜 `README.md` 得 **0**，
+   **别把它当成"页面里没有链接"**）。2026-09-15 实测**四条路都过不去**：
+   251 的 curl（含假 Chrome UA）、251 的 **headless Chrome**（PAT 请求 401、`PAT challenge aborted`）、
+   **Mac**（经 `2223` 反隧道）的 curl 与 `Chrome --headless=new --dump-dom`（DOM 里 `<title>` 仍是
+   `Client Challenge`）、以及两个公共取页代理（`r.jina.ai` 超时、`api.codetabs.com` 522）。
+   ⇒ **只有在真浏览器里手工看**。程序化复验只能走 `/pypi/<ver>/json` 与 `/simple/`（这两个不挑战）。
+   ⚠️ 推论：**页面里到底渲染成什么样，我们这边看不到**——排查时要么让用户看，
+   要么看 JSON 里的 markdown 源（链接是绝对就一定会渲染成绝对锚点）。
 2. 顶层 `/pypi/agent-charters/json` 有 **CDN 缓存**；要么查 `<版本>/json`，要么看 `/simple/`。
