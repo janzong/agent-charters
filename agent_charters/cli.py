@@ -198,6 +198,8 @@ def main(argv: list[str] | None = None) -> int:
         description=f"{t('cli.desc', ui)}（{DATASET_VERSION} / {__version__}）"
                     if ui == "zh" else
                     f"{t('cli.desc', ui)} ({DATASET_VERSION} / {__version__})")
+    p.add_argument("--version", action="version",
+                   version=f"agent-charters {__version__} ｜ dataset {DATASET_VERSION}")
     p.add_argument("--data", help=t("cli.data_help", ui, ds=DATASET_VERSION))
     sub = p.add_subparsers(dest="cmd", required=True)
 

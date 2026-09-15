@@ -1,5 +1,7 @@
 # agent-charters ｜ 智能体章程语料库
 
+**中文** ｜ [English](README.en.md)
+
 [![charter](https://github.com/janzong/agent-charters/actions/workflows/charter.yml/badge.svg)](https://github.com/janzong/agent-charters/actions/workflows/charter.yml)
 [![PyPI](https://img.shields.io/pypi/v/agent-charters)](https://pypi.org/project/agent-charters/)
 
@@ -57,9 +59,9 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 不给 `--lang` 时周边的清单文案仍跟你机器的语言走。见
 [`agent_charters/i18n.py`](agent_charters/i18n.py)。）
 
-> 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，版本 `0.3.3`）。
+> 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，版本 `0.3.4`）。
 > 上传走 **Trusted Publishing（OIDC）** —— 仓库里**不存任何 token**，见 [`SHARE.md`](SHARE.md) §8。
-> 语料库 parquet 打在包里（约 224 KB），装完换任意目录都能跑；不想走 PyPI 也可以
+> 语料库 parquet 打在包里（约 222 KB），装完换任意目录都能跑；不想走 PyPI 也可以
 > `pipx install "git+https://gitee.com/janzong/agent-charters"`（国内，约 10 秒）。
 > **国内网络**拉那两个依赖（pandas + pyarrow，约 62 MB）时仍可能断流：
 > 加 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
@@ -190,6 +192,9 @@ agent-charters brief
 # 已有文件：清单会标出你缺哪些，并把缺口写进提示词
 agent-charters brief path/to/AGENTS.md
 
+# 版本号（工具版本 + 数据集版本）
+agent-charters --version
+
 # 全局分布：语料库长什么样
 agent-charters stats
 
@@ -241,7 +246,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python work/fetch_full.py work/repos_topics.txt  # 抓取
 .venv/bin/python work/extract_v1.py           # 抽取
 .venv/bin/python work/pack.py                 # 打包（同时更新随包的 parquet）
-.venv/bin/pytest -q                           # 冒烟测试（138 项）
+.venv/bin/pytest -q                           # 冒烟测试（160 项）
 ```
 
 **纵向基线**：`data/processed/baseline-2026-09-10.tsv` 固化了本快照每个仓库的

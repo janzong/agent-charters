@@ -1151,3 +1151,19 @@ def test_publish_workflow_uses_trusted_publishing_without_any_token():
     lowered = raw.lower()
     for forbidden in ("password:", "secrets.pypi", "twine upload", "__token__"):
         assert forbidden not in lowered, f"发布路径里出现了凭据类写法：{forbidden}"
+
+def test_cli_version_flag_reports_the_package_version(capsys):
+    """`agent-charters --version` 要能打印版本并正常退出。
+
+    为什么值得一条测试：这个 CLI 的顶层解析器把子命令设成 `required=True`，
+    直觉上会以为"不带子命令的参数都会被拒"。`--version` 靠 argparse 的 `version`
+    action 在解析途中直接 `sys.exit(0)`，**赶在"缺子命令"报错之前**——
+    这是个容易在重构里被碰坏的隐式顺序，所以钉住它。
+    """
+    from agent_charters import __version__
+    from agent_charters.cli import main
+
+    with pytest.raises(SystemExit) as e:
+        main(["--version"])
+    assert e.value.code == 0
+    assert __version__ in capsys.readouterr().out
