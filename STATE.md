@@ -13,6 +13,8 @@
 > 09-14：英文短文**已在 dev.to 上线**（id `4649807`，12:23Z），发布后 18 分钟收到**首条非作者反馈**
 > （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**已由人贴出**（12:49Z）。
 > 渠道裁决：**外网以 dev.to 为主**，HN 押后（hosts 绕过已落四台，见 `SHARE.md` §0）。
+> 09-15：**包已发到 PyPI**（`agent-charters 0.3.3`，Trusted Publishing 零 token，run `34959442365`），
+> README / `SHARE.md` 里"包不在 PyPI""不能写 pip install"的旧话术已全部作废并改写（D36、§8.6）。
 > 09-14 二件：**动作 tag `v1` 已建并双端推送** —— 此前 README / `action.yml` 一直让消费方写
 > `uses: janzong/agent-charters@v1`，而两端远端**压根没有这条 tag**，那个引用会直接报错；
 > 建完在**外部消费方仓库实跑验证**（D35）。同日发现并修掉 `refs` 的**对外措辞比实现宽**：
@@ -47,6 +49,7 @@
 |---|---|
 | 数据集 | ✅ **v0.5**（30 字段 / 516 份可统计，`ruleset_v0.1.8`）——**Release `v0.5` 已建**（GitHub + Gitee，2026-09-13；tag 指向 `84c17b9`，两端下载的 sha256 与仓库内逐字节一致）｜旧资产 `v0.2`/`v0.3` 仍在各自 Release（不静默替换，见 D18） |
 | 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.3.3**）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
+| PyPI | ✅ **09-15 首发**：<https://pypi.org/project/agent-charters/> ＝ `agent-charters 0.3.3`（wheel + sdist，MIT，10 条 classifier、4 条 Project-URL、long_description＝README 8837 字符）。上传走 **Trusted Publishing（OIDC）**，仓库里**不存任何 token**；run `34959442365` 三个 job（preflight / build / upload）全绿。复验：从**默认索引**下载的轮子 sha256 `b5b8f631…31d3` 与 PyPI 公布值逐字节一致；干净 venv 装完、换无关目录跑 `compare` 得 8/9。⚠️ 依赖（pandas+pyarrow ≈62 MB）从 251 直连仍会断流（老问题，装时加清华镜像）。⚠️ 已知缺口：PyPI 页面上的 long description 是**中文** README |
 | 测试 | ✅ `pytest` **158 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组、D33 的"en 输出零汉字 + 中文文案冻结"、D34 的 Action 判定层 5 条、随包/发布两份语料逐字节一致）；**没有 `data/raw` 时 140 passed / 18 skipped**（新克隆与 CI 就是这个形态——已实测，跳过而不是红） |
 | CI / GitHub Action | ✅ **09-14 装机并首次跑绿**（`6fa8a8e`/`bb57b0f`，run `34855521055`）：三个 job 全 success —— `tests (py3.10)` **140 passed / 18 skipped**、`tests (py3.12)` 同样、`self-check` 打 8/9 并出 notice。⚠️ 真实 CI 里那 18 条跳过是**设计**（`data/raw` 不入库），不是漏跑；本地带 `data/raw` 是 **158 passed**：`tests` job 跑 py3.10/3.12 两套测试，`self-check` job 用**本仓库自己的 action** 检查本仓库的 `AGENTS.md`（`uses: ./`，即消费方路径 `uses: janzong/agent-charters@v1` 的同一链路）。判定层在 `agent_charters/gha.py`（可测）：①缺哪些类别 ②指向的路径还在不在；`fail-on-*` **默认关闭**（只报告），断链默认不拦——禁令清单里的路径不是断链（见 D34）；`refs` 只认 **Markdown 指针**，裸文件名不扫（§23）。**动作 tag `v1` 已发布，并在外部消费方仓库实跑通过**（2026-09-14，见 D35） |
 | 本仓库第一份 AGENTS.md | ✅ **09-14 写**（按 `brief` 的九槽清单正常写，不是为工具定制）。**自家工具当场抓到自家**：`compare` 报 **8/9**，缺的 `overview` 其实写了——标题「这是什么」不在词表里；`boundaries` 一度也漏（写的是「绝不」，规则里只有「禁止」家族）。归因 + 最小对照 → `LIMITATIONS.md` §22，**没有为了变绿改文档措辞**（那是迁就分类器，`work/case-rmas-v3.md` 已吃过一次同样的教训） |
@@ -229,8 +232,8 @@ agent-charters compare <你的AGENTS.md>
 | # | 动作 | 状态 |
 |---|---|---|
 | 1 | **README 首屏改成工具优先**：安装 + 一条 `compare` + 真实输出（`openai/openai-agents-python` 6/9） | ✅ **09-14 完成**（`0da259a`，GitHub/Gitee 双端实读确认）｜两项自检：嵌入输出可复现、**不引用 `data/raw/` 路径**（该目录 gitignore，读者跑不出来） |
-| 2 | **让读者一条命令装上** | ✅ **09-14 完成（不注册 PyPI）**：`pipx install "git+https://gitee.com/janzong/agent-charters"` ——清空虚拟环境实测 **11.4s**、parquet 打在包里（424 KB）、换目录可跑，README 首屏已改。**PyPI 仍是唯一需要账号的路径**（PyPI 无匿名上传，实测 `upload.pypi.org/legacy` 从 251 返 200），**是否注册由人定**：不注册只损失「PyPI 搜索入口 + 版本化安装」，不影响读者一条命令用上工具 |
-| 2b | 发 PyPI（可选） | ⏳ 未定。名字确认空着（`pypi.org/pypi/agent-charters` → 404）。若做：**优先 Trusted Publishing（GitHub Actions，零 token）**，PyPI 官方帮助原话推荐 CI 走这条；备选＝账号级 API token 写到 `~/.pypi_token`（0600、不打印、不进会话） |
+| 2 | **让读者一条命令装上** | ✅ **09-14 完成（不注册 PyPI）**：`pipx install "git+https://gitee.com/janzong/agent-charters"` ——清空虚拟环境实测 **11.4s**、parquet 打在包里（424 KB）、换目录可跑，README 首屏已改。**PyPI 仍是唯一需要账号的路径**（PyPI 无匿名上传，实测 `upload.pypi.org/legacy` 从 251 返 200），**是否注册由人定**（2026-09-15 已定：注册并发布，见 2b 与 D36）|
+| 2b | 发 PyPI（可选） | ✅ **09-15 完成**（`d28b225` + 触发 run `34959442365`）：**Trusted Publishing / OIDC，零 token**；`agent-charters 0.3.3` 已上线 <https://pypi.org/project/agent-charters/>。pending publisher 五字段由人填；账号侧 2FA＝TOTP（「密码」App）+ 恢复码；复验见 D36 与 `SHARE.md` §8.6 |
 | 3 | **GitHub Action**：PR 里跑 `compare`（缺 gotchas/agent_meta 提示）+ `refs`（指向的路径是否存在） | ✅ **09-14 完成**（`action.yml` 复合动作 + `.github/workflows/charter.yml`）。给外部仓库用：`- uses: janzong/agent-charters@v1` + `with: {path, fail-on-missing, fail-on-dangling}`；本仓库自己也在用（`uses: ./`）。**默认只报告不拦**（见 D34）。命中判据 6 的"反复使用"——但**别人仓库里跑起来才算数**——2026-09-14 用一次性外部消费方仓库（`janzong/agent-charters-action-test`）验证了 `@v1` 的解析、默认只报告（绿）、开启即拦（红+exit 1）三条行为（见 D35），**那是自建 fixture，不算判据 6** |
 | 4 | 对语料库里 558 个仓库做"免费体检"外联 | ⏳ **需人裁定**（公开外联、有 spam 风险）。做法：挑 10 个、逐条个性化、给具体结论不写"来 star" |
 | 5 | **CLI 输出中英双语**：英文渠道导来的读者不该在中文输出前止步 | ✅ **09-14 完成**（`b30a39f`，工具 0.3.3，138→150 测试）。默认跟 `LANG`/`LC_ALL`（非 zh 环境＝英文），`--lang en|zh` 可覆盖；中文输出与改造前**逐命令 diff 一致**（只有 `brief` 清单里的槽位问句由英文改回中文，见下） |
@@ -465,6 +468,36 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
 移法：`git tag -f -a v1 -m "<为什么移>" <commit> && git push --force origin v1 && git push --force gitee v1`。
 
 **日期**：2026-09-14
+
+### D36 ｜ PyPI 首发走 Trusted Publishing（零 token），并把"能不能装"当成发布的一部分（2026-09-15）
+
+**决定**：①发布**不进仓库任何凭据**——GitHub Actions 用 job 的 OIDC 身份向 PyPI 换一次性上传凭据
+（Trusted Publishing）；②**发布本身也按"外部使用者路径可用"的标准验证**，不只是"CI 绿了"。
+
+**为什么零 token**：本项目已经出过两次 key 卫生事故（dev.to key 两次贴进对话）。API token 一旦落盘/进日志/
+进 `~/.pypirc` 就是长期凭据，还要轮换；OIDC 把这一类问题整个删掉。代价：账号侧必须开 2FA
+（PyPI 强制，且**开了不能关**），且 pending publisher 五个字段必须与仓库精确匹配（不符＝403）。
+
+**三道闸（都在 `publish.yml` 里，且本地都真跑过）**：①Release 触发时 tag 与 `pyproject.version` 逐字一致；
+②版本已在 PyPI 上就跳过（同一版本号不能重传）；③上传前 `twine check --strict`。
+另加一条测试钉死"发布路径里不许出现 `password:` / `secrets.pypi` / `twine upload`"。
+
+**首发实况**（`agent-charters 0.3.3`，2026-09-15）：
+- 触发：`gh workflow run publish.yml` → run `34959442365`，preflight / build / upload **三 job 全绿**；
+- PyPI 侧：wheel sha256 `b5b8f631…31d3`（219,591 B）、sdist `bdb56763…325e`（243,557 B），
+  MIT、10 条 classifier、4 条 Project-URL；
+- **独立复验**（不看 CI 自己的输出）：从**默认索引**（真 PyPI、非镜像）`pip download` 轮子 →
+  sha256 与 PyPI 公布值**逐字节一致**；干净 venv 实装 → 换到无关工作目录跑
+  `compare` 输出 8/9、`stats` 语料库 558 份 ⇒ 语料库确实随包走、不依赖仓库目录。
+
+**已知缺口（未解决，别当成已解决）**：PyPI 页面上的 long description 是**中文 README**
+（8837 字符）——英文渠道读者会撞墙，与 D33"英文渠道读者不该在中文输出前止步"是同一个问题。
+要么补英文 README 并让 `readme` 指向它，要么在 README 顶部加英文摘要。**本轮没做。**
+
+**顺带发现（已记 `ENVIRONMENT.md` §9.8）**：`gh repo create --source=. --push` 走 HTTPS，
+而本机 git-over-HTTPS 到 GitHub 是死的 → 建出**空仓**且报错像"push 没执行"。
+
+**日期**：2026-09-15
 
 ## 6.5 实验结论：自动化对定位的影响（2026-09-10/11）
 

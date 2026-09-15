@@ -1,6 +1,7 @@
 # agent-charters ｜ 智能体章程语料库
 
 [![charter](https://github.com/janzong/agent-charters/actions/workflows/charter.yml/badge.svg)](https://github.com/janzong/agent-charters/actions/workflows/charter.yml)
+[![PyPI](https://img.shields.io/pypi/v/agent-charters)](https://pypi.org/project/agent-charters/)
 
 > **人写给 AI 智能体的书面规约**的结构化语料库。
 > 数据集 **v0.5** 覆盖 `AGENTS.md`，共 **558 份**、来自 558 个公开仓库。
@@ -11,13 +12,12 @@
 `compare` 回答一个问题：**你的章程写了九类里的哪几类，缺的是语料库里写得最多的哪几类。**
 
 ```bash
-# 一条命令，不经过 PyPI，直接从仓库装（国内走 gitee 这条，实测约 10 秒）
-pipx install "git+https://gitee.com/janzong/agent-charters"
-
-# 海外 / 没有 pipx：
-pipx install "git+https://github.com/janzong/agent-charters"
-#   或者用 venv：
-#   python -m venv .venv && .venv/bin/pip install "git+https://github.com/janzong/agent-charters"
+# 一条命令，从 PyPI 装（2026-09-15 上线）
+pipx install agent-charters
+#   没有 pipx 就用 venv：
+#   python -m venv .venv && .venv/bin/pip install agent-charters
+#   国内网络拉依赖（pandas + pyarrow 约 62 MB）慢或断流时，加镜像：
+#   pip install agent-charters -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 agent-charters compare path/to/AGENTS.md
 ```
@@ -57,12 +57,12 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 不给 `--lang` 时周边的清单文案仍跟你机器的语言走。见
 [`agent_charters/i18n.py`](agent_charters/i18n.py)。）
 
-> 包**尚未发到 PyPI**（`pypi.org/pypi/agent-charters` 仍是 404），所以上面用 git 直装 ——
-> 实测约 10 秒，语料库 parquet 已打在包里（424 KB），换任意目录都能跑。
-> 首次装会拉 pandas / pyarrow，慢的话是这一步。
-> **国内网络**拉这两个大包（62 MB）时可能断流：2026-09-14 实测直连 PyPI **3/3 次**
-> 下载到的 wheel 哈希不符（`pip` 报 expected/got 不一致），换镜像则一次成功 ——
-> 加上 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
+> 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，版本 `0.3.3`）。
+> 上传走 **Trusted Publishing（OIDC）** —— 仓库里**不存任何 token**，见 [`SHARE.md`](SHARE.md) §8。
+> 语料库 parquet 打在包里（约 224 KB），装完换任意目录都能跑；不想走 PyPI 也可以
+> `pipx install "git+https://gitee.com/janzong/agent-charters"`（国内，约 10 秒）。
+> **国内网络**拉那两个依赖（pandas + pyarrow，约 62 MB）时仍可能断流：
+> 加 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
 
 ## 放进 CI（GitHub Action）
 

@@ -425,10 +425,11 @@ file_sha、采集日期、抽取器版本和规则集版本，任何人都能复
 
 ## 安装
 
-    pip install git+https://gitee.com/janzong/agent-charters      # 国内
-    pip install git+https://github.com/janzong/agent-charters     # 国外
+    pip install agent-charters                                   # PyPI（2026-09-15 上线）
+    pip install agent-charters -i https://pypi.tuna.tsinghua.edu.cn/simple   # 国内拉依赖慢时
 
-也可以 clone 之后 pip install -e .。
+也可以直接装仓库（`pip install git+https://gitee.com/janzong/agent-charters`，国内约 10 秒），
+或 clone 之后 pip install -e .。
 
     仓库：https://github.com/janzong/agent-charters
     国内镜像（GitHub 慢时用）：https://gitee.com/janzong/agent-charters
@@ -540,7 +541,7 @@ file_sha、采集日期、抽取器版本和规则集版本，任何人都能复
 ## 顺手做了个工具
 
 ```bash
-pip install git+https://gitee.com/janzong/agent-charters
+pip install agent-charters
 agent-charters compare 你的AGENTS.md
 ```
 
@@ -671,11 +672,10 @@ export DEVTO_API_KEY=...                                       # 或写进 ~/.de
   `overview`+`gotchas`；`openai/openai-agents-python` 6/9 缺 `style`/`agent_meta`/`gotchas`）→
   "坑"为什么稀少（120 条人工标注：58% 读代码可得 / **34% 根本不是坑** / 8% 只能靠经历）→ 五问自查
   → 工具用法 → 诚实的局限 → 请读者跑 `compare` 报告错标
-- ⚠️ **包不在 PyPI**（`pypi.org/pypi/agent-charters/json` → **404**）：对外文案里**不能写
-  `pip install agent-charters`**。正确路径＝clone + venv + `pip install .`
-  **2026-09-14 已在清空环境实测通过**（`mktemp -d` 新建目录 → SSH clone → venv → `pip install .`
-  （清华镜像，含 pandas/pyarrow 约 30–60s）→ **换到无关目录**跑 `compare`，输出正确 2/9）——
-  这条同时是"外部使用者路径可用"的第一份证据
+- ✅ **包已上 PyPI**（2026-09-15）：对外文案现在**可以**写 `pip install agent-charters`。
+  （2026-09-14 之前确实是 404，那时只能用 git 直装 —— **旧文案里"不能写 pip install"已作废**。）
+  证据：`pip download` 走**默认索引**拉到轮子、sha256 与 PyPI 公布值逐字节一致；
+  干净 venv 装完、换无关目录跑 `compare` 输出 8/9 正常。**国内拉依赖仍要加清华镜像**
 - 首次发布留档：id `4649807`，2026-09-14 12:23Z 上线 ——
   <https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 - 口径：v0.5 数字 + 英中两个留出集（92%/70%、88%/73%），**不带三站更正尾巴**
@@ -1133,8 +1133,36 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 `STATE.md`/`SHARE.md` **都不在里面**；元数据 `Metadata-Version: 2.4` +
 `License-Expression: MIT` + 4 条 `Project-URL`。
 
-### 8.5 已知缺口（别当成已解决）
+### 8.5 已知缺口（**首发时仍存在**，别当成已解决）
 
 - **PyPI 页面上的 long description 是中文 README**。英文渠道导来的读者会直接撞墙
   （与 D33 的"英文渠道读者不该在中文输出前止步"同一个理由）。要么补一份英文 README
   并让 `readme` 指向它，要么在 README 顶部加一段英文摘要 —— **本轮没做**。
+
+### 8.6 首发实况（2026-09-15，`agent-charters 0.3.3`）
+
+**结论：已上线** —— <https://pypi.org/project/agent-charters/>。对外文案现在**可以**写
+`pip install agent-charters`（此前只能用 git 直装）。
+
+| 项 | 值 |
+|---|---|
+| 触发 | `gh workflow run publish.yml` → run `34959442365`，**preflight / build / upload 三 job 全绿** |
+| 轮子 | `agent_charters-0.3.3-py3-none-any.whl` 219,591 B ｜ sha256 `b5b8f631ce00998037639e34fdfd5dc86b6837ba9ae36cbb6ed87bd68f3131d3` |
+| sdist | `agent_charters-0.3.3.tar.gz` 243,557 B ｜ sha256 `bdb567638e5e498bd6bbecd901cc182dce4aaa36450b5c7cc0d5ea76dddf325e` |
+| 元数据 | MIT（SPDX）｜10 条 classifier｜4 条 Project-URL｜`requires-python >=3.10`｜long_description＝README 8837 字符 |
+| 账号侧 | 2FA＝**TOTP**（Mac「密码」App 存码；已另存 recovery codes）；pending publisher 五字段照 §8.1 填 |
+
+**独立复验**（关键：**不看 CI 自己的输出**）
+
+1. 从**默认索引**（真 PyPI，不是镜像）`pip download --no-deps agent-charters==0.3.3`
+   → 下到轮子，`sha256` 与上表**逐字节一致**（证明 PyPI 上那份就是我们构建的那份）；
+2. 干净 venv 实装 → **换到无关工作目录**跑 `agent-charters compare <仓库外的文件>` 输出 8/9、
+   `stats` 报语料库 558 份 ⇒ 语料库确实打在包里、不依赖仓库目录；
+3. 中英双语输出正常（`--lang zh` / 默认 en）。
+
+**仍未解决**：依赖（pandas + pyarrow ≈ 62 MB）从 251 **直连 PyPI 仍会断流**（本轮实测
+`pip install agent-charters` 完整装超时 `exit=124`，卡在 pyarrow 50 MB 那步）⇒ 国内装的时候
+依赖走清华镜像是常态操作，**不是包的问题**（包本身 219 KB，几秒就下来了）。
+
+**发布下一版**：改 `pyproject.toml` 的 `version` → 推双端 → `gh workflow run publish.yml`
+（或发同名 Release）。⚠️ **PyPI 上已发布的版本号不能重用**，只能往上升。
