@@ -193,7 +193,16 @@ agent-charters compare <你的AGENTS.md>
   逐类对照 `work/audit/v0.5-holdout-vs-rule.md`，脚本 `holdout_vs_rule_v0.5.py`；
   结论 precision 92% / recall 70%，与 in-sample 差 3–5pp ⇒ 未过拟合，见 `LIMITATIONS.md` §19。
   ⚠️ 中文留出集仍为 0（25 份全用掉了），中文准确率只能靠新采集，见 §18
-- ⏳ 扩展文件类型（`CLAUDE.md` / `.cursorrules` / `copilot-instructions.md`）
+- ⏳ 扩展文件类型：**2026-09-15 已实测增量**（`work/audit/filetype-probe.md`，脚本
+  `work/audit/filetype_probe.py`；样本 482/558＝86%，其余是 api.github.com 经代理的 `IncompleteRead`，
+  失败不写缓存、重跑即补齐）。四条关键数：①**同类文件是"同一批仓库的第二份文档"，不是新仓库**
+  （482 份里 0 份是"只有 `CLAUDE.md` 没有 `AGENTS.md`"——样本本来就是按"有 `AGENTS.md`"选的）；
+  ②`CLAUDE.md` 出现在 **285 个仓库（59.1%）**、715 个文件，扣掉 **192 个符号链接**与 7 个逐字节相同
+  ≈**516 个不同文件**（与现有实质语料同量级，但更短：中位约 1.7 KB vs 3.8 KB）；
+  ③**去重是前置功课**——`CLAUDE.md` 27% 是符号链接，`AGENTS.md` 自己也有 29% 是根文件的副本/链接，
+  现有管线不解析链接（trees API 的 `mode=120000` + blob `sha` 可与数据集 `file_sha` 逐字节比对）；
+  ④**310 个仓库（64%）有 ≥2 类同类文件** ⇒ 「其它方向③跨文件一致性检测」有真实底座。
+  **待人裁定**：不做 ／ 只做 `CLAUDE.md` 第二文档（要新切数据集 v0.6）／ 再做「跨文件一致性」产物。
 - ~~留 v0.1.9/v0.1.10 的三项~~ ✅ **2026-09-15 全部清完**（"改规则前先实测"的三条都测完了）：
   **h1 守卫**与**模块名型标题守卫**＝实测后否决（掉 ~37/~136 个真标签、或误伤真环境文档，
   数字见 `work/audit/v0.1.8-changelist.md` §A/B.3）；**全文兜底门放宽**＝量化后**决定不动**
