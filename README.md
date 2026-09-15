@@ -59,7 +59,7 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 不给 `--lang` 时周边的清单文案仍跟你机器的语言走。见
 [`agent_charters/i18n.py`](agent_charters/i18n.py)。）
 
-> 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，版本 `0.3.4`）。
+> 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，**当前版本见上方徽章**）。
 > 上传走 **Trusted Publishing（OIDC）** —— 仓库里**不存任何 token**，见 [`SHARE.md`](SHARE.md) §8。
 > 语料库 parquet 打在包里（约 222 KB），装完换任意目录都能跑；不想走 PyPI 也可以
 > `pipx install "git+https://gitee.com/janzong/agent-charters"`（国内，约 10 秒）。

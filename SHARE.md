@@ -1136,8 +1136,13 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 ### 8.5 已知缺口（0.3.4 后剩下的）
 
 - ~~PyPI 页面上的 long description 是中文 README~~ → **0.3.4 已修**（见 §8.7）：
-  `readme` 指向 `README.en.md`，链接全绝对化。**GitHub 首页仍是中文 README**（有意：
+  `readme` 指向 `README.en.md`。**GitHub 首页仍是中文 README**（有意：
   沿用既有外链与中文渠道流量），两个 README 顶部互相带语言切换。
+  ⚠️ **但 0.3.4 的相对链接只清了"正文"，漏了顶部那条切换器** ——
+  PyPI **不重写相对路径**，`[中文](README.md)` 会解析成
+  `pypi.org/project/agent-charters/README.md` → 404 → 跳回搜索页。
+  0.3.5 修掉（§8.8），并加测试钉死。**教训：改完只数了 `](LIMITATIONS.md)` 一种形态，
+  没扫全量链接** —— 复验口径要按"全量外部引用"取，不能只盯已知案例。
 - **依赖从国内直连 PyPI 会断流**（pandas + pyarrow ≈62 MB，实测 `exit=124`）——
   装的时候加清华镜像，不是包的问题。
 
@@ -1178,6 +1183,9 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 复验：`/pypi/agent-charters/0.3.4/json` 的 description **16,900 字符**、含 `a structured corpus`、
 `](LIMITATIONS.md)` 计数 **0**、绝对链接 22 条；从真 PyPI 升级装好后 `agent-charters --version`
 → `agent-charters 0.3.4 ｜ dataset v0.5`。
+⚠️ **这个复验口径有洞**：只数了 `](LIMITATIONS.md)` 这一种形态，**没扫全量链接** ——
+漏掉了顶部切换器的 `](README.md)`，用户当天点"中文切换"就退到了搜索页（§8.8）。
+**扫描要按"剩下哪些相对链接"取，不能按"我改过的那几条"取。**
 （⚠️ `https://pypi.org/pypi/agent-charters/json` 顶层端点有 **CDN 缓存**，刚发完可能还显示旧版本——
 要看新版本就查 `.../pypi/agent-charters/<版本>/json` 或 `/simple/agent-charters/`。）
 
@@ -1186,3 +1194,45 @@ run `34966176206` 里 `build` 与 `upload` **都是 skipped**，只有 preflight
 
 **发布下一版**：改 `pyproject.toml` 的 `version` → 推双端 → `gh workflow run publish.yml`
 （或发同名 Release）。⚠️ **PyPI 上已发布的版本号不能重用**，只能往上升。
+
+### 8.8 第三版 `0.3.5`（09-15 晚，`run 34966958406`）—— 修语言切换 404
+
+**用户报的现象**：PyPI 页面是英文（0.3.4 的预期），但点顶部的**「中文」切换**会**退到 PyPI 搜索页**。
+
+**根因**：`README.en.md` 第 3 行的切换器写的是**相对路径** `[中文](README.md)`。
+GitHub 会把它重写成 `github.com/janzong/agent-charters/blob/main/README.md`；
+**PyPI 不重写**，原样保留 → 浏览器解析成 `pypi.org/project/agent-charters/README.md` → 404 → 跳搜索。
+0.3.4 把正文里的 18 条相对链接都绝对化了，**唯独漏了这一条**（复验时只数了 `](LIMITATIONS.md)`）。
+
+**修法**（`8a39d4c`，双端已推）：
+
+| 改动 | 文件 |
+|---|---|
+| 切换器改绝对地址（两个 README 互链都改，GitHub 上照常可用） | `README.en.md` / `README.md` 第 3 行 |
+| 新增测试：剥掉围栏代码块与行内代码后，`README.en.md` **不许残留相对链接** | `tests/test_smoke.py` |
+| 版本一致性测试加钉：`readme` 必须指向 `README.en.md`（防有人换回中文版，重新踩 D33 的坑） | `tests/test_smoke.py` |
+| 0.3.4 → 0.3.5 | `pyproject.toml` / `agent_charters/__init__.py` |
+
+**为什么非发版本不可**：PyPI 的 long description 是**上传那一刻的元数据快照**，
+不是每次访问去 GitHub 拉——改链接**必须发新版本**才生效。
+
+**复验**（`/pypi/agent-charters/0.3.5/json`，⚠️ 顶层端点有 CDN 缓存、会显示旧版本）：
+description 16,952 字符 ｜ `](README.md)` 与 `](README.en.md)` 计数**都是 0** ｜
+残留相对链接扫描只剩 `path` 一条，核对后确认它在**行内代码**里（`[text](path)`，是文档举例的
+Markdown 指针语法，PyPI 不渲染成链接）⇒ 真实链接全部绝对。
+测试本地 **162 passed**；CI `144 passed / 18 skipped`（py3.10 与 py3.12 两套都跑）。
+
+**这条坑的普适形态**：只要 README 会被渲染到**不重写相对路径**的地方（PyPI / npm / crates.io…），
+所有链接就必须是绝对地址——包括**看起来像"站内导航"的那几条**。
+
+**同一轮顺手改掉第二处"发布时快照"陷阱**：两个 README 的 PyPI 提示语原本写死
+`版本 \`0.3.4\``，而 PyPI 的 description 是上传那一刻的快照 ⇒ **每发一版，页面上的版本号就旧一版**。
+改成指向**页面顶部的 PyPI 徽章**（`img.shields.io/pypi/v/agent-charters`，动态读当前版本），
+这句话就再也不会过期。⚠️ 提醒：**0.3.5 已经发出去的那份快照里仍写着 `0.3.4`**
+（改 README 不会回写历史版本，要等下一版发布才同步）——属于已知且无害的陈旧。
+
+**复验这个页面的两个坑**（都踩过）：
+1. `https://pypi.org/project/agent-charters/` 的 **HTML 抓不到**——从 251 直连返回的是 Fastly
+   `Client Challenge`（3 KB 的 JS 挑战页，`len(html)=3036`、搜 `README.md` 得 0 次），
+   **别把它当成"页面里没有链接"**。要看渲染内容就走 JSON API。
+2. 顶层 `/pypi/agent-charters/json` 有 **CDN 缓存**；要么查 `<版本>/json`，要么看 `/simple/`。

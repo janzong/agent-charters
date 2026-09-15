@@ -67,8 +67,8 @@ default — the safest thing to feed a model. Without `--lang`, the surrounding 
 text still follows your machine's locale. See
 [agent_charters/i18n.py](https://github.com/janzong/agent-charters/blob/main/agent_charters/i18n.py).)
 
-> The package **is on PyPI**: `pip install agent-charters` (first release 2026-09-15,
-> version `0.3.4`). Uploads go through **Trusted Publishing (OIDC)** — the repository
+> The package **is on PyPI**: `pip install agent-charters` (first release 2026-09-15;
+> **the current version is on the badge above**). Uploads go through **Trusted Publishing (OIDC)** — the repository
 > **stores no token at all**; see [SHARE.md](https://github.com/janzong/agent-charters/blob/main/SHARE.md) §8.
 > The corpus parquet ships inside the package (~222 KB), so it runs from any directory.
 > If you would rather skip PyPI: `pipx install "git+https://gitee.com/janzong/agent-charters"`
