@@ -764,3 +764,55 @@ printf '# P\n\n先读 `docs/missing.md`，别提交 `dist/`，也别碰 `scripts
 **注意 `unverified` 这一态**：`base_dir` 没有 `.git` 时（例：把章程拷到 `/tmp` 单独跑）
 **不判断链**，对每个候选报 `unverified` —— 宁可说"验不了"，也不要误报
 （`work/case-rmas-v3.md` §5 记过这个假阳性：`/tmp` 被当仓库根，一份草案报出 16 个假断链）。
+
+---
+
+## 24. 全文兜底门收紧的代价：**≤7 个标签**、且 2 个是假的（2026-09-15，只测不改）
+
+**这是什么挂账**：`v0.1.8` 收紧标题通道时，顺手把**全文兜底门**关小了一格——`crewAIInc/crewAI`
+因此丢了 `build_test`（撑它的是全文通道的 `run \`…\``）。当时的留档（`work/audit/v0.1.8-changelist.md`
+§A/B.3）只给了个推算："若把门放宽成'已标注章节 ≤1 也跑全文'，全库 8 份会补标签"，并写明
+**单独审计留给下一版**。这轮把那份审计做出来（`work/audit/fulltext_gate_audit.py`）。
+
+**门与量级**（`analyze_text(fulltext_gate=…)`，见 `agent_charters/extract.py::FULLTEXT_GATES`；
+`empty` ＝已发布的 v0.5 口径）：
+
+| 门 | 558 份新增标签 | 丢失 | 516 份覆盖率变化 | 中文 1046 份 |
+|---|---|---|---|---|
+| `le1_sections`（changelist 点名要审的） | **7**（build_test 3 / workflow 2 / gotchas 1 / agent_meta 1） | 0 | build_test 82.8→83.3 / workflow 67.1→67.4 / gotchas 13.6→13.8 / agent_meta 25.8→26.0 | +0 |
+| `le1_counts`（更宽一点） | 4（build_test 2 / gotchas 1 / agent_meta 1） | 0 | 同上小幅 | — |
+| `always`（总是跑，**上界**） | **130** | 0 | 大幅 | — |
+
+**逐条读过那 7 个**（这批**没有一个落在三组人工盲判的样本上**，只能读原文判）：
+
+| 文件 | 补上的类别 | 命中的原文 | 判 |
+|---|---|---|---|
+| `QuintinShaw/pi-dynamic-workflows` | build_test | `Run \`npm run context:check\` with the other checks…` | **真** |
+| `crewAIInc/crewAI` | build_test | `run \`cd docs && mintlify broken-links\`` | **真**（就是挂账起因） |
+| `bwz96sco/or_llm_agent` | build_test | `run \`npx gitnexus analyze\`` | **真** |
+| `joske/yserver` | workflow | `work on feature branch for phases` / `squash merge when ready` | **真** |
+| `MichaelSimoneau/michael-simoneau-com` | workflow | 欢迎语里的 "the forward-only **branch** of …" | **边界**（描述分支策略，不是流程规定） |
+| `bwz96sco/or_llm_agent` | gotchas | "Blast radius / **What breaks if I change X?**" ——那是**任务→技能文件的**路由表 | **假阳性** |
+| `bwz96sco/or_llm_agent` | agent_meta | 目录清单里的 "`.codex/agents/` for optional custom **subagents**" | **假阳性**（描述目录，不是对 AI 的要求） |
+
+⇒ **7 个标签里 4 个真、1 个边界、2 个假**。而 `always` 那一栏在**有人工盲判的样本**上
+（29 处新增）是**真 14 / 假 15**：这个方向（"让全文通道多跑"）整体就是**掷硬币**。
+
+**结论（处置）：不动这个门**，理由按重要性排：
+
+1. **它不是"标签中性"的改动**——与 v0.1.9 那两条词不同（那两条实测 558 份逐份零变化），
+   这个门会让**已发布的 v0.5 标签本身变化**（7 处）。按 D18「不静默替换已发布资产」，
+   要落地就得重切数据集、发新版本——为了 7 个标签（其中 2 个还是假的）不值。
+2. **收益太小**：7 / 4600+ 个 (文件, 类别) 对 ≈ 0.15%，覆盖率最多动 0.5pp。
+3. **方向本身可疑**：上界那一行（130 个新增、盲判上真:假 ≈ 1:1）说明"放宽全文通道"这条路
+   的通式精确率约 50%，与 §13 记的"正文通式残余假阳性 ≈3%"不是一回事——全文通道是**最弱**的通道。
+4. 挂账的原始痛点（`crewAIInc/crewAI` 丢 1 个 `build_test`）**已经在本节被记录**——
+   这比改一门去捞它更符合本项目"如实记缺口"的取向。
+
+**留给将来**：如果哪天因为别的原因**要重切数据集**（例如扩文件类型导致必然重算），
+可以顺带把门放到 `le1_sections`——那时它不再是"替换资产"而是"新版本的正常差异"，
+但**别忘了那 7 个里有 2 个是假的**。
+
+**这条测量的边界**：①那 7 个标签**没有盲判覆盖**（三组人工样本里一个都没碰上），上表是**我读原文**判的，
+不是第二人独立判；②`le1_*` 两种口径只差 3 个标签，说明这个"≤1"的阈值本身不敏感——
+真正的分水岭是"要不要让全文通道参与已经被标题通道答过的文件"。

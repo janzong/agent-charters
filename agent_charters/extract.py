@@ -41,22 +41,35 @@ def doc_language(text: str) -> str:
     return "zh" if cjk * 12 > letters else "mixed"
 
 
+# v0.5 起"全文兜底门"的可选口径。**仅供审计脚本做对照实测**（D32：改规则前先实测影响），
+# 默认值 "empty" 就是现行规则，行为一个字节都不变；其它取值只在 `work/audit/` 里用。
+# 背景：门一收紧就会**减少**标签（`crewAIInc/crewAI` 的 build_test 就是这么丢的，见
+# `work/audit/v0.1.8-changelist.md` §A/B.3 与 `LIMITATIONS.md` §22 同一批挂账）。
+FULLTEXT_GATES = ("empty", "le1_sections", "le1_counts", "always")
+
+
 def analyze_text(text: str, meta: dict | None = None, *,
-                 strong: bool = True) -> dict:
+                 strong: bool = True, fulltext_gate: str = "empty") -> dict:
     """分析一份章程文本，返回与语料库同构的记录。
 
     meta 可提供 repo_full_name / repo_stars / repo_language / license 等背景字段。
     strong=False 关闭强模式通道，用于回归对比（语料库 v0.1 基线即无强模式）。
+    fulltext_gate 只给审计脚本用，见 `FULLTEXT_GATES`；默认值＝现行规则。
     """
+    if fulltext_gate not in FULLTEXT_GATES:
+        raise ValueError(f"未知的 fulltext_gate：{fulltext_gate}（可选 {FULLTEXT_GATES}）")
     meta = dict(meta or {})
     size = len(text.encode("utf-8"))
     sections = split_sections(text)
 
     tag_counts: Counter = Counter()
+    tagged_sections = 0
     for head, body in sections:
         if not head.strip() and len(body.strip()) < 40:
             continue
         tags, _ = classify(head, body)
+        if tags:
+            tagged_sections += 1
         for t in tags:
             tag_counts[t] += 1
 
@@ -67,7 +80,16 @@ def analyze_text(text: str, meta: dict | None = None, *,
     # 反而比它完全不撞词时**拿到更少的标签**（pi-vim / topocm_content 实测掉标签）。
     used_fulltext = False
     heading_count = sum(1 for head, _ in sections if head.strip())
-    if not tag_counts or heading_count <= 1:
+    # 现行规则（"empty"）：完全没有标签，或本来就没有标题结构（≤1 个标题）时才跑全文通道。
+    # 审计口径见 FULLTEXT_GATES：le1_sections/le1_counts 是"再多放一点"，always 是上界。
+    gate_open = not tag_counts or heading_count <= 1
+    if fulltext_gate == "le1_sections":
+        gate_open = gate_open or tagged_sections <= 1
+    elif fulltext_gate == "le1_counts":
+        gate_open = gate_open or sum(tag_counts.values()) <= 1
+    elif fulltext_gate == "always":
+        gate_open = True
+    if gate_open:
         ft_tags, _ = classify_fulltext(text)
         if ft_tags:
             used_fulltext = True

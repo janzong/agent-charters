@@ -340,6 +340,20 @@ def test_v019_added_words_veto(text, forbidden):
     assert forbidden not in analyze_text(text)["categories"]
 
 
+# D39（2026-09-15）：全文兜底门的**审计开关**（`analyze_text(fulltext_gate=…)`）。
+# 现行口径是 "empty"（没有标签，或 ≤1 个标题时才跑全文）；三种更宽的口径实测后都不采纳
+# （`LIMITATIONS.md` §24：只补 7 个标签、2 个是假的，且会改动已发布的 v0.5 标签）。
+# 这里只钉住开关本身：默认＝现行、未知取值报错、放宽后**只会多加**。
+
+def test_fulltext_gate_switch():
+    text = "# A\n\n## 概述\n\n这是项目概览。\n\n## 其它\n\nThen run `mintlify broken-links`.\n"
+    assert analyze_text(text)["categories"] == analyze_text(text, fulltext_gate="empty")["categories"]
+    assert "build_test" not in analyze_text(text)["categories"]      # 现行口径：门关着
+    assert "build_test" in analyze_text(text, fulltext_gate="le1_sections")["categories"]
+    with pytest.raises(ValueError):
+        analyze_text(text, fulltext_gate="nope")
+
+
 # O4（ruleset_v0.1.8）：收紧块。全库实测（558 份逐份 diff）**净增 1 / 净掉 34**
 # （章节级 −158 / +3）。34 个掉的逐份看过，**全部**是审计里点名过的假阳性：
 # `task` 4（Finishing a task / Required task lifecycle…）、`requirement` 8（PR/Testing/
