@@ -1133,11 +1133,13 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 `STATE.md`/`SHARE.md` **都不在里面**；元数据 `Metadata-Version: 2.4` +
 `License-Expression: MIT` + 4 条 `Project-URL`。
 
-### 8.5 已知缺口（**首发时仍存在**，别当成已解决）
+### 8.5 已知缺口（0.3.4 后剩下的）
 
-- **PyPI 页面上的 long description 是中文 README**。英文渠道导来的读者会直接撞墙
-  （与 D33 的"英文渠道读者不该在中文输出前止步"同一个理由）。要么补一份英文 README
-  并让 `readme` 指向它，要么在 README 顶部加一段英文摘要 —— **本轮没做**。
+- ~~PyPI 页面上的 long description 是中文 README~~ → **0.3.4 已修**（见 §8.7）：
+  `readme` 指向 `README.en.md`，链接全绝对化。**GitHub 首页仍是中文 README**（有意：
+  沿用既有外链与中文渠道流量），两个 README 顶部互相带语言切换。
+- **依赖从国内直连 PyPI 会断流**（pandas + pyarrow ≈62 MB，实测 `exit=124`）——
+  装的时候加清华镜像，不是包的问题。
 
 ### 8.6 首发实况（2026-09-15，`agent-charters 0.3.3`）
 
@@ -1163,6 +1165,24 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 **仍未解决**：依赖（pandas + pyarrow ≈ 62 MB）从 251 **直连 PyPI 仍会断流**（本轮实测
 `pip install agent-charters` 完整装超时 `exit=124`，卡在 pyarrow 50 MB 那步）⇒ 国内装的时候
 依赖走清华镜像是常态操作，**不是包的问题**（包本身 219 KB，几秒就下来了）。
+
+### 8.7 第二版 `0.3.4`（同日晚，`run 34966005314`）—— 把 PyPI 页面换成英文
+
+首发（0.3.3）当天就暴露两个**只有真发上去才会看见**的问题，0.3.4 一起修掉：
+
+| 问题 | 为什么首发时没发现 | 0.3.4 的做法 |
+|---|---|---|
+| PyPI 页面的 long description 是**中文** README | 本地看不出"页面给谁看" | 新增 `README.en.md` 全文翻译，`readme` 指向它 ⇒ GitHub 首页留中文、**PyPI 是英文** |
+| README 里 **18 条相对链接**在 PyPI 上 404 | PyPI 不重写相对路径，GitHub 会 | 英文版链接**全部绝对化**（相对链接 0 条，只剩语言切换那条） |
+
+复验：`/pypi/agent-charters/0.3.4/json` 的 description **16,900 字符**、含 `a structured corpus`、
+`](LIMITATIONS.md)` 计数 **0**、绝对链接 22 条；从真 PyPI 升级装好后 `agent-charters --version`
+→ `agent-charters 0.3.4 ｜ dataset v0.5`。
+（⚠️ `https://pypi.org/pypi/agent-charters/json` 顶层端点有 **CDN 缓存**，刚发完可能还显示旧版本——
+要看新版本就查 `.../pypi/agent-charters/<版本>/json` 或 `/simple/agent-charters/`。）
+
+**顺带验证了"已在 PyPI 就跳过"那道闸**（真实运行，不是单测）：0.3.4 发布后**再触发一次**，
+run `34966176206` 里 `build` 与 `upload` **都是 skipped**，只有 preflight success。
 
 **发布下一版**：改 `pyproject.toml` 的 `version` → 推双端 → `gh workflow run publish.yml`
 （或发同名 Release）。⚠️ **PyPI 上已发布的版本号不能重用**，只能往上升。

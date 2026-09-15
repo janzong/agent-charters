@@ -13,7 +13,8 @@
 > 09-14：英文短文**已在 dev.to 上线**（id `4649807`，12:23Z），发布后 18 分钟收到**首条非作者反馈**
 > （`jo-do`）；回复文案 `work/share-paste/devto-reply-01.md`，**已由人贴出**（12:49Z）。
 > 渠道裁决：**外网以 dev.to 为主**，HN 押后（hosts 绕过已落四台，见 `SHARE.md` §0）。
-> 09-15：**包已发到 PyPI**（`agent-charters 0.3.3`，Trusted Publishing 零 token，run `34959442365`），
+> 09-15：**包已发到 PyPI**（首日两版：`0.3.3` → **`0.3.4`**，Trusted Publishing 零 token，run `34959442365` / `34966005314`），
+> 0.3.4 把 PyPI 页面换成**英文 README**（链接全绝对化，相对链接 18→0）并加了 `--version`；
 > README / `SHARE.md` 里"包不在 PyPI""不能写 pip install"的旧话术已全部作废并改写（D36、§8.6）。
 > 09-14 二件：**动作 tag `v1` 已建并双端推送** —— 此前 README / `action.yml` 一直让消费方写
 > `uses: janzong/agent-charters@v1`，而两端远端**压根没有这条 tag**，那个引用会直接报错；
@@ -48,10 +49,10 @@
 | 项 | 状态 |
 |---|---|
 | 数据集 | ✅ **v0.5**（30 字段 / 516 份可统计，`ruleset_v0.1.8`）——**Release `v0.5` 已建**（GitHub + Gitee，2026-09-13；tag 指向 `84c17b9`，两端下载的 sha256 与仓库内逐字节一致）｜旧资产 `v0.2`/`v0.3` 仍在各自 Release（不静默替换，见 D18） |
-| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.3.3**）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
-| PyPI | ✅ **09-15 首发**：<https://pypi.org/project/agent-charters/> ＝ `agent-charters 0.3.3`（wheel + sdist，MIT，10 条 classifier、4 条 Project-URL、long_description＝README 8837 字符）。上传走 **Trusted Publishing（OIDC）**，仓库里**不存任何 token**；run `34959442365` 三个 job（preflight / build / upload）全绿。复验：从**默认索引**下载的轮子 sha256 `b5b8f631…31d3` 与 PyPI 公布值逐字节一致；干净 venv 装完、换无关目录跑 `compare` 得 8/9。⚠️ 依赖（pandas+pyarrow ≈62 MB）从 251 直连仍会断流（老问题，装时加清华镜像）。⚠️ 已知缺口：PyPI 页面上的 long description 是**中文** README |
-| 测试 | ✅ `pytest` **158 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组、D33 的"en 输出零汉字 + 中文文案冻结"、D34 的 Action 判定层 5 条、随包/发布两份语料逐字节一致）；**没有 `data/raw` 时 140 passed / 18 skipped**（新克隆与 CI 就是这个形态——已实测，跳过而不是红） |
-| CI / GitHub Action | ✅ **09-14 装机并首次跑绿**（`6fa8a8e`/`bb57b0f`，run `34855521055`）：三个 job 全 success —— `tests (py3.10)` **140 passed / 18 skipped**、`tests (py3.12)` 同样、`self-check` 打 8/9 并出 notice。⚠️ 真实 CI 里那 18 条跳过是**设计**（`data/raw` 不入库），不是漏跑；本地带 `data/raw` 是 **158 passed**：`tests` job 跑 py3.10/3.12 两套测试，`self-check` job 用**本仓库自己的 action** 检查本仓库的 `AGENTS.md`（`uses: ./`，即消费方路径 `uses: janzong/agent-charters@v1` 的同一链路）。判定层在 `agent_charters/gha.py`（可测）：①缺哪些类别 ②指向的路径还在不在；`fail-on-*` **默认关闭**（只报告），断链默认不拦——禁令清单里的路径不是断链（见 D34）；`refs` 只认 **Markdown 指针**，裸文件名不扫（§23）。**动作 tag `v1` 已发布，并在外部消费方仓库实跑通过**（2026-09-14，见 D35） |
+| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.3.4**；新增 `--version`）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
+| PyPI | ✅ **09-15 首发 0.3.3，同日跟进 0.3.4**：<https://pypi.org/project/agent-charters/>（最新 `0.3.4`，wheel + sdist，MIT，10 条 classifier、4 条 Project-URL）（wheel + sdist，MIT，10 条 classifier、4 条 Project-URL、long_description＝README 8837 字符）。上传走 **Trusted Publishing（OIDC）**，仓库里**不存任何 token**；run `34959442365` 三个 job（preflight / build / upload）全绿。复验：从**默认索引**下载的轮子 sha256 `b5b8f631…31d3` 与 PyPI 公布值逐字节一致；干净 venv 装完、换无关目录跑 `compare` 得 8/9。⚠️ 依赖（pandas+pyarrow ≈62 MB）从 251 直连仍会断流（老问题，装时加清华镜像）。⚠️ 依赖坑：pandas+pyarrow 从 251 直连会断流（加清华镜像）。**英文页面的缺口已于 0.3.4 修掉**（`readme` 指向 `README.en.md`，long_description 16900 字符、相对链接 0 条）；四道闸里"版本已在 PyPI 就跳过"**已实跑验证**（重跑 run `34966176206`：preflight success、build/upload 直接 skipped）|
+| 测试 | ✅ `pytest` **161 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组、D33 的"en 输出零汉字 + 中文文案冻结"、D34 的 Action 判定层 5 条、随包/发布两份语料逐字节一致）；**没有 `data/raw` 时 140 passed / 18 skipped**（新克隆与 CI 就是这个形态——已实测，跳过而不是红） |
+| CI / GitHub Action | ✅ **09-14 装机并首次跑绿**（`6fa8a8e`/`bb57b0f`，run `34855521055`）：三个 job 全 success —— `tests (py3.10)` **140 passed / 18 skipped**、`tests (py3.12)` 同样、`self-check` 打 8/9 并出 notice。⚠️ 真实 CI 里那 18 条跳过是**设计**（`data/raw` 不入库），不是漏跑；本地带 `data/raw` 是 **161 passed**：`tests` job 跑 py3.10/3.12 两套测试，`self-check` job 用**本仓库自己的 action** 检查本仓库的 `AGENTS.md`（`uses: ./`，即消费方路径 `uses: janzong/agent-charters@v1` 的同一链路）。判定层在 `agent_charters/gha.py`（可测）：①缺哪些类别 ②指向的路径还在不在；`fail-on-*` **默认关闭**（只报告），断链默认不拦——禁令清单里的路径不是断链（见 D34）；`refs` 只认 **Markdown 指针**，裸文件名不扫（§23）。**动作 tag `v1` 已发布，并在外部消费方仓库实跑通过**（2026-09-14，见 D35） |
 | 本仓库第一份 AGENTS.md | ✅ **09-14 写**（按 `brief` 的九槽清单正常写，不是为工具定制）。**自家工具当场抓到自家**：`compare` 报 **8/9**，缺的 `overview` 其实写了——标题「这是什么」不在词表里；`boundaries` 一度也漏（写的是「绝不」，规则里只有「禁止」家族）。归因 + 最小对照 → `LIMITATIONS.md` §22，**没有为了变绿改文档措辞**（那是迁就分类器，`work/case-rmas-v3.md` 已吃过一次同样的教训） |
 | 仓库 | ✅ https://github.com/janzong/agent-charters （public） |
 | 国内镜像 | ✅ <https://gitee.com/janzong/agent-charters>（public；main + tag `v0.1`/`v0.1.1`/`v0.2`/`v0.3`/`v0.5` + 动作 tag `v1` 已对齐（双端 `ls-remote` 实测一致）；**Release `v0.5` 已建**，资产哈希与仓库内逐字节一致；SSH 专用密钥 `id_gitee`） |
@@ -490,9 +491,19 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
   sha256 与 PyPI 公布值**逐字节一致**；干净 venv 实装 → 换到无关工作目录跑
   `compare` 输出 8/9、`stats` 语料库 558 份 ⇒ 语料库确实随包走、不依赖仓库目录。
 
-**已知缺口（未解决，别当成已解决）**：PyPI 页面上的 long description 是**中文 README**
-（8837 字符）——英文渠道读者会撞墙，与 D33"英文渠道读者不该在中文输出前止步"是同一个问题。
-要么补英文 README 并让 `readme` 指向它，要么在 README 顶部加英文摘要。**本轮没做。**
+**同日跟进 0.3.4**（run `34966005314`）：首发当场暴露两个对外问题，当天解决——
+①PyPI 页面的 long description 是中文 README（英文渠道读者撞墙，与 D33 同一个问题）
+＋ README 里 18 条相对链接在 PyPI 上 404（PyPI 不重写相对路径）；
+②顺手补了 CLI 的 `--version`。
+做法：新增 `README.en.md`（全文翻译、**链接全部绝对化**，相对链接 0 条），
+`pyproject.toml` 的 `readme` 指向它 ⇒ GitHub 首页留中文（沿用既有链接与中文渠道流量）、
+**PyPI 页面是英文**，两个 README 顶部互相带语言切换。
+**数字交叉核对**：英文版 79 个数字令牌逐个回查中文版，只剩两处"中文版本身已过期"的差值
+（测试 138→160、parquet 224→222 KB；实测 227,784 B）——没有新编的数字。
+
+**"已在 PyPI 就跳过"这道闸已实跑验证**（不是只有单测）：0.3.4 发布后重跑一次
+`gh workflow run publish.yml` → run `34966176206` 里 `build` 与 `upload` **都是 skipped**，
+只有 preflight success。
 
 **顺带发现（已记 `ENVIRONMENT.md` §9.8）**：`gh repo create --source=. --push` 走 HTTPS，
 而本机 git-over-HTTPS 到 GitHub 是死的 → 建出**空仓**且报错像"push 没执行"。
