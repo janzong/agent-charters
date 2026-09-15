@@ -36,6 +36,12 @@
 > `791` 份根级章程里 **111** 份符号链接、**75** 份纯指针（中位 **11 字节**、**69** 份现在报 0/9），
 > 新模块 `pointers.py` 接进 `compare` / `brief` / Action 三处并**显式说明跟随**；
 > `is_pointer`（数据集标签）一个字未动。`pytest` **185 passed**。
+> 09-15 深夜三：**动作 tag `v1` 已移到 `6c25b06`**（按 D35 的移动规则：动了 `action.yml` +
+> `agent_charters/`），并在**外部消费方仓库** `janzong/agent-charters-action-test` 实跑验证
+> （run `34985605504`）：runner 日志 `Download action repository 'janzong/agent-charters@v1'
+> (SHA:6c25b06…)`；新增的 `pointer-follow` job（`path: CLAUDE.md`，内容只有 `@AGENTS.md` 11 字节）
+> **绿**，输出 `followed=1`、`missing=boundaries,workflow,style,environment,agent_meta,gotchas`
+> （6 个，与 `AGENTS.md` 那份一致 —— **不是** 9 个）。
 
 ---
 
@@ -520,7 +526,15 @@ v0.2 要把它并入数据集字段（如 `routes_outward` / `hard_route` / `bro
 随包语料库）；纯记账（`STATE.md` / `SHARE.md` / `work/`）留在 main，不必跟着移 tag。
 移法：`git tag -f -a v1 -m "<为什么移>" <commit> && git push --force origin v1 && git push --force gitee v1`。
 
-**日期**：2026-09-14
+**2026-09-15 再次移动**：`v1` 从 `942adc4`（注解对象）→ `d8b2737` 之后的 `6c25b06`
+（新注解对象 `dfcadc9`，双端 `--force`）。理由：动了**动作相关内容** —— 新增
+`agent_charters/pointers.py`（指针识别 / 跟随）+ `action.yml`（新增 `followed` 输出与描述）。
+服务端真值：双端 `ls-remote --tags` 都是 `refs/tags/v1 dfcadc9` + `refs/tags/v1^{} 6c25b06`。
+**外部消费方实跑复验**（run `34985605504`）：`Download action repository
+'janzong/agent-charters@v1' (SHA:6c25b06…)`，`report-only` 绿、`enforce` 按设计红、
+新增 `pointer-follow` 绿（`followed=1` / `missing` 6 个）。
+
+**日期**：2026-09-14（2026-09-15 补记第二次移动）
 
 ### D36 ｜ PyPI 首发走 Trusted Publishing（零 token），并把"能不能装"当成发布的一部分（2026-09-15）
 
@@ -670,6 +684,13 @@ pandas 写法在库里失效（`pd.DataFrame(load_corpus())` 一行可拿回）�
 判定＝**薄 + 在指路 + 自己没有规则**；`@路径` 语法必须认（`is_pointer` 的正则完全不认它，而它是主导形态 68/103）。
 已知漏判 1 份（`RobertoMachorro/Moped`，44B 的 "Refer to @AGENTS.md **mandatory** instructions."
 被反证闸挡下）——**不改闸**（与 D39 同一处置）。新增 8 条测试，`pytest` 185 passed。
+
+**已上线到消费方**（同日）：动作 tag `v1` 已移到 `6c25b06`，并在外部消费方仓库
+`janzong/agent-charters-action-test` 实跑 —— 新增 job 拿一份 **11 字节**的 `CLAUDE.md`（`@AGENTS.md`）
+跑 `uses: janzong/agent-charters@v1`：**绿**，`followed=1`、
+`missing=boundaries,workflow,style,environment,agent_meta,gotchas`（与 `AGENTS.md` 一致，不是 9 个）。
+顺带踩到一个通用坑并记进 `ENVIRONMENT.md` §9.9：**`GITHUB_STEP_SUMMARY` 是每个 step 各一个文件**，
+后面的 step 读不到前面 action 写的内容 ⇒ 断言要用公开 `outputs`，别读那个文件。
 
 ## 6.5 实验结论：自动化对定位的影响（2026-09-10/11）
 

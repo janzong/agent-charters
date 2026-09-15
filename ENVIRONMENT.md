@@ -370,3 +370,10 @@ git push origin main && git push gitee main && git push --tags
    后果有欺骗性：仓库**被建成空仓**，`gh` 只报 `failed to run git: exit status 128`，
    看起来像"push 没执行"而不是"推送失败"。2026-09-14 建 `agent-charters-action-test` 时踩到。
    建完先 `git remote set-url origin git@github.com:<owner>/<repo>.git` 再 push
+9. **`GITHUB_STEP_SUMMARY` 是「每个 step 各一个文件」**，不是整个 job 共用一个。
+   后果：在后面的 step 里 `cat $GITHUB_STEP_SUMMARY` 只会看到自己那份**空的**文件
+   （路径形如 `_temp/_runner_file_commands/step_summary_<uuid>`），
+   于是"上一步的 action 到底写了什么"断言不出来 —— 2026-09-15 就在这上面假失败了一次。
+   要断言就用**公开接口**：消费方的 `steps.<id>.outputs.*`（本仓库的 action 现在也导出
+   `missing` / `dangling` / `followed`），或运行完在外部用 `gh run view --log` 读。
+   运行结束后的**合并结果**仍能在 job 摘要里看到，只是读不到"某一步写进去的那份"。
