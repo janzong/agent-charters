@@ -99,7 +99,8 @@ def main() -> int:
          "- ⚠️ **这是 in-sample 一致率**：这 100 份正是驱动 v0.5 改动的那批样本，",
          "  所以数字是**上界**，不是留出集估计。它回答「改完还剩多少分歧」。",
          "- 口径：**主口径**只算人判确认的类别（agent 的 `call`、用户工作台判 1）；",
-         "  人判「犹豫」的类别（`borderline` / 用户判 2）**单列**，不计入漏标/错标，另给宽松口径作对照。", ""]
+         "  人判「犹豫」的类别（`borderline` / 用户判 2）**单列**；两种口径都给——",
+         "  **现行实现**把它计入错标（保守），**文档口径**把它出局（§20 的自披露）。", ""]
 
     summary = {}
     for gname, shas in groups.items():
@@ -146,6 +147,14 @@ def main() -> int:
                 L.append(f"- `{repo}`：漏 {miss or '—'}｜错 {extra or '—'}")
         L.append("")
         TP, FP, FN = sum(tp.values()), sum(fp.values()), sum(fn.values())
+        # 文档口径（§20 的自披露）：犹豫且规则命中的**出局**；现行实现把它算错标。
+        # 之前只算了不打印，这条"另给宽松口径作对照"的承诺是空的 —— 补上。
+        n_blfp = sum(bl_fp.values())
+        TP2, FP2 = TP + n_blfp, FP - n_blfp
+        L.insert(len(L), f"- 两支口径：现行（犹豫计错标）**{TP / (TP + FP):.0%} / "
+                        f"{TP / (TP + FN):.0%}**（TP {TP} / FP {FP} / FN {FN}）"
+                        f"｜文档（犹豫出局）**{TP2 / (TP2 + FP2):.0%} / {TP2 / (TP2 + FN):.0%}**"
+                        f"（TP {TP2} / FP {FP2} / FN {FN}，差 {n_blfp} 处犹豫命中）") if TP + FP else None
         micro_p = TP / (TP + FP) if TP + FP else 0
         micro_r = TP / (TP + FN) if TP + FN else 0
         summary[gname] = (n, exact, FN, FP, micro_p, micro_r,

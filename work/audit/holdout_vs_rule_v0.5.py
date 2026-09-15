@@ -86,6 +86,7 @@ def main() -> int:
     tp = collections.Counter(); fp = collections.Counter(); fn = collections.Counter()
     bl_hit = collections.Counter(); bl_miss = collections.Counter()
     exact = 0; bl_total = 0
+    bl_fp = collections.Counter()
     det = []
     for sha, c in calls.items():
         repo = c["repo"]
@@ -100,6 +101,9 @@ def main() -> int:
         for x in h & rule: tp[x] += 1
         for x in bl:
             (bl_hit if x in rule else bl_miss)[x] += 1
+            if x in rule and x not in h:
+                # 「犹豫」且规则命中、人判也不算 ⇒ **文档口径**下这条不算错标（§20 第 2 件）
+                bl_fp[x] += 1
         if h != rule:
             det.append((repo, sorted(h - rule), sorted(rule - h),
                         sorted(bl & rule)))
@@ -109,8 +113,9 @@ def main() -> int:
          f"- 生成：{today}｜规则 `ruleset_v0.1.8`｜数据 v0.5｜抽样 seed `{sample['seed']}`",
          f"- 样本：**{n} 份**（从可用池 **{len(pool)}** 份中随机抽；先按 `repo+file_path` 排除上一轮已用的 {len(ex_pairs)} 份）",
          "- ✅ **本表是留出集估计**：这 55 份**没有**参与 v0.5 规则改动；盲判时只读原文、未看规则输出。",
-         "- 口径：**主口径**只算盲判确认的类别（`call`）；判「犹豫」的类别（`borderline`）**单列**，",
-         "  不计入漏标/错标（同 in-sample 口径，便于对比）。", ""]
+         "- 口径（两种都给，与 `cn_vs_rule_v0.6.py` 同款算法）：**现行实现**把「犹豫」计入错标",
+         "  （更保守，也是对外引用的那个数）；**文档口径**把「犹豫且规则命中」的出局。",
+         "  两口径差的只有下面「犹豫」那一列的命中数，逐类数字同源。", ""]
 
     L += [f"## 总览（{n} 份）", "",
           f"- 文件级完全一致：**{exact}/{n} = {round(exact * 100 / n, 1)}%**",
@@ -128,7 +133,15 @@ def main() -> int:
     TP, FP, FN = sum(tp.values()), sum(fp.values()), sum(fn.values())
     mp = f"{TP / (TP + FP):.0%}" if TP + FP else "—"
     mr = f"{TP / (TP + FN):.0%}" if TP + FN else "—"
-    L += ["", f"**微平均：precision {mp}｜recall {mr}**（TP {TP} / FP {FP} / FN {FN}）", ""]
+    # 文档口径：犹豫且规则命中 → 出局（§20 记的那条；cn_vs_rule_v0.6.py 同款算法）
+    TP2 = TP + sum(bl_fp.values()); FP2 = FP - sum(bl_fp.values()); FN2 = FN
+    mp2 = f"{TP2 / (TP2 + FP2):.0%}" if TP2 + FP2 else "—"
+    mr2 = f"{TP2 / (TP2 + FN2):.0%}" if TP2 + FN2 else "—"
+    L += ["",
+          f"**微平均（现行口径，犹豫计入错标）**：precision **{mp}**｜recall **{mr}**"
+          f"（TP {TP} / FP {FP} / FN {FN}）",
+          f"**微平均（文档口径，犹豫出局）**：precision **{mp2}**｜recall **{mr2}**"
+          f"（TP {TP2} / FP {FP2} / FN {FN2}）", ""]
 
     if det:
         L += ["## 逐份分歧（人−规则 = 漏标；规则−人 = 错标）", ""]
@@ -155,7 +168,8 @@ def main() -> int:
           "## 怎么读", "",
           "- **留出集数字才是对外可引用的**；`v0.5-human-vs-rule.md`（100 份，in-sample）",
           "  只能当「改完还剩多少分歧」。",
-          "- 「犹豫」单列：盲判时拿不准的类别不进 precision/recall，避免把模糊判断算成规则的对错。",
+          "- 「犹豫」怎么算：**主口径（现行实现）把它算成错标**，所以引用的 92% / 70% 是两种算法里",
+          "  **更保守**的那个；按「犹豫出局」复算是 97% / 71%。两条都列在上面，别只引一条。",
           "- 局限：**单一标注者**（本智能体），没有第二人独立复判；且留出集**没有中文、没有指针文件**（见 §18）。",
           "- 复算：`.venv/bin/python work/audit/holdout_vs_rule_v0.5.py`；",
           "  盲判原文 `work/audit/v0.5-holdout-calls-a*.json`、抽样 `work/audit/v0.5-holdout-sample.json`。"]
