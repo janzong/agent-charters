@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
+from . import pointers
 from .extract import CATEGORIES, analyze_file, category_coverage, load_corpus, substantive
 from .refs import find_refs, resolve_targets
 
@@ -38,6 +39,8 @@ class Result:
     files: list[str] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
     dangling: list[str] = field(default_factory=list)
+    followed: list[str] = field(default_factory=list)      # "CLAUDE.md -> AGENTS.md"
+    unfollowed: list[str] = field(default_factory=list)    # 像指针但目标不在同级目录
     unverified: int = 0
     failures: list[str] = field(default_factory=list)
     problems: list[str] = field(default_factory=list)   # 用法错（配置写错了），也算失败
@@ -62,8 +65,22 @@ def evaluate(files: list[str], fail_on_missing: tuple[str, ...] = (),
         return res
 
     mine: set[str] = set()
+    seen: set[str] = set()
     for f in res.files:
-        mine |= set(analyze_file(f)["categories"])
+        # 指针文件（`@AGENTS.md`，实测根级章程里 75 份、中位 11 字节）本身没有正文，
+        # 直接判它会报"九类全缺"——那是**错误结论**。跟随到目标再判，并把这件事写进摘要。
+        resolved, ptr = pointers.resolve(f)
+        src = str(resolved)
+        if ptr is not None:
+            if ptr.resolved:
+                res.followed.append(f"{f} -> {ptr.target}")
+            else:
+                res.unfollowed.append(f"{f} -> {ptr.raw}")
+        # 两个入口文件互为指针（`CLAUDE.md` → `AGENTS.md`）时别把同一份数两遍
+        if src in seen:
+            continue
+        seen.add(src)
+        mine |= set(analyze_file(src)["categories"])
     res.missing = sorted((c for c in CATEGORIES if c not in mine), key=lambda c: -_coverage()[c])
 
     for f in res.files:
@@ -97,6 +114,14 @@ def _summary_md(res: Result, lang: str) -> str:
         out += [f"- `{c}`" for c in res.missing]
     else:
         out.append(f"All {len(CATEGORIES)} categories covered.")
+    if res.followed:
+        out += ["", f"Followed {len(res.followed)} pointer file(s) "
+                    f"(their own bodies carry no rules):", ""]
+        out += [f"- `{x.replace(' -> ', '` -> `')}`" for x in res.followed[:10]]
+    if res.unfollowed:
+        out += ["", f"{len(res.unfollowed)} pointer(s) whose target is not next to them "
+                    f"(not followed, not a failure):", ""]
+        out += [f"- `{x.replace(' -> ', '` -> `')}`" for x in res.unfollowed[:10]]
     if res.dangling:
         out += ["", f"{len(res.dangling)} path(s) pointed at but not found:", ""]
         out += [f"- `{d}`" for d in res.dangling[:10]]
@@ -127,6 +152,7 @@ def main(env: dict | None = None) -> int:
             with open(output_path, "a", encoding="utf-8") as fh:
                 fh.write(f"missing={','.join(res.missing)}\n")
                 fh.write(f"dangling={len(res.dangling)}\n")
+                fh.write(f"followed={len(res.followed)}\n")
         except OSError:
             pass
 
@@ -135,7 +161,8 @@ def main(env: dict | None = None) -> int:
         return 0
 
     print(f"checked {len(res.files)} file(s): missing {len(res.missing)}/{len(CATEGORIES)}"
-          f" categories, {len(res.dangling)} dangling path(s)")
+          f" categories, {len(res.dangling)} dangling path(s)"
+          f"{f', followed {len(res.followed)} pointer(s)' if res.followed else ''}")
     for p in res.problems:
         print(f"::error::{p}")
     for f in res.failures:

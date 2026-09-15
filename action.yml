@@ -4,6 +4,11 @@
 # 指出去的 **Markdown 指针**还在不在（`.sh` / `.py` / `.env` 这类裸文件名不在扫描范围内）。
 # **不改你的文件**，只报告（除非你开 fail-on-*）。
 #
+# 一条实测得出的行为（2026-09-15）：`path` 指到的那份文件如果**本身就是指针**
+# （`CLAUDE.md` 全文 `@AGENTS.md`、或一句 "Read CLAUDE.md before repository work."），
+# 工具会**跟过去判目标文件**并在摘要里说明——根级章程里 111/791 是符号链接、75 份是这种
+# 纯指针（中位 11 字节），不跟随就会对它们报"缺 9 个类别"，那是假警报。
+#
 # 用法（消费方仓库的 workflow）：
 #   - uses: actions/checkout@v5
 #   - uses: janzong/agent-charters@v1
@@ -61,6 +66,13 @@ outputs:
   dangling:
     description: 'Number of pointed-at paths that do not exist'
     value: ${{ steps.check.outputs.dangling }}
+  followed:
+    description: >-
+      Number of charter files that were themselves pointers (`@AGENTS.md`, "read
+      CLAUDE.md") and were judged by their target instead. Followed files are listed
+      in the job summary; ones whose target is not next to them are reported there
+      but never fail the build.
+    value: ${{ steps.check.outputs.followed }}
 
 runs:
   using: composite

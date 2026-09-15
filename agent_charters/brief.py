@@ -132,6 +132,7 @@ def render(files: list[str], lang: str = "en", corpus=None,
     CLI 里必须分开传：中文用户 `agent-charters brief` 拿到的还是中文清单
     （改造前就是这样），但贴进模型的提示词仍默认英文。
     """
+    from . import pointers
     from .extract import analyze_file
     from .i18n import t
 
@@ -144,7 +145,12 @@ def render(files: list[str], lang: str = "en", corpus=None,
         out.append(t("brief.gaps_head", ui))
         out.append("-" * 58)
         for f in files:
-            rec = analyze_file(f)
+            # 指针文件必须跟过去——否则"你缺 9 个类别"是假警报（`@AGENTS.md` 只有 11 字节）
+            src, ptr = pointers.resolve(f)
+            rec = analyze_file(src)
+            if ptr is not None and ptr.resolved:
+                out.append(t("brief.followed", ui, f=f, raw=ptr.raw,
+                             target=ptr.target.name))
             mine |= set(rec["categories"])
             missing = [c for c in CATEGORIES if c not in rec["categories"]]
             out.append(t("brief.gap_line", ui, f=f, n=len(rec["categories"]),

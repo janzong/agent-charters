@@ -1363,3 +1363,156 @@ def test_pypi_readme_has_no_relative_links():
     bad = [l for l in re.findall(r"\[[^\]]*\]\(([^)]+)\)", text)
            if not l.startswith(("http://", "https://", "#"))]
     assert not bad, f"README.en.md 里有相对链接，PyPI 上会 404：{bad}"
+
+
+# --- 指针识别 / 跟随（agent_charters/pointers.py，2026-09-15，D40）-------------
+#
+# 起因：实测根级 `AGENTS.md`/`CLAUDE.md` 有 111/791 份是符号链接、75 份是"纯指针"
+# （中位 11 字节，`@AGENTS.md`），而 `compare` 与 Action 是单文件判定 ⇒ 对着它们报 0/9
+# （"你这章程很空"），是**错误结论**。见 LIMITATIONS.md §25 / work/audit/pointer-census.md。
+
+POINTER_CHARTER = ("# AGENTS.md\n\n## Build\nRun `pytest`. Never commit `.env`.\n\n"
+                   "## Structure\n`src/` and `docs/notes.md`.\n")
+
+
+def test_pointer_body_detects_the_at_import_form(tmp_path):
+    """`@AGENTS.md` 是实测里的主导形态（68/103），而 `is_pointer` 的正则完全不认它。
+
+    两个东西刻意不合并：`is_pointer` 是**数据集标签**（改它要按 D18 重切资产），
+    `pointers` 是**工具行为**（零代价）。这条测试就是钉住这个分工的。
+    """
+    from agent_charters import pointers
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@./AGENTS.md\n", encoding="utf-8")
+    assert pointers.is_pointer_body(f.read_text(encoding="utf-8"))
+    assert analyze_file(f)["is_pointer"] is False        # ← 现有判据看得见才有鬼
+    assert analyze_file(f)["categories"] == []           # ← 用户拿到的就是 0/9
+
+
+def test_pointer_follows_a_relative_target(tmp_path):
+    from agent_charters import pointers
+    (tmp_path / "AGENTS.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@AGENTS.md\n", encoding="utf-8")
+
+    ptr = pointers.inspect(f)
+    assert ptr is not None and ptr.resolved
+    assert ptr.raw == "AGENTS.md"
+    assert ptr.target == tmp_path / "AGENTS.md"
+    # 跟随之后拿到的是目标的标签，而不是「空」
+    assert analyze_file(ptr.target)["categories"]
+
+
+def test_pointer_follows_a_read_style_reference(tmp_path):
+    """`Read \\`CLAUDE.md\\` before repository work.` 这种写法也要认（caveman 那类路由桩）。"""
+    from agent_charters import pointers
+    (tmp_path / "CLAUDE.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    f = tmp_path / "AGENTS.md"
+    f.write_text("Read `CLAUDE.md` before repository work.\n", encoding="utf-8")
+    ptr = pointers.inspect(f)
+    assert ptr is not None and ptr.resolved and ptr.target.name == "CLAUDE.md"
+
+
+def test_pointer_dangling_target_is_reported_not_faked(tmp_path):
+    """目标不在就**如实说没跟到**——绝不能拿空结果冒充"跟过了"。"""
+    from agent_charters import pointers
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@docs/nope.md\n", encoding="utf-8")
+    ptr = pointers.inspect(f)
+    assert ptr is not None and not ptr.resolved and ptr.raw == "docs/nope.md"
+
+
+def test_pointer_does_not_hijack_a_file_that_has_its_own_rules(tmp_path):
+    """`BerriAI/litellm` 那类：首行转引，但后面写着自己的规则 ⇒ 它是内容，不是指针。"""
+    from agent_charters import pointers
+    f = tmp_path / "AGENTS.md"
+    f.write_text("Read @CLAUDE.md for coding guidelines\n\n"
+                 "Before requesting maintainer review, verify the current PR tip "
+                 "passes required CI and code coverage.\n", encoding="utf-8")
+    assert pointers.inspect(f) is None
+
+
+def test_pointer_follows_a_chain_but_stops_on_a_cycle(tmp_path):
+    from agent_charters import pointers
+    (tmp_path / "C.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    (tmp_path / "B.md").write_text("@C.md\n", encoding="utf-8")
+    (tmp_path / "A.md").write_text("@B.md\n", encoding="utf-8")
+    assert pointers.inspect(tmp_path / "A.md").target.name == "C.md"
+
+    (tmp_path / "X.md").write_text("@Y.md\n", encoding="utf-8")
+    (tmp_path / "Y.md").write_text("@X.md\n", encoding="utf-8")
+    loop = pointers.inspect(tmp_path / "X.md")      # 环：不挂、不死循环
+    assert loop is not None and loop.resolved
+
+
+def test_cli_compare_follows_the_pointer_and_says_so(tmp_path, capsys, monkeypatch):
+    """跟随必须**说出来**——静默替换会让人把目标的覆盖当成这个文件写的。"""
+    from agent_charters.cli import main
+    monkeypatch.setenv("LANG", "zh_CN.UTF-8")
+    monkeypatch.delenv("LC_ALL", raising=False)
+    (tmp_path / "AGENTS.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@./AGENTS.md\n", encoding="utf-8")
+
+    assert main(["compare", str(f)]) == 0
+    out = capsys.readouterr().out
+    assert "是指针" in out and "AGENTS.md" in out
+    assert "合计覆盖 0/9 类" not in out            # 跟过去了，就不是"什么都没有"
+
+    # 目标不在时：说清楚"没跟到"，而不是默默给 0/9
+    (tmp_path / "gone.md").write_text("@docs/nope.md\n", encoding="utf-8")
+    assert main(["compare", str(tmp_path / "gone.md")]) == 0
+    assert "没有跟随" in capsys.readouterr().out
+
+
+def test_gha_follows_pointers_and_reports_them(tmp_path):
+    """Action 里更要紧：不跟随就会在别人的 PR 上贴"缺 9 个类别"。"""
+    from agent_charters.gha import evaluate
+    (tmp_path / ".git").mkdir()
+    (tmp_path / "AGENTS.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    (tmp_path / "CLAUDE.md").write_text("@AGENTS.md\n", encoding="utf-8")
+
+    direct = evaluate([str(tmp_path / "AGENTS.md")])
+    via_ptr = evaluate([str(tmp_path / "CLAUDE.md")])
+    assert via_ptr.missing == direct.missing and len(via_ptr.missing) < len(CATEGORIES)
+    assert via_ptr.followed == [f"{tmp_path / 'CLAUDE.md'} -> {tmp_path / 'AGENTS.md'}"]
+
+    # 目标是同一个文件时不要数两遍（互为指针的两个入口）
+    both = evaluate([str(tmp_path / "AGENTS.md"), str(tmp_path / "CLAUDE.md")])
+    assert both.missing == direct.missing
+
+    # 没跟到的：只是报告，不是失败（沿用"宁可说验不了，不要误报"的口径）
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "CLAUDE.md").write_text("@AGENTS.md\n", encoding="utf-8")
+    outside = evaluate([str(tmp_path / "docs" / "CLAUDE.md")], fail_on_dangling=True)
+    assert outside.followed == [] and outside.failures == []
+    assert outside.unfollowed == [f"{tmp_path / 'docs' / 'CLAUDE.md'} -> AGENTS.md"]
+
+
+def test_brief_counts_a_pointer_files_target(tmp_path, capsys, monkeypatch):
+    """`brief` 也吃同一份"该判哪个文件"的逻辑——不然清单会说你九类全缺。"""
+    from agent_charters.cli import main
+    monkeypatch.setenv("LANG", "zh_CN.UTF-8")
+    monkeypatch.delenv("LC_ALL", raising=False)
+    (tmp_path / "AGENTS.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@AGENTS.md\n", encoding="utf-8")
+
+    assert main(["brief", str(f)]) == 0
+    out = capsys.readouterr().out
+    assert "是指针" in out and "按 **AGENTS.md** 计" in out
+    assert "0/9" not in out          # 跟随后的真实覆盖，不是"什么都没写"
+
+
+def test_cli_en_pointer_output_has_no_chinese(tmp_path, capsys, monkeypatch):
+    """英文读者拿到指针文件时，那段解释也必须是英文。"""
+    from agent_charters.cli import main
+    monkeypatch.setenv("LANG", "en_US.UTF-8")
+    monkeypatch.delenv("LC_ALL", raising=False)
+    (tmp_path / "AGENTS.md").write_text(POINTER_CHARTER, encoding="utf-8")
+    f = tmp_path / "CLAUDE.md"
+    f.write_text("@AGENTS.md\n", encoding="utf-8")
+
+    assert main(["compare", str(f), "--lang", "en"]) == 0
+    out = capsys.readouterr().out
+    assert "is a pointer" in out and not CHINESE.search(out)

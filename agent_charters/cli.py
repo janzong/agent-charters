@@ -20,6 +20,7 @@ from collections import Counter
 from pathlib import Path
 
 from . import __version__
+from . import pointers
 from .extract import (CATEGORIES, DATASET_VERSION, analyze_file,
                       category_coverage, load_corpus, substantive)
 from .i18n import detect_lang, t
@@ -113,7 +114,15 @@ def cmd_compare(args: argparse.Namespace) -> int:
 
     all_mine: set[str] = set()
     for path in args.files:
-        rec = analyze_file(path)
+        # 「这份文件是指针」不等于「这份文件是空的」：40% 的根级章程里有一份只写一行转引
+        # （`@AGENTS.md` 是 11 个字节）。不跟过去就会报 0/9，给用户"你这章程很空"的错误结论
+        # ——所以跟随，**并且把这件事说出来**（静默替换会让人把目标的覆盖当成这个文件写的）。
+        src, ptr = pointers.resolve(path)
+        if ptr is not None and ptr.resolved:
+            print(t("cmp.followed", lang, src=path, raw=ptr.raw, target=ptr.target.name))
+        elif ptr is not None:
+            print(t("cmp.follow_dangling", lang, src=path, raw=ptr.raw))
+        rec = analyze_file(src)
         all_mine.update(rec["categories"])
         state = t("cmp.pointer", lang) if rec["is_pointer"] else f"{rec['bytes']}B"
         print(f"\n### {path}  [{state}, {rec['doc_language']}, "

@@ -12,7 +12,7 @@ from .extract import (DATASET_VERSION, analyze_file, analyze_text,
                       category_coverage, load_corpus, substantive)
 from .taxonomy import CATEGORIES, RULESET_VERSION, VERSION
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 __all__ = [
     "CATEGORIES",

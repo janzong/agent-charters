@@ -250,6 +250,15 @@ agent-charters refs path/to/AGENTS.md
 about most that you have not written at all**, plus each category's coverage in the
 corpus. Chinese files work the same way.
 
+`compare` also does something the measurements forced on it: when the file **is itself a
+pointer** — a `CLAUDE.md` whose entire body is `@AGENTS.md`, or a single line like
+`Read \`CLAUDE.md\` before repository work.` — it does not report "you wrote nothing".
+It **follows the pointer and judges the target**, saying so in the output ("the numbers
+below are `AGENTS.md`"). This is not a corner case: of 791 root-level charters, **111**
+are symlinks and **75** are such pure pointers, median **11 bytes** — reporting 0/9 for
+those would be a wrong answer. When the target is not next to the file, it says the
+pointer could not be followed instead of pretending it did.
+
 `brief` is for people about to *generate* a charter, and it is based on measurement
 rather than folklore: a controlled experiment over 11 repositories found that
 auto-generated coverage **is decided by the shape of the prompt** — when the prompt did

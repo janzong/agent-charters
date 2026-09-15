@@ -32,6 +32,10 @@
 > 09-15 深夜：**量了「同一仓库两份章程的分歧」——真冲突只有 2.5%，但暴露出 `compare` 的一条真局限**：
 > 38–49% 的成对里**有一份是指针/空壳**（`@./AGENTS.md` 13B、`Read CLAUDE.md` 734B），单文件判定会报 0/9、
 > 给用户**错误结论**。⇒ 自我更正上一轮凭直觉推荐的选项 3（跨文件一致性），**改推「指针识别 / 跟随」**（D40、§25）。
+> 09-15 深夜二：**「指针识别 / 跟随」已落地**（工具 `0.4.1`，未发 PyPI）——
+> `791` 份根级章程里 **111** 份符号链接、**75** 份纯指针（中位 **11 字节**、**69** 份现在报 0/9），
+> 新模块 `pointers.py` 接进 `compare` / `brief` / Action 三处并**显式说明跟随**；
+> `is_pointer`（数据集标签）一个字未动。`pytest` **185 passed**。
 
 ---
 
@@ -62,7 +66,7 @@
 |---|---|
 | 数据集 | ✅ **v0.5**（30 字段 / 516 份可统计，`ruleset_v0.1.8`）——**Release `v0.5` 已建**（GitHub + Gitee，2026-09-13；tag 指向 `84c17b9`，两端下载的 sha256 与仓库内逐字节一致）｜旧资产 `v0.2`/`v0.3` 仍在各自 Release（不静默替换，见 D18） |
 | 规则集 | ✅ **`ruleset_v0.1.9`**（2026-09-15）：相对 v0.1.8 只多两条词——正文禁令家族 `绝不`、`overview` 标题词表 `这是什么`。**对 v0.5 标签中性**（`--verify-v05` 用改完的真实规则重算 558 份，逐份标签与内容模式完全一致，覆盖率仍 85.7% / 32.2%）；收益在未来采到的中文上（v0.6 中文 +6/+8，逐条读过 14/14 真命中）。**v0.5 行仍写 `ruleset_v0.1.8`**，不重算、不替换（D24/D38）｜遗留：无（正文通道「提到即命中」已量化，代价≈0、决定不修，见 §22.2）|
-| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.4.0，运行时零依赖**——语料以 `jsonl.gz` 随包，只用到标准库的 gzip+json；`--version` 自 0.3.4 起）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
+| 命令行工具 | ✅ `agent-charters stats / brief / compare / show / refs`（**工具 0.4.0（PyPI 已发）／工作区 `0.4.1`（未发，攒着发：新增「指针识别 / 跟随」，见 D40）**；0.4.0 起运行时零依赖——语料以 `jsonl.gz` 随包，只用到标准库的 gzip+json；`--version` 自 0.3.4 起）——现在打印的基线是 v0.5 的 `boundaries` 85.7% / `build_test` 82.8%；**输出中英双语**（默认跟 `LANG`/`LC_ALL`，`--lang en\|zh` 可覆盖，见 D33） |
 | PyPI | ✅ **09-15 首发起四版：`0.3.3` → `0.3.4` → `0.3.5` → `0.4.0`**：<https://pypi.org/project/agent-charters/>（最新 **`0.4.0`**：wheel 104 KB、**`Requires-Dist` 为空**——装包不再拉 pandas/pyarrow；MIT，10 条 classifier、4 条 Project-URL，`requires-python >=3.10`）。上传走 **Trusted Publishing（OIDC）**，仓库里**不存任何 token**；三道闸＝tag 与 version 一致 / 已在 PyPI 就跳过 / `twine check --strict`。run `34959442365`（0.3.3）· `34966005314`（0.3.4）· `34966958406`（0.3.5）· `34971331591`（0.4.0）三个 job 全绿。复验（0.3.3）：从**默认索引**下载的轮子 sha256 `b5b8f631…31d3` 与 PyPI 公布值逐字节一致；
 **0.4.0 独立复验**：默认索引 `pip install agent-charters==0.4.0` **4.3 秒**装完、`pip list` 里只有本包（轮子 104,851 B / sha256 `9754f371…4b6f4c`）；干净 venv 装完、换无关目录跑 `compare` 得 8/9。**「已在 PyPI 就跳过」已实跑验证**（重跑 run `34966176206`：preflight success、build/upload 直接 skipped）。页面语言：**PyPI 渲染 `README.en.md`（英文）**，GitHub 首页仍是中文 `README.md`，两边顶部互相带切换器——⚠️ 这个切换器**必须写绝对地址**（PyPI 不重写相对路径，相对链接＝404 跳搜索页，0.3.5 修的就是这条）。~~⚠️ 依赖（pandas+pyarrow ≈62 MB）从 251 直连仍会断流~~ → **0.4.0 已从根上解决**：运行时依赖归零，装包不再拉它们（D37）。|
 | 测试 | ✅ `pytest` **168 passed**（含"数据集可由 raw 重放""跨哈希种子字节一致""发布校验和""词中命中不许打标签／词首前缀必须打标签"、指针反证闸三组、D33 的"en 输出零汉字 + 中文文案冻结"、D34 的 Action 判定层 5 条、随包/发布两份语料逐字节一致）；**没有 `data/raw` 时 150 passed / 18 skipped**（新克隆与 CI 就是这个形态——已实测，跳过而不是红） |
@@ -212,6 +216,10 @@ agent-charters compare <你的AGENTS.md>
   **`compare` / Action 是单文件判定**，对着 13B 的 `CLAUDE.md`（`@./AGENTS.md`）或 734B 的 routing-stub
   会报 **0/9**，给用户的是"你这章程很空"这种**错误结论**。**改建议：先做「指针识别 / 跟随」**
   （工具行为，不动数据不动规则，可单独发 0.4.x），选项 2 / 3 推后。见 `LIMITATIONS.md` §25 与 **D40**。
+  **→ ✅ 同日落地（工具 `0.4.1`，未发 PyPI）**：新模块 `agent_charters/pointers.py` 接进
+  `compare` / `brief` / GitHub Action 三个入口（`work/audit/pointer-census.md`）——
+  判定＝薄 + 在指路 + 自己没有规则，跟随必须**说出来**（"这份是指针，下面的数字说的是 X"）。
+  动的是**工具行为**，`is_pointer`（数据集标签）**一个字没改**。已知漏判 1 份（Moped，选择不放宽）。
   ~~原三选一（不做 ／ 只做 `CLAUDE.md` 第二文档 ／ 做「跨文件一致性」）~~ 仅作历史记录。
 - ~~留 v0.1.9/v0.1.10 的三项~~ ✅ **2026-09-15 全部清完**（"改规则前先实测"的三条都测完了）：
   **h1 守卫**与**模块名型标题守卫**＝实测后否决（掉 ~37/~136 个真标签、或误伤真环境文档，
@@ -654,6 +662,14 @@ pandas 写法在库里失效（`pd.DataFrame(load_corpus())` 一行可拿回）�
 
 **守卫/复验**：`work/audit/pair_divergence.py`（可重跑，输出含逐对证据）＋
 `LIMITATIONS.md` §25（含四条边界：分档而非随机抽样、只判 8 个槽位、正则漏判、九类用自家分类器）。
+
+**状态：已实现（同日，工具 `0.4.1`，未发 PyPI）**。新模块 `agent_charters/pointers.py`；
+`pointers.resolve(path)` 是三个入口（`compare` / `brief` / Action）的唯一接线点。
+落地前先量了规模（`work/audit/pointer-census.md` + `pointer_probe.py`）：791 份根级章程里
+111 份符号链接、156 份非链接小文件、**75 份纯指针**（中位 11B、73/75 目标在树里、69 份当前报 0/9）。
+判定＝**薄 + 在指路 + 自己没有规则**；`@路径` 语法必须认（`is_pointer` 的正则完全不认它，而它是主导形态 68/103）。
+已知漏判 1 份（`RobertoMachorro/Moped`，44B 的 "Refer to @AGENTS.md **mandatory** instructions."
+被反证闸挡下）——**不改闸**（与 D39 同一处置）。新增 8 条测试，`pytest` 185 passed。
 
 ## 6.5 实验结论：自动化对定位的影响（2026-09-10/11）
 

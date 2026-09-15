@@ -72,3 +72,21 @@
   是"引用 + 大量自己的规则"，本就不该跟随，所以不扫）。
 - `@导入` 的正则要求 `.md`/`.mdc` 后缀，`@user@host.md` 这类误配在样本里**没有出现过**（逐条看过上表 12 个样例）。
 - 树只覆盖 508 / 558 个仓库（其余是 api.github.com 经代理抖动，`filetype_probe.py` 重跑即补）。
+
+---
+
+## 实现（同日，D40 的执行项）
+
+- 新模块 `agent_charters/pointers.py`（检测 + 跟随），接进 **`compare` / `brief` / GitHub Action** 三个入口；
+  `pointers.resolve(path)` 是单一入口，返回"该判哪个文件"。
+- 判定＝三条件同时满足：**薄**（`content_bytes < 400`）+ **在指路**（`@路径.md` / `Read|See|详见 X.md` /
+  本地 Markdown 链接 / 作者自陈）+ **自己没有规则**（`OWN_RULES_PAT` 反证闸）。
+- 输出**必须说出来**："这份是指针（`X`）——下面的数字说的是 `Y`"；跟不到就说"没有跟随"，
+  绝不拿空结果冒充"跟过了"。
+- **不动 `is_pointer`**（数据集标签，改它按 D18 要重切资产）；两处口径的差别写进了 `pointers.py` 的模块 docstring。
+- 已知漏判 **1 份**：`RobertoMachorro/Moped` 的 44B `Refer to @AGENTS.md mandatory instructions.`
+  ——反证闸看到 `mandatory` 就判"有自己的规则"。**选择不放宽**（与 §24 同一处置：
+  为 1 例动一条形态判据不划算）。整批 75 份里就这 1 份，占 1.3%。
+- 验证：`pytest` **183 passed**（新增 8 条：检测/跟随/悬空/不劫持有规则的文件/链与环/
+  CLI 说出来/Action 跟随与去重/未跟随不判失败）；真数据实测用
+  `JCodesMore/ai-website-cloner-template`（`CLAUDE.md` = `@AGENTS.md`，11B）跑通中英两版输出。

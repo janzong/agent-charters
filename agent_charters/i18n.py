@@ -95,6 +95,16 @@ T: dict[str, dict[str, str]] = {
     "cmp.corpus": {"en": "corpus", "zh": "语料库"},
     "cmp.pointer": {"en": "pointer (no body text)", "zh": "pointer（无正文内容）"},
     "cmp.sections": {"en": "{n} sections", "zh": "{n} 章节"},
+    "cmp.followed": {
+        "en": "↪ {src} is a pointer (`{raw}`) - followed it: the numbers below are "
+              "**{target}**, not this file.",
+        "zh": "↪ {src} 是指针（`{raw}`）——已跟随：**下面的数字说的是 `{target}`，不是这个文件本身**。",
+    },
+    "cmp.follow_dangling": {
+        "en": "⚠ {src} looks like a pointer (`{raw}`), but that file is not next to it "
+              "- nothing was followed; the numbers below are this file's own.",
+        "zh": "⚠ {src} 像是指针（`{raw}`），但同级目录里没有这个文件——没有跟随，下面的数字说的是这个文件本身。",
+    },
     "cmp.total": {"en": "coverage {mine}/{all} categories",
                   "zh": "合计覆盖 {mine}/{all} 类"},
     "cmp.absent": {"en": "Missing from yours, most common first:",
@@ -172,6 +182,10 @@ T: dict[str, dict[str, str]] = {
         "en": "Name every slot in the prompt|unnamed slots get skipped systematically "
               "(workflow 0/11 -> 3/3 once named)",
         "zh": "提示词必须点名每一个槽位|未点名的槽位会被系统性跳过（workflow 0/11 → 点名后 3/3）",
+    },
+    "brief.followed": {
+        "en": "  ↪ {f} is a pointer (`{raw}`) - counted as **{target}**.",
+        "zh": "  ↪ {f} 是指针（`{raw}`）——按 **{target}** 计。",
     },
     "brief.rule.no_guessing": {
         "en": "Ask for \"if there is no evidence, say so - do not guess\"|"
