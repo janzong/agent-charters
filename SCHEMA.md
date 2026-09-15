@@ -102,7 +102,7 @@
 |---|---|---|
 | `extractor_version` | str | 抽取脚本版本 |
 | `taxonomy_version` | str | 分类法**定义**版本（九类是什么） |
-| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 词表；v0.1.3 标题改词首匹配 + 删裸词 `make`；v0.1.4 删 3 个路由型 `agent_meta` 标题词；v0.1.5 补 CJK 通道；v0.1.6 切章节时跳过围栏代码块；v0.1.7 撤容器型标题词 + 补 `ownership` 类；**v0.1.8 补 `DO NOT` 通式 / `trap` / `e2e` / 复数 / `intent`，加 12 类共现否决，`is_pointer` 加反证闸（v0.5 数据集用的就是它）** |
+| `ruleset_version` | str | 判定**规则**版本。定义没变但规则变了时递增。v0.1.1 加强模式通道；v0.1.2 收紧 `is_pointer` + 补 `structure` 词表；v0.1.3 标题改词首匹配 + 删裸词 `make`；v0.1.4 删 3 个路由型 `agent_meta` 标题词；v0.1.5 补 CJK 通道；v0.1.6 切章节时跳过围栏代码块；v0.1.7 撤容器型标题词 + 补 `ownership` 类；**v0.1.8 补 `DO NOT` 通式 / `trap` / `e2e` / 复数 / `intent`，加 12 类共现否决，`is_pointer` 加反证闸（v0.5 数据集用的就是它）**；v0.1.9 补 `绝不`（正文禁令家族）/ `这是什么`（`overview` 标题词表）——对 v0.5 标签中性，故 v0.5 的行仍写 v0.1.8（`LIMITATIONS.md` §22.1 / D38）|
 | `used_fulltext_fallback` | bool | 是否启用了全文补救通道（说明该文件无有效标题） |
 | `strong_patterns` | bool | 是否启用了强模式通道。**v0.1.1 全行为 `true`**；`false` 用于复现 v0.1 基线 |
 
