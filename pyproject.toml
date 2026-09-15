@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-charters"
-version = "0.3.4"
+version = "0.3.5"
 description = "Structured corpus of AGENTS.md — the written rules humans hand to AI agents ｜ 人写给 AI 智能体的书面规约的结构化语料库"
 readme = "README.en.md"
 requires-python = ">=3.10"

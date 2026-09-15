@@ -1124,6 +1124,9 @@ def test_pyproject_version_matches_package_version():
     meta = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert meta["project"]["version"] == __version__, (
         f"pyproject {meta['project']['version']} != __version__ {__version__}")
+    # PyPI 页面渲染的是这个文件（GitHub 首页仍用中文 README.md）——
+    # 换回 README.md 会让英文渠道读者重新撞墙，钉住。
+    assert meta["project"]["readme"] == "README.en.md"
 
 
 def test_publish_workflow_uses_trusted_publishing_without_any_token():
@@ -1167,3 +1170,20 @@ def test_cli_version_flag_reports_the_package_version(capsys):
         main(["--version"])
     assert e.value.code == 0
     assert __version__ in capsys.readouterr().out
+
+
+def test_pypi_readme_has_no_relative_links():
+    """PyPI 渲染的 README（`README.en.md`）里**不许有相对链接**。
+
+    为什么值得一条测试：PyPI **不重写相对路径**（GitHub 会）。`[中文](README.md)`
+    在 GitHub 上正常，在 PyPI 页面上会解析成 `pypi.org/project/agent-charters/README.md`
+    → 404 → 被重定向回搜索页（2026-09-15 真实踩到：用户点"中文切换"退到了搜索）。
+    更贵的是：这段描述是**上传时的元数据快照**，改它必须发一个新版本才能在 PyPI 上生效——
+    所以宁可让测试在提交前拦住，也别再为一条链接发一次版本。
+    """
+    text = (ROOT / "README.en.md").read_text(encoding="utf-8")
+    text = re.sub(r"```.*?```", "", text, flags=re.S)   # 围栏代码块
+    text = re.sub(r"`[^`]*`", "", text)                 # 行内代码（`[文字](路径)` 只是示意）
+    bad = [l for l in re.findall(r"\[[^\]]*\]\(([^)]+)\)", text)
+           if not l.startswith(("http://", "https://", "#"))]
+    assert not bad, f"README.en.md 里有相对链接，PyPI 上会 404：{bad}"

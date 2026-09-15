@@ -1,6 +1,6 @@
 # agent-charters ｜ 智能体章程语料库
 
-**中文** ｜ [English](README.en.md)
+**中文** ｜ [English](https://github.com/janzong/agent-charters/blob/main/README.en.md)
 
 [![charter](https://github.com/janzong/agent-charters/actions/workflows/charter.yml/badge.svg)](https://github.com/janzong/agent-charters/actions/workflows/charter.yml)
 [![PyPI](https://img.shields.io/pypi/v/agent-charters)](https://pypi.org/project/agent-charters/)

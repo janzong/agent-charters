@@ -1,6 +1,6 @@
 # agent-charters ｜ a structured corpus of AGENTS.md
 
-[中文](README.md) ｜ **English**
+[中文](https://github.com/janzong/agent-charters/blob/main/README.md) ｜ **English**
 
 [![charter](https://github.com/janzong/agent-charters/actions/workflows/charter.yml/badge.svg)](https://github.com/janzong/agent-charters/actions/workflows/charter.yml)
 [![PyPI](https://img.shields.io/pypi/v/agent-charters)](https://pypi.org/project/agent-charters/)
