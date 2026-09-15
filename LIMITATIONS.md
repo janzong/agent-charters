@@ -828,8 +828,8 @@ printf '# P\n\n先读 `docs/missing.md`，别提交 `dist/`，也别碰 `scripts
 **方法与样本**（脚本 `work/audit/pair_divergence.py`，报告 `work/audit/pair-divergence.md`；
 正文走 blob API 缓存在 `data/cache/blobs/`，不进库）：
 
-- 从 482 棵已缓存仓库树里取"**根级 `AGENTS.md` + 根级 `CLAUDE.md`、非符号链接、blob sha 不同**"的成对：
-  共 **174 对**；
+- 从已缓存的仓库树里取"**根级 `AGENTS.md` + 根级 `CLAUDE.md`、非符号链接、blob sha 不同**"的成对：
+  共 **174 对**（缓存树 508 棵；482 棵时即为 174 对，扩样后不变）；
 - 按尺寸比**分档抽样 40 对**（近似 45% / 差一截 33% / 极端 22%；不是随机抽样，见边界）下正文，跑三件事：
   ①行级 `difflib` 相似度与两边**独有行数**；②九类覆盖对照；③**槽位对照**——包管理器 / 测试 / 格式化 /
   lint / 合并策略 / 提交规范 / CI / 锁文件这八个"只能有一种做法"的选择位，**同一互斥族内两边取值不同才算冲突**
