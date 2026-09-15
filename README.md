@@ -61,10 +61,10 @@ LANG=en_US.UTF-8 agent-charters compare --lang en path/to/AGENTS.md
 
 > 包**已在 PyPI 上线**：`pip install agent-charters`（首发 2026-09-15，**当前版本见上方徽章**）。
 > 上传走 **Trusted Publishing（OIDC）** —— 仓库里**不存任何 token**，见 [`SHARE.md`](SHARE.md) §8。
-> 语料库 parquet 打在包里（约 222 KB），装完换任意目录都能跑；不想走 PyPI 也可以
-> `pipx install "git+https://gitee.com/janzong/agent-charters"`（国内，约 10 秒）。
-> **国内网络**拉那两个依赖（pandas + pyarrow，约 62 MB）时仍可能断流：
-> 加 `-i https://pypi.tuna.tsinghua.edu.cn/simple` 再装（实测 9 秒）。
+> **零运行时依赖**（0.4.0 起）：装的是几百 KB，不拖 pandas/pyarrow——那两块只有在
+> 你要读 parquet 时才需要（`pip install "agent-charters[parquet]"`），日常用不上。
+> 语料库以 `jsonl.gz` 打在包里（约 46 KB），装完换任意目录都能跑；
+> 国内想更快也可以 `pipx install "git+https://gitee.com/janzong/agent-charters"`。
 
 ## 放进 CI（GitHub Action）
 
@@ -152,6 +152,8 @@ jobs:
 import pandas as pd
 
 df = pd.read_parquet("data/processed/agent-charters-v0.5.parquet")
+# 装了本包的话，同一份语料也能直接拿成 DataFrame（不需要 parquet 文件）：
+# import agent_charters; df = pd.DataFrame(agent_charters.load_corpus())
 
 # 最常出现的主题
 from collections import Counter
@@ -245,8 +247,8 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python work/discover_repos2.py      # 枚举候选仓库
 .venv/bin/python work/fetch_full.py work/repos_topics.txt  # 抓取
 .venv/bin/python work/extract_v1.py           # 抽取
-.venv/bin/python work/pack.py                 # 打包（同时更新随包的 parquet）
-.venv/bin/pytest -q                           # 冒烟测试（160 项）
+.venv/bin/python work/pack.py                 # 打包（发布 parquet + 随包 jsonl.gz）
+.venv/bin/pytest -q                           # 冒烟测试（168 项）
 ```
 
 **纵向基线**：`data/processed/baseline-2026-09-10.tsv` 固化了本快照每个仓库的

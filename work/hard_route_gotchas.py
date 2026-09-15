@@ -45,7 +45,9 @@ def fisher_two_sided(a: int, b: int, c: int, d: int) -> float:
 
 
 def main() -> int:
-    df = substantive(load_corpus()).copy()
+    # 语料库已改成纯标准库的 Corpus（随包不再依赖 pandas）；分析脚本里再转回
+    # DataFrame 最省事——work/ 不进 wheel，也不进 sdist。
+    df = pd.DataFrame(substantive(load_corpus()))
     df["has_gotchas"] = df["categories"].map(lambda x: "gotchas" in x)
     df["hard"] = df["hard_route"] == True  # noqa: E712
     n = len(df)

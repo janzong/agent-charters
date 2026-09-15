@@ -70,10 +70,11 @@ text still follows your machine's locale. See
 > The package **is on PyPI**: `pip install agent-charters` (first release 2026-09-15;
 > **the current version is on the badge above**). Uploads go through **Trusted Publishing (OIDC)** — the repository
 > **stores no token at all**; see [SHARE.md](https://github.com/janzong/agent-charters/blob/main/SHARE.md) §8.
-> The corpus parquet ships inside the package (~222 KB), so it runs from any directory.
-> If you would rather skip PyPI: `pipx install "git+https://gitee.com/janzong/agent-charters"`
-> (China, ~10 s). The two dependencies (pandas + pyarrow, ~62 MB) can stall on a slow
-> link to PyPI — add the mirror above if so (measured: 9 s).
+> **Zero runtime dependencies** (since 0.4.0): the install is a few hundred KB and pulls
+> no pandas/pyarrow — those are only needed if you want to read parquet
+> (`pip install "agent-charters[parquet]"`), which the everyday commands do not.
+> The corpus ships as `jsonl.gz` inside the package (~46 KB), so it runs from any directory.
+> For a faster route in China: `pipx install "git+https://gitee.com/janzong/agent-charters"`.
 
 ## Put it in CI (GitHub Action)
 
@@ -182,6 +183,8 @@ text belongs to each repository's authors.
 import pandas as pd
 
 df = pd.read_parquet("data/processed/agent-charters-v0.5.parquet")
+# with the package installed, the same corpus is one line away (no parquet file needed):
+# import agent_charters; df = pd.DataFrame(agent_charters.load_corpus())
 
 # the most common topics
 from collections import Counter
@@ -288,8 +291,8 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python work/discover_repos2.py      # enumerate candidate repositories
 .venv/bin/python work/fetch_full.py work/repos_topics.txt  # fetch
 .venv/bin/python work/extract_v1.py           # extract
-.venv/bin/python work/pack.py                 # package (also refreshes the shipped parquet)
-.venv/bin/pytest -q                           # smoke tests (160)
+.venv/bin/python work/pack.py                 # package (release parquet + bundled jsonl.gz)
+.venv/bin/pytest -q                           # smoke tests (168)
 ```
 
 **Longitudinal baseline**: `data/processed/baseline-2026-09-10.tsv` freezes each

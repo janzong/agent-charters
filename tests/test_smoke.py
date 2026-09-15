@@ -8,6 +8,7 @@
   3. 语料库可由 data/raw 重放（工具与数据集同源）
 """
 
+import gzip
 import json
 import re
 import sys
@@ -44,7 +45,7 @@ def test_every_row_is_traceable(corpus):
     for col in ["repo_full_name", "file_path", "file_sha", "commit_date",
                 "retrieved_at", "extractor_version", "taxonomy_version",
                 "ruleset_version"]:
-        assert corpus[col].notna().all(), col
+        assert all(rec.get(col) is not None for rec in corpus), col
     assert set(corpus["retrieved_at"]) == {"2026-09-10"}
 
 
@@ -551,21 +552,144 @@ def test_published_checksums_match():
 
 
 def test_bundled_corpus_matches_the_published_one():
-    """随包副本与发布副本必须逐字节相同——同一个数据集在仓库里有两份。
+    """随包语料解压后必须与发布资产逐字节相同——同一个数据集在仓库里有两份。
 
-    `agent_charters/data/` 是 CLI 实际读的那份，`data/processed/` 是发布资产
-    （被 SHA256SUMS 钉住）。只测后者的话，"重新生成后忘了拷进包"会让工具继续
+    `agent_charters/data/*.jsonl.gz` 是 CLI 实际读的那份，`data/processed/` 是发布
+    资产（被 SHA256SUMS 钉住）。只测后者的话，"重新生成后忘了拷进包"会让工具继续
     打印旧数字、而 Release 上是新的——两边各自都能通过校验，对外却是两套数。
+
+    0.4.0 起随包那份是 `.jsonl.gz`（读它不需要 pandas）：压缩用的是
+    `gzip.compress(..., mtime=0)`，所以同一个输入每次压出同样的字节，比对才有意义。
     """
-    bundled = ROOT / "agent_charters" / "data"
     processed = ROOT / "data" / "processed"
-    assert bundled.exists() and processed.exists()
-    for f in sorted(bundled.glob("*.parquet")):
-        twin = processed / f.name
-        if not twin.exists():
-            continue
-        assert f.read_bytes() == twin.read_bytes(), (
-            f"{f.name}：随包副本与 data/processed 不一致（重新生成后要拷进两者）")
+    src = processed / f"agent_charters_{DATASET_VERSION}.jsonl"
+    if not src.exists():
+        pytest.skip("data/processed 不在仓库里（发布包精简版）")
+    bundled = ROOT / "agent_charters" / "data" / f"agent-charters-{DATASET_VERSION}.jsonl.gz"
+    assert bundled.exists(), f"随包语料缺失：{bundled}（跑 work/pack.py 生成）"
+    assert gzip.decompress(bundled.read_bytes()) == src.read_bytes(), (
+        f"{bundled.name}：随包副本与 data/processed 不是同一份（重新生成后要拷进两者）")
+
+
+def test_bundled_corpus_is_reproducible_from_the_published_jsonl():
+    """再压一遍必须得到同样的字节——否则"随包副本"这个说法只在今天成立。"""
+    src = ROOT / "data" / "processed" / f"agent_charters_{DATASET_VERSION}.jsonl"
+    if not src.exists():
+        pytest.skip("data/processed 不在仓库里（发布包精简版）")
+    bundled = ROOT / "agent_charters" / "data" / f"agent-charters-{DATASET_VERSION}.jsonl.gz"
+    again = gzip.compress(src.read_bytes(), compresslevel=9, mtime=0)
+    assert again == bundled.read_bytes()
+
+
+def test_the_package_has_no_runtime_dependencies():
+    """`pip install agent-charters` 不许拖 pandas/pyarrow（≈62 MB）进来。
+
+    为什么值一条测试：这两块只用来读一张 550 KB 的表，而国内直连 PyPI 下 62 MB
+    经常断流——"看到→用上"的坎就卡在这里（2026-09-15 实测）。依赖一旦被谁加回去，
+    装包会重新变重，而且**外面的人不会来提 issue，他们只是装不上就走了**。
+    """
+    try:
+        import tomllib
+    except ModuleNotFoundError:   # py3.10：tomllib 还没进标准库
+        import tomli as tomllib
+
+    meta = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert meta["project"]["dependencies"] == [], "运行时依赖必须为空"
+    assert "pandas" in " ".join(meta["project"]["optional-dependencies"]["parquet"])
+    # 查的是**模块级**导入：函数里按需 import（读 parquet 那条可选路径）是允许的，
+    # 那种写法不会让不装 pandas 的人受影响。
+    import ast
+    heavy = {"pandas", "pyarrow", "numpy"}
+    for f in sorted((ROOT / "agent_charters").glob("*.py")):
+        for node in ast.parse(f.read_text(encoding="utf-8")).body:
+            if isinstance(node, ast.Import):
+                names = [a.name for a in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                names = [node.module or ""]
+            else:
+                continue
+            for name in names:
+                assert name.split(".")[0] not in heavy, (
+                    f"{f.name} 在模块级 import 了 {name} —— 装包会因此重新变重")
+
+
+def test_cli_runs_with_pandas_and_pyarrow_unavailable(capsys, monkeypatch):
+    """把 pandas/pyarrow 从 import 路径上摘掉，`stats` 仍要能跑。
+
+    上一条测的是"源码里没写 import"；这条测的是"哪怕环境里装了也不会被用到"——
+    两条合起来才等于"用户不装那 62 MB 也能跑"。
+    """
+    import builtins
+    real_import = builtins.__import__
+
+    def blocked(name, *args, **kwargs):
+        if name.split(".")[0] in {"pandas", "pyarrow", "numpy"}:
+            raise AssertionError(f"运行时不应当 import {name}")
+        return real_import(name, *args, **kwargs)
+
+    for mod in [m for m in sys.modules
+                if m.split(".")[0] in {"agent_charters", "pandas", "pyarrow", "numpy"}]:
+        monkeypatch.delitem(sys.modules, mod, raising=False)
+    monkeypatch.setattr(builtins, "__import__", blocked)
+
+    from agent_charters.cli import main
+    assert main(["stats", "--lang", "en"]) == 0
+    out = capsys.readouterr().out
+    assert "collected 558" in out and "Category coverage" in out
+
+
+def test_the_bundled_corpus_and_the_parquet_agree(capsys):
+    """同一个数据集的两条读法必须给出一模一样的统计。
+
+    随包的是 jsonl.gz（标准库读），发布格式是 parquet（可选依赖读）。换了读法就换
+    了数字的话，"随包副本与发布副本是同一份"这句承诺就破了——而且破得很安静：
+    工具照常打印，只是数字跟 Release 说明对不上。
+    """
+    pq = ROOT / "data" / "processed" / f"agent-charters-{DATASET_VERSION}.parquet"
+    if not pq.exists():
+        pytest.skip("data/processed 不在仓库里（发布包精简版）")
+    pytest.importorskip("pandas")
+
+    bundled, from_parquet = load_corpus(), load_corpus(pq)
+    assert len(bundled) == len(from_parquet) == 558
+    assert [r["file_sha"] for r in bundled] == [r["file_sha"] for r in from_parquet]
+    assert (category_coverage(substantive(bundled))
+            == category_coverage(substantive(from_parquet)))
+
+    from agent_charters.cli import main
+    assert main(["stats", "--lang", "en"]) == 0
+    once = capsys.readouterr().out
+    assert main(["stats", "--lang", "en", "--data", str(pq)]) == 0
+    assert capsys.readouterr().out == once, "两条路径打印的统计不一致"
+    # `--data` 写在子命令前（argparse 的顶层位置）也要一样——两种写法都该能用
+    assert main(["--data", str(pq), "stats", "--lang", "en"]) == 0
+    assert capsys.readouterr().out == once, "--data 放在子命令前面时结果不同"
+
+
+def test_cli_reports_an_unreadable_corpus_instead_of_a_traceback(capsys):
+    """`--data` 指错或指到读不了的文件，要一行人话（exit 2）。"""
+    from agent_charters.cli import main
+    assert main(["stats", "--data", "no-such-corpus.jsonl.gz", "--lang", "en"]) == 2
+    assert "no-such-corpus.jsonl.gz" in capsys.readouterr().err
+
+
+def test_reading_parquet_without_the_extra_says_what_to_install(capsys, monkeypatch):
+    """指了 .parquet 但没装可选依赖 → 告诉用户装什么，而不是抛 traceback。"""
+    pq = ROOT / "data" / "processed" / f"agent-charters-{DATASET_VERSION}.parquet"
+    if not pq.exists():
+        pytest.skip("data/processed 不在仓库里（发布包精简版）")
+    import builtins
+    real_import = builtins.__import__
+
+    def blocked(name, *args, **kwargs):
+        if name.split(".")[0] in {"pandas", "pyarrow"}:
+            raise ImportError(name)
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", blocked)
+    from agent_charters.cli import main
+    assert main(["stats", "--data", str(pq), "--lang", "en"]) == 2
+    assert "agent-charters[parquet]" in capsys.readouterr().err
 
 
 def test_cli_reports_a_missing_input_file_instead_of_a_traceback(capsys):
@@ -587,7 +711,7 @@ def test_category_counts_are_dense(corpus):
     rec = analyze_text(ZH_CHARTER)
     assert list(rec["category_counts"]) == list(CATEGORIES)
     assert all(isinstance(v, int) for v in rec["category_counts"].values())
-    for d in corpus["category_counts"].tolist():
+    for d in corpus["category_counts"]:
         assert list(d) == list(CATEGORIES)
         assert not any(v is None for v in d.values())
 
@@ -610,10 +734,10 @@ def test_brief_refs_rates_are_live(corpus):
     from agent_charters.brief import refs_rates, render
     sub = substantive(corpus)
     n = len(sub)
-    routed = round(int(sub["imperative_route"].sum()) * 100 / n)
-    hard = round(int(sub["hard_route"].sum()) * 100 / n)
+    routed = round(sum(sub["imperative_route"]) * 100 / n)
+    hard = round(sum(sub["hard_route"]) * 100 / n)
     assert refs_rates(corpus) == (routed, hard)
-    out = render([], lang="zh", df=corpus)
+    out = render([], lang="zh", corpus=corpus)
     assert f"{routed}% 的章程会转引外部文件" in out
     assert f"{hard}% 指向知识库或规则目录" in out
 
@@ -795,7 +919,7 @@ def test_baseline_matches_corpus(corpus):
         for r in csv.DictReader(fh, delimiter="\t"):
             rows[r["repo_full_name"]] = r
     assert len(rows) == len(corpus) == 558
-    for _, rec in corpus.iterrows():
+    for rec in corpus:
         assert rows[rec["repo_full_name"]]["file_sha"] == rec["file_sha"]
 
 
@@ -933,7 +1057,7 @@ def test_corpus_is_reproducible_from_raw(corpus):
     rows = [json.loads(l) for l in MANIFEST.read_text().splitlines()]
     by_sha = {r["file_sha"]: r for r in rows}
     tainted = []
-    for i, (_, rec) in enumerate(corpus.iterrows()):
+    for i, rec in enumerate(corpus):
         if i % 7:            # 抽样（约 1/7，够灵敏又不拖慢）
             continue
         src = by_sha[rec["file_sha"]]

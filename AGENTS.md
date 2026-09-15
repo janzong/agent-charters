@@ -14,10 +14,10 @@
 | 路径 | 是什么 |
 |---|---|
 | `agent_charters/` | 随包的 Python 包：`cli.py`（命令）`brief.py`（清单与提示词）`refs.py`（外部引用）`extract.py`（抽取与统计）`i18n.py`（中英文案）`taxonomy.py`（九类规则集） |
-| `agent_charters/data/*.parquet` | **随包语料库**——CLI 实际读的就是这一份 |
-| `data/processed/` | **发布资产**（同名 parquet + jsonl + `SHA256SUMS`），Release 用这一份 |
+| `agent_charters/data/*.jsonl.gz` | **随包语料库**——CLI 实际读的就是这一份（纯标准库可读，0.4.0 起不再随包发 parquet） |
+| `data/processed/` | **发布资产**（parquet + jsonl + `SHA256SUMS`），Release 用这一份 |
 | `work/` | 一次性分析脚本与审计记录（`work/audit/` 是人工核对逐条存档），对外引用的每个比例都出自这里 |
-| `tests/test_smoke.py` | 唯一的测试套件（单文件，150+ 条） |
+| `tests/test_smoke.py` | 唯一的测试套件（单文件，168 条） |
 
 文档各管一摊，别混：`STATE.md`（状态与决策记录）、`FINDINGS.md`（对外结论）、
 `LIMITATIONS.md`（已知边界与错在哪里）、`TAXONOMY.md`（九类定义与口径裁决）、
@@ -26,7 +26,7 @@
 ## 构建、运行、测试
 
 ```bash
-python -m venv .venv && .venv/bin/pip install -e . pytest   # 国内网络加 -i https://pypi.tuna.tsinghua.edu.cn/simple
+python -m venv .venv && .venv/bin/pip install -e ".[test]"  # 国内网络加 -i https://pypi.tuna.tsinghua.edu.cn/simple
 .venv/bin/python -m pytest -q                               # 期望全绿；缺 data/raw 时少数用例自动跳过
 .venv/bin/python -m agent_charters.cli compare AGENTS.md --lang en
 ```
@@ -47,16 +47,20 @@ CI 是 `.github/workflows/charter.yml`：两个 Python（3.10 / 3.12）跑测试
 1. `git pull` → 改 → `.venv/bin/python -m pytest -q` → conventional commit。
 2. **push 两个远端**：`origin`（GitHub）+ `gitee`（Gitee 镜像），两边必须一致。
    push ≠ 部署：数据集的 Release 与对外发帖由人执行。
-3. 数据集升版要**同时动三处**：两份 parquet、`data/processed/SHA256SUMS`、`taxonomy.py` 里的版本字段；
-   漏一处会被测试或 `work/` 下的复算脚本打回。
+3. 数据集升版要**同时动四处**：`data/processed/` 的 jsonl 与 parquet、随包 `.jsonl.gz`（跑 `work/pack.py`
+   一次生成）、`data/processed/SHA256SUMS`、`taxonomy.py` 里的版本字段；漏一处会被测试或 `work/`
+   下的复算脚本打回（"随包副本与发布副本是同一份"有测试钉着）。
 
 ## 运行环境
 
 - Python ≥ 3.10，纯 Python 实现（无编译步骤）。Linux / macOS 都要能跑。
 - **输出语言跟 locale 走**（`LC_ALL` → `LC_MESSAGES` → `LANG`，`zh*` 中文，其余英文），
   每个命令可用 `--lang en|zh` 覆盖；英文输出里不许出现汉字（有测试钉住）。
-- 国内直连 PyPI 拉 pandas / pyarrow（60 MB+）会断流或哈希不符，用清华镜像。
-- 包**不发 PyPI**：读者走 `pipx install "git+https://gitee.com/janzong/agent-charters"`。
+- **运行时零依赖**（0.4.0 起）：语料以 `jsonl.gz` 随包，只用到标准库的 gzip + json。
+  `pandas` / `pyarrow` 只在读 parquet（`[parquet]` 附加依赖）与跑测试（`[test]`）时需要——
+  别把这两个加回 `dependencies`：装包会从几百 KB 变成 62 MB，而国内直连拉它们常断流（有测试钉住）。
+- 包已发 PyPI（2026-09-15 起，Trusted Publishing/OIDC，仓库不存 token）：`pip install agent-charters`；
+  国内更快的一条是 `pipx install "git+https://gitee.com/janzong/agent-charters"`。
 
 ## 绝对不能做
 

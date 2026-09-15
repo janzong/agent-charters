@@ -79,17 +79,17 @@ REFS_BASE = {
 }
 
 
-def refs_rates(df=None) -> tuple[int, int]:
+def refs_rates(corpus=None) -> tuple[int, int]:
     """外部引用的两个基准率（祈使转引 % / 知识载体 %），从语料库实时计算。
 
     口径必须与 FINDINGS 16 一致：转引指**祈使式**（"read / 详见 X.md"），
     不是 routes_outward（那还包含"只点名知识库、没有祈使动词"的 29 份）。
     """
     from .extract import load_corpus
-    sub = substantive(df if df is not None else load_corpus())
+    sub = substantive(corpus if corpus is not None else load_corpus())
     n = len(sub) or 1
-    return (round(int(sub["imperative_route"].sum()) * 100 / n),
-            round(int(sub["hard_route"].sum()) * 100 / n))
+    return (round(sum(sub["imperative_route"]) * 100 / n),
+            round(sum(sub["hard_route"]) * 100 / n))
 
 
 REFS_ASK = (
@@ -116,12 +116,13 @@ def _bar(pct: float, width: int = 20) -> str:
     return "█" * filled + "·" * (width - filled)
 
 
-def base_rates(df=None) -> dict[str, float]:
+def base_rates(corpus=None) -> dict[str, float]:
     from .extract import load_corpus
-    return category_coverage(substantive(df if df is not None else load_corpus()))
+    return category_coverage(substantive(corpus if corpus is not None else load_corpus()))
 
 
-def render(files: list[str], lang: str = "en", df=None, ui_lang: str | None = None) -> str:
+def render(files: list[str], lang: str = "en", corpus=None,
+           ui_lang: str | None = None) -> str:
     """打印清单（可选对比文件）并输出可粘贴的提示词。
 
     两个语言参数是两件事，别合并：
@@ -135,7 +136,7 @@ def render(files: list[str], lang: str = "en", df=None, ui_lang: str | None = No
     from .i18n import t
 
     ui = ui_lang or lang
-    cov = base_rates(df)
+    cov = base_rates(corpus)
     out: list[str] = []
 
     mine: set[str] = set()
@@ -172,7 +173,7 @@ def render(files: list[str], lang: str = "en", df=None, ui_lang: str | None = No
     out.append("")
 
     out += [t("brief.refs_head", ui), "-" * 58]
-    routed, hard = refs_rates(df)
+    routed, hard = refs_rates(corpus)
     out.append(f"  {REFS_BASE[ui].format(routed=routed, hard=hard)}")
     out.append(t("brief.refs_ask", ui) + REFS_ASK[OUTPUT_LANG[ui]])
     if files:

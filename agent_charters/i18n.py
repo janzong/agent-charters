@@ -23,8 +23,14 @@ T: dict[str, dict[str, str]] = {
         "zh": "人写给 AI 智能体的书面规约语料库",
     },
     "cli.data_help": {
-        "en": "path to a custom corpus parquet (defaults to the bundled {ds})",
-        "zh": "自定义语料库 parquet 路径（默认用随包的 {ds}）",
+        "en": "custom corpus file: .jsonl/.jsonl.gz (stdlib) or .parquet (needs the "
+              "[parquet] extra); defaults to the bundled {ds}",
+        "zh": "自定义语料库路径：.jsonl/.jsonl.gz（标准库可读）或 .parquet（需 [parquet] "
+              "附加依赖）；默认用随包的 {ds}",
+    },
+    "cli.bad_corpus": {
+        "en": "cannot read the corpus: {msg}",
+        "zh": "读不了语料库：{msg}",
     },
     "cli.lang_help": {
         "en": "output language (default: auto from LANG — zh* → Chinese, otherwise English)",

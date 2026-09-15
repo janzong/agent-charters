@@ -14,6 +14,7 @@
 """
 
 import argparse
+import statistics
 import sys
 from collections import Counter
 from pathlib import Path
@@ -33,6 +34,19 @@ def _lang(args: argparse.Namespace) -> str:
     return args.lang or detect_lang()
 
 
+def _corpus(args: argparse.Namespace, lang: str):
+    """读语料库；读不了要说人话而不是抛 traceback。
+
+    最现实的失败是：指了一份 `.parquet` 但没装可选依赖——那条路径要 pandas
+    （0.4.0 起不再默认安装），报错得直接告诉用户装什么。
+    """
+    try:
+        return load_corpus(args.data) if args.data else load_corpus()
+    except (OSError, RuntimeError) as exc:
+        print(t("cli.bad_corpus", lang, msg=exc), file=sys.stderr)
+        return None
+
+
 def _missing_files(args: argparse.Namespace) -> list[str]:
     """不存在的输入文件要报清楚，不要抛 traceback。
 
@@ -45,12 +59,14 @@ def _missing_files(args: argparse.Namespace) -> list[str]:
 
 def cmd_stats(args: argparse.Namespace) -> int:
     lang = _lang(args)
-    df = load_corpus(args.data) if args.data else load_corpus()
-    sub = substantive(df)
-    ruleset = (df["ruleset_version"].iloc[0]
-               if "ruleset_version" in df.columns else "ruleset_v0.1")
-    print(t("stats.header", lang, ds=DATASET_VERSION, collected=len(df),
-            sub=len(sub), snap=df["retrieved_at"].iloc[0], ruleset=ruleset))
+    corpus = _corpus(args, lang)
+    if corpus is None:
+        return 2
+    sub = substantive(corpus)
+    ruleset = (corpus.first("ruleset_version")
+               if "ruleset_version" in corpus.columns else "ruleset_v0.1")
+    print(t("stats.header", lang, ds=DATASET_VERSION, collected=len(corpus),
+            sub=len(sub), snap=corpus.first("retrieved_at"), ruleset=ruleset))
 
     print(t("stats.coverage", lang))
     print("-" * 58)
@@ -72,8 +88,9 @@ def cmd_stats(args: argparse.Namespace) -> int:
     print("\n" + t("stats.size", lang))
     print("-" * 58)
     b = sub["bytes"]
-    print(t("stats.bytes", lang, med=int(b.median()), mean=int(b.mean()), mx=int(b.max())))
-    print(t("stats.labels", lang, avg=sub["categories"].map(len).mean()))
+    print(t("stats.bytes", lang, med=int(statistics.median(b)),
+            mean=int(sum(b) / len(b)), mx=int(max(b))))
+    print(t("stats.labels", lang, avg=sum(map(len, sub["categories"])) / len(sub)))
     return 0
 
 
@@ -82,12 +99,14 @@ def cmd_compare(args: argparse.Namespace) -> int:
     if bad := _missing_files(args):
         print(t("cli.no_such_file", lang, files=", ".join(bad)), file=sys.stderr)
         return 2
-    df = load_corpus(args.data) if args.data else load_corpus()
-    corpus = substantive(df)
+    loaded = _corpus(args, lang)
+    if loaded is None:
+        return 2
+    corpus = substantive(loaded)
     cov = category_coverage(corpus)
     n = len(corpus)
 
-    snap = df.iloc[0]["retrieved_at"]      # 原来这里把 parquet 又读了两遍
+    snap = loaded.first("retrieved_at")    # 注：快照日是数据集级字段，取未过滤那份
     print(t("cmp.baseline", lang, n=n, snap=snap))
     print(t("cmp.head", lang, cat=t("cmp.category", lang), corpus=t("cmp.corpus", lang)))
     print("-" * 52)
@@ -114,7 +133,7 @@ def cmd_compare(args: argparse.Namespace) -> int:
             print(t("cmp.cov_line", lang, c=c, pct=pct))
     else:
         # 平均标签数实时算——写死过一次（4.4），与语料库实际值不符
-        avg = corpus["categories"].map(len).mean()
+        avg = sum(map(len, corpus["categories"])) / len(corpus)
         print(t("cmp.full", lang, avg=avg))
     return 0
 
@@ -124,32 +143,38 @@ def cmd_brief(args: argparse.Namespace) -> int:
     if bad := _missing_files(args):
         print(t("cli.no_such_file", detect_lang(), files=", ".join(bad)), file=sys.stderr)
         return 2
-    df = load_corpus(args.data) if args.data else None
+    corpus = _corpus(args, _lang(args)) if args.data else None
+    if args.data and corpus is None:
+        return 2
     # 两件事分开：提示词默认英文（喂模型最稳），周边文案默认跟 locale；
     # 显式给了 --lang 就两处都用它（用户既然点名了语言，别再猜）。
-    print(render(args.files, lang=args.lang or "en", df=df,
+    print(render(args.files, lang=args.lang or "en", corpus=corpus,
                  ui_lang=args.lang or detect_lang()))
     return 0
 
 
 def cmd_show(args: argparse.Namespace) -> int:
     lang = _lang(args)
-    df = substantive(load_corpus(args.data) if args.data else load_corpus())
-    hit = df[df["categories"].map(lambda x: args.category in x)]
-    if hit.empty:
+    loaded = _corpus(args, lang)
+    if loaded is None:
+        return 2
+    corpus = substantive(loaded)
+    hit = corpus.where(lambda r: args.category in r["categories"])
+    if not hit:
         print(t("show.none", lang, cat=args.category))
         return 1
     print(t("show.head", lang, cat=args.category, n=len(hit),
             k=min(args.limit, len(hit))))
     # 按该类别的章节数降序——最能代表这个类别的排在前面
-    hit = hit.assign(_n=hit["category_counts"].map(
-        lambda d: d.get(args.category, 0))).sort_values("_n", ascending=False)
-    for _, r in hit.head(args.limit).iterrows():
+    def hits_in(rec: dict) -> int:
+        return int(rec["category_counts"].get(args.category, 0))
+
+    for r in sorted(hit, key=hits_in, reverse=True)[:args.limit]:
         rl = r["repo_language"] if isinstance(r["repo_language"], str) else "-"
         lic = r["license"] if isinstance(r["license"], str) else "-"
         print(f"  {r['repo_full_name']:<40} {int(r['bytes']):>6}B  "
-              f"{rl:<12} {lic:<14} {args.category} x{int(r['_n'])}")
-    print(t("show.raw", lang, path=df["file_path"].iloc[0]))
+              f"{rl:<12} {lic:<14} {args.category} x{hits_in(r)}")
+    print(t("show.raw", lang, path=corpus.first("file_path")))
     return 0
 
 
@@ -191,6 +216,17 @@ def _add_lang(sp: argparse.ArgumentParser) -> None:
                     help=t("cli.lang_help", detect_lang()))
 
 
+def _add_data(sp: argparse.ArgumentParser) -> None:
+    """`--data` 在子命令上再挂一遍。
+
+    放在顶层时 argparse 只认 `agent-charters --data X stats`，而人几乎一定会写成
+    `agent-charters stats --data X`——那就撞一句 "unrecognized arguments"，看不出该
+    往哪挪。`SUPPRESS` 是关键：子命令没给时不写入命名空间，顶层的值才不会被 None 盖掉。
+    """
+    sp.add_argument("--data", default=argparse.SUPPRESS,
+                    help=t("cli.data_help", detect_lang(), ds=DATASET_VERSION))
+
+
 def main(argv: list[str] | None = None) -> int:
     ui = detect_lang()
     p = argparse.ArgumentParser(
@@ -205,30 +241,36 @@ def main(argv: list[str] | None = None) -> int:
 
     s1 = sub.add_parser("stats", help=t("cmd.stats", ui))
     _add_lang(s1)
+    _add_data(s1)
     s1.set_defaults(func=cmd_stats)
 
     sb = sub.add_parser("brief", help=t("cmd.brief", ui))
     sb.add_argument("files", nargs="*", help=t("cmd.brief.files", ui))
     sb.add_argument("--lang", choices=["en", "zh"], default=None,
                     help=t("cmd.brief.lang", ui))
+    _add_data(sb)
     sb.set_defaults(func=cmd_brief)
 
     s2 = sub.add_parser("compare", help=t("cmd.compare", ui))
     s2.add_argument("files", nargs="+", help=t("cmd.compare.files", ui))
     _add_lang(s2)
+    _add_data(s2)
     s2.set_defaults(func=cmd_compare)
 
     s4 = sub.add_parser("refs", help=t("cmd.refs", ui))
     s4.add_argument("files", nargs="+", help=t("cmd.refs.files", ui))
     _add_lang(s4)
+    _add_data(s4)
     s4.set_defaults(func=cmd_refs)
 
     s3 = sub.add_parser("show", help=t("cmd.show", ui))
     s3.add_argument("category", choices=CATEGORIES)
     s3.add_argument("--limit", type=int, default=10, help=t("cmd.show.limit", ui))
     _add_lang(s3)
+    _add_data(s3)
     s3.set_defaults(func=cmd_show)
 
+    p.set_defaults(data=None)         # 两个位置都没给时的兜底（子命令用 SUPPRESS 不覆盖）
     args = p.parse_args(argv)
     return args.func(args)
 

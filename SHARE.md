@@ -1143,8 +1143,40 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
   `pypi.org/project/agent-charters/README.md` → 404 → 跳回搜索页。
   0.3.5 修掉（§8.8），并加测试钉死。**教训：改完只数了 `](LIMITATIONS.md)` 一种形态，
   没扫全量链接** —— 复验口径要按"全量外部引用"取，不能只盯已知案例。
-- **依赖从国内直连 PyPI 会断流**（pandas + pyarrow ≈62 MB，实测 `exit=124`）——
-  装的时候加清华镜像，不是包的问题。
+- ~~**依赖从国内直连 PyPI 会断流**（pandas + pyarrow ≈62 MB，实测 `exit=124`）——装的时候加清华镜像~~
+  → **0.4.0 从根上解决**（§8.9）：运行时依赖归零，随包语料改成 `jsonl.gz`（标准库读）。
+
+### 8.9 第四版 `0.4.0`（09-15 晚）—— 装包不再拖 62 MB
+
+**要解决的问题**：`pip install agent-charters` 会连带装 pandas + pyarrow（≈62 MB）——
+只为读一张 **550 KB** 的表。国内直连 PyPI 拉这两个包实测 `exit=124`（断流），于是
+"看到 → 用上"这条链的最后一米经常断在这里；GitHub Action 每次运行也要多下 62 MB。
+
+**做法**（`D37`）：
+
+| 面 | 之前 | 之后 |
+|---|---|---|
+| 随包语料 | `agent_charters/data/*.parquet`（4 个版本，约 222 KB） | `agent-charters-<DS>.jsonl.gz`（**46 KB**，只带当前版本） |
+| 运行时依赖 | `pandas>=2.0` + `pyarrow>=14` | **空**；新增 `[parquet]` 附加依赖给读/写 parquet 的人 |
+| wheel | 219,591 B（0.3.3） | **104,143 B** |
+| 数据读法 | `pd.read_parquet` | 标准库 `gzip` + `json` → `Corpus`（行＝dict） |
+| 发布格式 | parquet（不变） | parquet（不变）+ jsonl，`data/processed/` 与 `SHA256SUMS` 原样 |
+| CI 装包 | `-e ".[test]"` | 同；`tests` job 才装 pandas |
+
+**关键约束：随包副本与发布副本仍是同一份数据** —— `agent-charters-v0.5.jsonl.gz` 解压后
+与 `data/processed/agent_charters_v0.5.jsonl` **逐字节相同**（测试钉住），压缩用
+`gzip.compress(..., mtime=0)` 所以重新打包字节可复现。
+
+**复验**（干净 venv，`pip list` 里只有 `agent-charters==0.4.0`，`pandas`/`pyarrow` 均 `None`）：
+
+- `agent-charters stats/show/compare/brief` 全部正常，且**数字与 parquet 路径逐字节一致**
+  （`boundaries 85.7%`、中位数 6689 B / 均值 10740 B / 最大 154006 B、平均标签 4.7）；
+- 指了 `.parquet` 又没装 `[parquet]` → 一行人话 + `exit 2`（不是 traceback）；
+- 本地 `pytest` **168 passed**；CI（py3.10/3.12）**150 passed / 18 skipped**。
+
+**顺带修掉的两处**：①`AGENTS.md` 里"包**不发 PyPI**"这句已经过期（0.3.3 就发了），
+趁这次改文档一并订正；②`--data` 原先只认顶层位置（`agent-charters --data X stats`），
+写在子命令后面会报 `unrecognized arguments` —— 现在两个位置都能用。
 
 ### 8.6 首发实况（2026-09-15，`agent-charters 0.3.3`）
 
@@ -1242,3 +1274,5 @@ Markdown 指针语法，PyPI 不渲染成链接）⇒ 真实链接全部绝对�
    ⚠️ 推论：**页面里到底渲染成什么样，我们这边看不到**——排查时要么让用户看，
    要么看 JSON 里的 markdown 源（链接是绝对就一定会渲染成绝对锚点）。
 2. 顶层 `/pypi/agent-charters/json` 有 **CDN 缓存**；要么查 `<版本>/json`，要么看 `/simple/`。
+
+**再下一版见 §8.9（`0.4.0`，运行时依赖归零）。**

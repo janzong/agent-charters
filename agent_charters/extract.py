@@ -1,11 +1,10 @@
 """抽取逻辑：把一份 AGENTS.md 文本变成结构化记录。"""
 
+import gzip
 import json
 import re
 from collections import Counter
 from pathlib import Path
-
-import pandas as pd
 
 import re as _re
 
@@ -164,26 +163,88 @@ def analyze_file(path: str | Path, meta: dict | None = None) -> dict:
     return analyze_text(text, m)
 
 
-_DATA = (Path(__file__).parent / "data"
-         / f"agent-charters-{DATASET_VERSION}.parquet")
+BUNDLED = Path(__file__).parent / "data"
+_BUNDLED_JSONL_GZ = BUNDLED / f"agent-charters-{DATASET_VERSION}.jsonl.gz"
 
 
-def load_corpus(path: str | Path | None = None) -> pd.DataFrame:
-    """加载随包发布的语料库（558 份）。"""
-    return pd.read_parquet(path or _DATA)
+class Corpus:
+    """随包语料库的内存表示：一行一个 dict，只用标准库。
+
+    为什么不是 DataFrame（0.4.0 改）：为读一张 550 KB 的表而依赖 pandas + pyarrow
+    （≈62 MB），会让 `pip install agent-charters` 在国内经常断流——"看到→用上"的坎
+    正好卡在这里。要 DataFrame 的调用方一行就能拿到：
+    `pd.DataFrame(load_corpus())`。
+    """
+
+    __slots__ = ("rows",)
+
+    def __init__(self, rows) -> None:
+        self.rows = list(rows)
+
+    def __len__(self) -> int:
+        return len(self.rows)
+
+    def __iter__(self):
+        return iter(self.rows)
+
+    def __getitem__(self, name: str) -> list:
+        """整列的值，顺序即行序。"""
+        return [r[name] for r in self.rows]
+
+    def __repr__(self) -> str:
+        return f"Corpus({len(self)} rows, {len(self.columns)} columns)"
+
+    @property
+    def columns(self) -> tuple:
+        return tuple(self.rows[0]) if self.rows else ()
+
+    def first(self, name: str):
+        """首行的某个数据集级字段（快照日、规则集版本）。"""
+        return self.rows[0].get(name) if self.rows else None
+
+    def where(self, keep) -> "Corpus":
+        """按谓词筛行，返回新的 Corpus。"""
+        return Corpus([r for r in self.rows if keep(r)])
 
 
-def substantive(df: pd.DataFrame) -> pd.DataFrame:
+def load_corpus(path: str | Path | None = None) -> Corpus:
+    """加载随包发布的语料库（558 份）。
+
+    默认读随包的 `.jsonl.gz`（标准库即可，装包零运行时依赖）。显式给路径时按扩展名
+    分派：`.jsonl` / `.jsonl.gz` 走标准库；`.parquet` 需要可选依赖
+    ——`pip install "agent-charters[parquet]"`（不默认装，那会拖 62 MB 进来）。
+    """
+    p = Path(path) if path else _BUNDLED_JSONL_GZ
+    if p.suffix == ".parquet":
+        return Corpus(_read_parquet(p))
+    opener = gzip.open if p.suffix == ".gz" else open
+    with opener(p, "rt", encoding="utf-8") as fh:
+        return Corpus(json.loads(line) for line in fh if line.strip())
+
+
+def _read_parquet(p: Path) -> list[dict]:
+    """parquet 是发布格式，不是随包格式——读它属于可选能力。"""
+    try:
+        import pandas as pd
+    except ImportError as exc:      # pragma: no cover - 只有在没装 extra 时走到
+        raise RuntimeError(
+            f'parquet files need the optional extra: '
+            f'pip install "agent-charters[parquet]"  ({p})'
+        ) from exc
+    return pd.read_parquet(p).to_dict("records")
+
+
+def substantive(corpus: Corpus) -> Corpus:
     """过滤出可用于统计的实质文件（排除空壳与转引用）。"""
-    return df[df["is_substantive"] & ~df["is_pointer"]]
+    return corpus.where(lambda r: bool(r["is_substantive"]) and not r["is_pointer"])
 
 
-def category_coverage(df: pd.DataFrame) -> dict[str, float]:
+def category_coverage(corpus: Corpus) -> dict[str, float]:
     """各类别的覆盖率（百分比，一位小数）。
 
     保留一位小数不是为了好看：整数取整会把 85.7% 印成 85%，与对外文案、数据集
     报告里的数字对不上——本项目"可复算"的承诺要求工具打印的就是引用时该用的数。
     """
-    n = len(df) or 1
-    return {c: round(sum(1 for tags in df["categories"] if c in tags) * 100 / n, 1)
+    n = len(corpus) or 1
+    return {c: round(sum(1 for tags in corpus["categories"] if c in tags) * 100 / n, 1)
             for c in CATEGORIES}

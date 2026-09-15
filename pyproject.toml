@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-charters"
-version = "0.3.5"
+version = "0.4.0"
 description = "Structured corpus of AGENTS.md — the written rules humans hand to AI agents ｜ 人写给 AI 智能体的书面规约的结构化语料库"
 readme = "README.en.md"
 requires-python = ">=3.10"
@@ -24,14 +24,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Documentation",
 ]
-dependencies = [
-    "pandas>=2.0",
-    "pyarrow>=14",
-]
+# 运行时零依赖（0.4.0）：语料库随包以 .jsonl.gz 分发，只用到标准库的
+# gzip + json。此前为了读一张 550 KB 的表而拖 pandas + pyarrow ≈62 MB，
+# 国内直连 PyPI 下常断流——"看到→用上"的坎恰好卡在这里。
+dependencies = []
 
 [project.optional-dependencies]
-# 只有跑测试才需要；运行本包不需要（pandas/pyarrow 才是运行时依赖）
-test = ["pytest", "pyyaml", "tomli; python_version < '3.11'"]
+# 只有读/写 parquet（发布格式）才需要它，日常使用不装
+parquet = ["pandas>=2.0", "pyarrow>=14"]
+# 跑测试需要：数据集重放/确定性校验都走 parquet
+test = ["pytest", "pyyaml", "pandas>=2.0", "pyarrow>=14",
+        "tomli; python_version < '3.11'"]
 
 [project.urls]
 Homepage = "https://github.com/janzong/agent-charters"
@@ -46,4 +49,5 @@ agent-charters = "agent_charters.cli:main"
 packages = ["agent_charters"]
 
 [tool.setuptools.package-data]
-agent_charters = ["data/*.parquet"]
+# 随包的是 jsonl.gz（标准库可读）；parquet 只作为发布格式留在 data/processed
+agent_charters = ["data/*.jsonl.gz"]
