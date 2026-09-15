@@ -1195,6 +1195,32 @@ parquet 语料），sdist 额外含 `tests/` 与 `LICENSE`；`work/`、`data/raw
 就是两个不同的合法 gzip 流。**要钉的是内容，不是压缩帧**；现在只钉"gz 头里没有时间戳"
 （与实现无关）。
 
+### 8.10 第五版 `0.4.1`（09-15 深夜）—— 工具会**跟随指针**了
+
+**为什么发**：这是 0.4.0 之后第一个**用户可见的行为变化**（`D40`）——`compare` / `brief` /
+GitHub Action 遇到"这份章程本身就是指针"的文件时**跟过去判目标**，而不是报 0/9。
+实测底盘：791 份根级章程里 **111** 份符号链接、**75** 份纯指针（中位 **11 字节**）、69 份原本报 0/9。
+（数据、边界与实现口径：`work/audit/pointer-census.md`、`LIMITATIONS.md` §25。）
+
+| 项 | 值 |
+|---|---|
+| 触发 | `gh workflow run publish.yml`（**沿用前四版的 workflow_dispatch**，不建 tag —— `vX.Y` 是数据集 tag 命名空间，别混，见 D35） |
+| run | `34987867624`，三 job 全绿（preflight / build / upload OIDC） |
+| wheel | `agent_charters-0.4.1-py3-none-any.whl` **111,868 B** ｜ sha256 `059d3e1c76590640…` |
+| sdist | `agent_charters-0.4.1.tar.gz` 147,610 B ｜ sha256 `9793d0452ac31730…` |
+| 元数据 | `requires_dist` **仍无无条件依赖**（只剩 `extra == "parquet"` / `extra == "test"` 两组） |
+| 页面 | `README.en.md` 照旧英文渲染；语言切换器是**绝对地址**（0.3.5 那个 404 没有回归） |
+
+**独立复验（干净 venv，默认索引，不经任何镜像）**：
+`pip install agent-charters==0.4.1` **约 2 秒**装完、`pip list` 里只有它自己；
+`agent-charters --version` → `0.4.1 ｜ dataset v0.5`；拿一份 11 字节的 `CLAUDE.md`（`@AGENTS.md`）
+跑 `compare CLAUDE.md --lang zh` → 输出 `↪ CLAUDE.md 是指针（AGENTS.md）——已跟随…`，**不是 0/9**。
+下载下来的轮子 sha256 与 PyPI 公布值一致；**内容哈希（排除 `RECORD`）与本地构建逐字节相同**。
+
+⚠️ **别把"轮子字节可复现"当承诺**：本地 `python -m build` 出的轮子哈希与 PyPI 上的**不同**
+（zip 存了 packing 时间戳），但解开后的内容一致。和 §8.9 那条 gzip 坑同一个道理 ——
+**要钉的是内容，不是容器帧**。
+
 ### 8.6 首发实况（2026-09-15，`agent-charters 0.3.3`）
 
 **结论：已上线** —— <https://pypi.org/project/agent-charters/>。对外文案现在**可以**写
