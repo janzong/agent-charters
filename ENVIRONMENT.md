@@ -377,3 +377,13 @@ git push origin main && git push gitee main && git push --tags
    要断言就用**公开接口**：消费方的 `steps.<id>.outputs.*`（本仓库的 action 现在也导出
    `missing` / `dangling` / `followed`），或运行完在外部用 `gh run view --log` 读。
    运行结束后的**合并结果**仍能在 job 摘要里看到，只是读不到"某一步写进去的那份"。
+10. **GraphQL 的 `Blob.text` 会把正文里的 NUL 字节改写成两个 ASCII 字符 `^@`**（REST raw blob 不会）
+    —— 2026-09-16 写纵向面板时踩到：本地缓存 3743 B、`byteSize` 报 3742 B，
+    而对拍 git blob sha 只有一个仓库对不上（`momozi1996/momo-code`，1/558）。
+    用 `gh api -H "Accept: application/vnd.github.raw" /repos/{r}/git/blobs/{sha}` 取原始字节才坐实。
+    影响面很小（`file_sha` 仍以远端 oid 为准，分类用的是文本、不受这一字节影响），
+    但**别以为本地副本一定逐字节等于远端** —— 要验证就把缓存重新算成 git blob sha 对拍。
+11. **`byteSize` 与 T0 基线那一列 `bytes` 不是同一个口径。** T0 的 `bytes` 是**文本按 LF 归一后**的
+    utf-8 长度；GraphQL `byteSize` 给的是**真实字节数**，两者对 CRLF 文件正好差 CR 的个数
+    （2026-09-16 实测：`aotemiao/artemis` 差 52、`ijry/uview-plus` 差 11）。跨期比 `bytes` 必须先统一口径，
+    否则会把"没变过"的文件读成变了。
