@@ -1,0 +1,21 @@
+# 纵向面板按季快照（决策 D42 / 设计 work/longitudinal-plan.md）
+# 安装：cp work/systemd/agent-charters-panel.* ~/.config/systemd/user/ && systemctl --user daemon-reload
+#       # 防"补跑"：先把时间戳设为现在，否则 Persistent=true 会立刻补一次已错过的档期
+#       mkdir -p ~/.local/share/systemd/timers && touch ~/.local/share/systemd/timers/stamp-agent-charters-panel.timer
+#       systemctl --user enable --now agent-charters-panel.timer
+# 手动跑一期：systemctl --user start agent-charters-panel.service
+# 看结果：tail -40 ~/workspace/agent-charters/data/cache/panel/logs/run-*.log
+# 卸载：systemctl --user disable --now agent-charters-panel.timer
+[Unit]
+Description=agent-charters 纵向面板：取一期快照（D42）
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/workspace/agent-charters
+# 只产出 tsv + sidecar + 日志；**不自动提交**（提交由人或会话来做，避免无人复核的写入）
+ExecStart=/bin/bash -lc 'mkdir -p data/cache/panel/logs && .venv/bin/python work/panel_run.py --show-clusters 1 >> data/cache/panel/logs/run-$(date +%%F).log 2>&1'
+# 跑完给 Hermes 报一声（失败不拖垮这次运行：'-' 前缀=忽略退出码）
+ExecStart=-%h/plugins/fleet-ops/scripts/notify-hermes.sh "【通知·来自 Codex】agent-charters 纵向面板本期快照已跑完：日志在 data/cache/panel/logs/。请核对本期指标，并提交 data/processed/baseline-<日期>.tsv 与 panel-<日期>.json（D42：只加期不改框、老快照永不重标、死者留档）。"
+# 通知链最长路径 ~4 分钟（hermes 偶尔很慢，devto-watch 有前科），留足余量
+TimeoutStartSec=420

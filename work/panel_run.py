@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import datetime
 import hashlib
 import json
 import pathlib
@@ -253,7 +254,7 @@ def verify(date: str, meta: dict) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--date", required=True, help="本期日期，如 2026-12-10")
+    ap.add_argument("--date", default=None, help="本期日期，如 2026-12-10（默认今天；timer 用）")
     ap.add_argument("--frame", default=str(T0), help="面板框（默认 T0 基线）")
     ap.add_argument("--prev", default=None, help="对照期 tsv（默认：日期在本期之前的最新一份）")
     ap.add_argument("--limit", type=int, default=0)
@@ -261,6 +262,7 @@ def main() -> int:
     ap.add_argument("--show-clusters", type=int, default=0, help="打印前 N 个模板簇的仓库名")
     ap.add_argument("--report-only", action="store_true", help="不联网，用已有产物算指标")
     args = ap.parse_args()
+    args.date = args.date or datetime.date.today().isoformat()
     SHOW_CLUSTERS[0] = args.show_clusters
 
     frame = list(load_tsv(pathlib.Path(args.frame)))

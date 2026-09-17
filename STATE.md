@@ -56,6 +56,12 @@
 > 0 B ×2、13 B 的 `.ai/AGENTS.md` ×2），且 T0 就已有 30/2/2 ⇒ §6.6 等的"机写簇出现"**尚未发生**。
 > 顺带踩到两个管道坑并写进 `ENVIRONMENT.md` §9.10 / §9.11：GraphQL `text` 会把 NUL 改写成 `^@`（1/558）；
 > `byteSize` 与 T0 的 `bytes` 口径不同（CRLF 文件差的就是 CR 个数）。
+> 09-17：**季度 timer 已装**（`work/systemd/agent-charters-panel.{service,timer}` → `~/.config/systemd/user/`，
+> `enable --now`、`systemd-analyze verify` 通过；ExecStart 同款命令行空跑验证）——
+> 排程 3/6/9/12 月 10 日 03:30，**下一次 2026-12-10 触发 T1**；服务只写 tsv + sidecar + 日志、**不自动提交**，跑完通知 Hermes。
+> ⚠️ 坑记在 `work/longitudinal-plan.md`：`Persistent=true` 会在首次启用时**补跑已错过的档期**，装前必须先补时间戳。
+> 同日复核 dev.to：09-14 那 4 条回复**都已贴出**、**三天无人回应** ⇒ 判据 6 仍是 0；
+> 对策稿 `work/share-paste/devto-selfcomment-01.md`（作者自评，把请求降成"贴文件我来跑"，**待人贴**）。
 
 ---
 

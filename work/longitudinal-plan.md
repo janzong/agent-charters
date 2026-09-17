@@ -80,7 +80,13 @@
       **区分 `dead` 与 `moved`**（改名不该计入消失率）；③`--report-only` 可离线复算指标。
 - [x] **T0.5 验证期 2026-09-16 已跑**（原计划直接跳到 T1；多一个 6 天间隔的点，等于免费拿到
       一条"短期抖动"基线，也给 12 月那期去风险）。T1 = **2026-12-10** 不变。
-- [ ] 跑通两期之后再上 systemd user timer（季度）；**先手工**。
+- [x] **季度 timer 已装（2026-09-17）**：`work/systemd/agent-charters-panel.{service,timer}`
+      （库存在 `~/.config/systemd/user/`，`enable --now` 已开，`systemd-analyze verify` 通过）。
+      排程：**3/6/9/12 月 10 日 03:30**（`Persistent=true`，机器没开机则开机后补跑）⇒ 下一次 **2026-12-10 03:33 触发 T1**。
+      服务只产出 tsv + sidecar + 日志（`data/cache/panel/logs/run-<日期>.log`），**不自动提交**，
+      跑完给 Hermes 发一条通知；ExecStart 同款命令行已空跑验证过。
+      ⚠️ 装的时候必须**先补时间戳** `~/.local/share/systemd/timers/stamp-agent-charters-panel.timer`，
+      否则 `Persistent=true` 会立刻补跑一次已错过的档期（把 9 月 10 日那期补出来，多出一个无用期次）。
 - [ ] 重抓前备份 `data/raw/full_manifest.jsonl`（§6.6 已记）。
 - 停：`systemctl --user disable --now <timer>`。
 

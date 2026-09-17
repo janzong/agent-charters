@@ -1,0 +1,14 @@
+[Unit]
+Description=按季触发纵向面板（3/6/9/12 月 10 日 03:30）
+
+[Timer]
+OnCalendar=*-03-10 03:30:00
+OnCalendar=*-06-10 03:30:00
+OnCalendar=*-09-10 03:30:00
+OnCalendar=*-12-10 03:30:00
+# 机器那几天没开机也不漏档：开机后补跑（首次安装前要先补时间戳，见 .service 注释）
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
