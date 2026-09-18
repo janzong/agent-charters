@@ -12,6 +12,7 @@
 
 每仓库一次 `GET /repos/{r}/git/trees/HEAD?recursive=1`（递归，才看得见 `docs/AGENTS.md`）。
 失败**不写缓存**（filetype_probe 踩过：失败记账 → 重跑永久跳过）。
+只用标准库（`http.client` keep-alive）——**不引第三方依赖**（本仓库章程明写）。
 所有响应缓存到 `data/cache/prevalence/`（gitignore），重跑零成本。
 
 用法：
@@ -33,11 +34,8 @@ import re
 import subprocess
 import threading
 import time
-import urllib.error
+import http.client
 import urllib.parse
-import urllib.request
-
-import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CACHE = ROOT / "data/cache/prevalence"
@@ -59,15 +57,21 @@ def token() -> str:
                           text=True, check=True).stdout.strip()
 
 
-# 连接复用（urllib 每次重握手，慢了 20 倍）；并发压到 6，别撞次级限流。
-_SESSION = requests.Session()
-_SESSION.mount("https://", requests.adapters.HTTPAdapter(pool_connections=8, pool_maxsize=8))
 _HEAD = {"Accept": "application/vnd.github+json",
          "User-Agent": "agent-charters-prevalence/1.0"}
+_HOST = "api.github.com"
 
 
 class SecondaryLimit(Exception):
     pass
+
+
+class ApiError(Exception):
+    """非 2xx 且不该重试（404 / 409 …）。**标准库实现，不引第三方依赖**。"""
+
+    def __init__(self, code: int, url: str):
+        super().__init__(f"HTTP {code} {url}")
+        self.code = code
 
 
 _PACE_T = [0.0]
@@ -85,19 +89,53 @@ def _pace() -> None:
         _PACE_T[0] = time.monotonic() + PACE
 
 
+_CONN = threading.local()      # 每线程一条 keep-alive 连接（urllib 每次重握手，慢约 20 倍）
+
+
+def _connection(timeout: int = 30) -> http.client.HTTPSConnection:
+    c = getattr(_CONN, "c", None)
+    if c is None:
+        c = http.client.HTTPSConnection(_HOST, timeout=timeout)
+        _CONN.c = c
+    return c
+
+
+def _call(path: str, tok: str, timeout: int = 30) -> tuple[int, dict, bytes]:
+    """一次 GET。连接坏了就丢掉重连（最多 3 次）——keep-alive 复用必须自己管这个。"""
+    headers = {**_HEAD, "Authorization": f"Bearer {tok}"}
+    err = None
+    for attempt in range(3):
+        c = _connection(timeout)
+        try:
+            c.request("GET", path, headers=headers)
+            r = c.getresponse()
+            return r.status, dict(r.getheaders()), r.read()
+        except Exception as e:                        # noqa: BLE001 连接层异常 → 重连
+            err = e
+            try:
+                c.close()
+            except Exception:                         # noqa: BLE001
+                pass
+            _CONN.c = None
+            time.sleep(0.5 * (attempt + 1))
+    raise err                                         # type: ignore[misc]
+
+
 def _get(url: str, tok: str, timeout: int = 30) -> dict:
     _pace()
-    r = _SESSION.get(url, headers={**_HEAD, "Authorization": f"Bearer {tok}"}, timeout=timeout)
-    if r.status_code == 403 and "Repository access blocked" in r.text:
+    status, hdr, body = _call(url.split(_HOST, 1)[1], tok, timeout)
+    text = body.decode("utf-8", "replace")
+    if status == 403 and "Repository access blocked" in text:
         # 单个仓库被 GitHub 以 ToS/DMCA 封禁（**不是**限流，也不是"没有这个仓库"）。
         # 稳定状态 → 可以记账，但它不该混进分母（没法学）。
         return {"_error": "blocked-tos"}
-    if r.status_code == 403 and r.headers.get("X-RateLimit-Remaining") == "0":
+    if status == 403 and hdr.get("X-RateLimit-Remaining") == "0":
         return {"_error": "ratelimit-403"}
-    if r.status_code in (403, 429):
-        raise SecondaryLimit(f"{r.headers.get('Retry-After', '30')}|{url}|{r.text[:240]}")
-    r.raise_for_status()
-    return r.json()
+    if status in (403, 429):
+        raise SecondaryLimit(f"{hdr.get('Retry-After', '30')}|{url}|{text[:240]}")
+    if status >= 400:
+        raise ApiError(status, url)
+    return json.loads(text) if text.strip() else {}
 
 
 # ---------------------------------------------------------------- 缓存层
@@ -116,8 +154,8 @@ def cached_json(path: pathlib.Path, fetch, retries: int = 12):
             print(f"  [次级限流] 全局静默 60s …{str(e)[:300]}", flush=True)
             last = SecondaryLimit("global")
             continue
-        except requests.HTTPError as e:
-            code = e.response.status_code
+        except ApiError as e:
+            code = e.code
             if code in (403, 429):
                 time.sleep(3 * (attempt + 1))
                 last = e
