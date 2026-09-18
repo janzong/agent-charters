@@ -387,3 +387,11 @@ git push origin main && git push gitee main && git push --tags
     utf-8 长度；GraphQL `byteSize` 给的是**真实字节数**，两者对 CRLF 文件正好差 CR 的个数
     （2026-09-16 实测：`aotemiao/artemis` 差 52、`ijry/uview-plus` 差 11）。跨期比 `bytes` 必须先统一口径，
     否则会把"没变过"的文件读成变了。
+12. **GitHub 的 `403` 有三种含义，必须读 body 才分得开**（2026-09-18 写分母研究时踩到）：
+    ①**主限流**（`X-RateLimit-Remaining: 0`）②**次级限流**（并发/突发触发；GitHub 文档明说
+    同一用户要**串行**请求 —— 实测 3 个线程并发就会被持续 403，而**串行 + `requests.Session`
+    连接复用**跑 ~8 次/秒无碍）③**单个仓库被 ToS/DMCA 封禁**：
+    `403 {"message":"Repository access blocked","block":{"reason":"tos"}}`。
+    把 ③ 当成 ② 的后果是**退避重试同一个 ID**，永远等不到成功（白卡几十分钟）。
+    处置：③ 单列一类（**不是**"没有这个仓库"，也**不该**混进分母）；②用**全局**静默而不是每线程各自退避。
+    另：`urllib` 每次重握手比 `requests.Session` 慢约 20 倍，批量探测一律用后者。
