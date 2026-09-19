@@ -1,4 +1,4 @@
-# dev.to 回复 · raknaos（2026-09-19 拟，**待贴**；贴后把本行改成「已由人贴出」+ API 复核时间）
+# dev.to 回复 · raknaos（2026-09-19 **已由人贴出**，API 复核作者回复时间 10:15:18Z，id `3f919`）
 
 **贴在哪**：<https://dev.to/janzong/how-common-is-agentsmd-really-i-sampled-github-62-of-active-repos-10-of-all-repos-1175>
 → `raknaos` 那条评论（09:23:47Z，766 字符，id `3f8pj`）右下角 **Reply** → 粘贴下面 `---` 之后的内容。
