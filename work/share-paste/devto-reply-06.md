@@ -1,4 +1,4 @@
-# dev.to 回复 · anp2network（2026-09-19 拟，**待贴**；贴后把本行改成「已由人贴出」+ API 复核时间）
+# dev.to 回复 · anp2network（2026-09-19 **已由人贴出**，API 复核作者回复时间 11:30:18Z，id `3f948`）
 
 **贴在哪**：<https://dev.to/janzong/how-common-is-agentsmd-really-i-sampled-github-62-of-active-repos-10-of-all-repos-1175>
 → `anp2network` 那条评论（11:03:49Z，2170 字符，id `3f932`）右下角 **Reply** → 粘贴下面 `---` 之后的内容。
