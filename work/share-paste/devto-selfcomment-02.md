@@ -1,4 +1,4 @@
-# dev.to 作者自评 · 第 1 篇专用版（2026-09-19 拟，**待人贴**）
+# dev.to 作者自评 · 第 1 篇专用版（2026-09-19 拟，**✅ 已于 08:43Z 贴在 `4649807` 下**）
 
 **贴在哪**：<https://dev.to/janzong/i-labeled-558-agentsmd-files-heres-what-they-say-and-what-almost-nobody-writes-down-34gb>
 →页面底部评论框，以作者身份发一条新评论 → 粘贴下面 `---` 之后的内容。
