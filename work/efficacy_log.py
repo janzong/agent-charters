@@ -210,17 +210,28 @@ def cmd_report(args) -> int:
         print(f"\n  {g:<8} 任务 {len(rs):<4} 规则 {nr:<4} 违规 {nv:<4}"
               f" 合规率 {100 * (nr - nv) / nr:5.1f}%" if nr else
               f"\n  {g:<8} 任务 {len(rs):<4} 规则 0（填不出分母）")
+    n_noc = len(groups.get("无章程", []))
+    if n_noc:
+        print(f"\n  ⚠️ **{n_noc}/{len(rows)} 个任务跑在没有任何章程的仓里** —— 这些行填不出分母"
+              f"（没有明写规则，就不存在「违反」），**只能计入任务数与返工**，不许并进合规率。")
     for x, y in (("有章程", "无章程"), ("T", "C1"), ("T", "C2")):
-        if x in groups and y in groups:
-            a = [1 if r["violated"] else 0 for r in groups[x]]
-            b = [1 if r["violated"] else 0 for r in groups[y]]
-            ci = diff_ci(a, b)
-            if ci:
-                lo, hi = ci
-                mark = "CI 跨 0 ⇒ 分不出来" if lo <= 0 <= hi else "CI 不跨 0"
-                print(f"  违规率差（{x} − {y}）= "
-                      f"{(sum(a) / len(a) - sum(b) / len(b)) * 100:+.1f}pp"
-                      f"  [{lo * 100:+.1f}, {hi * 100:+.1f}]pp ⇒ {mark}")
+        if x not in groups or y not in groups:
+            continue
+        nx = sum(len(r["applicable"]) for r in groups[x])
+        ny = sum(len(r["applicable"]) for r in groups[y])
+        if not nx or not ny:
+            print(f"  ⚠️ 不比较「{x} − {y}」的违规率：其中一组**规则条目数为 0**"
+                  f"（没有章程就没有可违反的规则，0% 是定义出来的、不是测出来的）。")
+            continue
+        a = [1 if r["violated"] else 0 for r in groups[x]]
+        b = [1 if r["violated"] else 0 for r in groups[y]]
+        ci = diff_ci(a, b)
+        if ci:
+            lo, hi = ci
+            mark = "CI 跨 0 ⇒ 分不出来" if lo <= 0 <= hi else "CI 不跨 0"
+            print(f"  违规率差（{x} − {y}）= "
+                  f"{(sum(a) / len(a) - sum(b) / len(b)) * 100:+.1f}pp"
+                  f"  [{lo * 100:+.1f}, {hi * 100:+.1f}]pp ⇒ {mark}")
 
     print("\n  ⚠️ 本轨**非随机**：只能读成「值不值得做正式实验」，**不能当因果证据**。")
     if len(rows) < 20:

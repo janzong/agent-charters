@@ -731,6 +731,18 @@ Reddit 无代理则跳过。
 属系统改动，等互动量上来再做。可行性已探明：Mac 有 Chrome + node v22 + npm 可达（官方源与 npmmirror 均 200）、
 251 有 Chrome 153 + `~/.cache/ms-playwright` 缓存，两条路都通）。
 
+### 第 3 篇：分母研究（2026-09-19，**草稿已建，待人上线**）
+
+- 文件 `work/share-paste/devto-article-03.md`（约 9.5 KB，tags `ai/agents/github/opensource`，
+  series 继续用 `AGENTS.md in the wild`）
+- **草稿 id `4692252`**，`published=false`（已读回确认）。**上线由人执行**（本仓库规矩）：
+  `.venv/bin/python work/share-paste/publish_devto.py --file work/share-paste/devto-article-03.md --live`
+- 主题＝本轮**分母研究**（不是旧数据重发）：活跃仓 6.2% / 存量 1.0%、`CLAUDE.md` 5.4% 基本并驾齐驱、
+  93% 的存量仓近 90 天没 push、8.3% 空仓；并**主动交代**趋势测不出来（世代 vs 年龄混淆）、
+  两个框不一致（6.2% vs 1.8% ⇒ 区间 2–6%）、以及 `403` 三义那个 API 坑。
+- ⚠️ 第 2 篇文章里"Not on PyPI — the install is a clone"已过期（现在 PyPI 有 `0.4.1`），
+  第 3 篇已改用 `pip install agent-charters`；第 2 篇要不要改口径，待人定。
+
 ### 评论盯梢（2026-09-14 装机，**只在有新评论时出声**）
 
 **为什么盯评论**：文章我能自动发，评论我发不了（API 只读）——评论是唯一"需要人动手、漏了就浪费"的信号。
