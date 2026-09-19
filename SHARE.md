@@ -731,17 +731,31 @@ Reddit 无代理则跳过。
 属系统改动，等互动量上来再做。可行性已探明：Mac 有 Chrome + node v22 + npm 可达（官方源与 npmmirror 均 200）、
 251 有 Chrome 153 + `~/.cache/ms-playwright` 缓存，两条路都通）。
 
-### 第 3 篇：分母研究（2026-09-19，**草稿已建，待人上线**）
+### 第 3 篇：分母研究（2026-09-19 **已上线**）
 
-- 文件 `work/share-paste/devto-article-03.md`（约 9.5 KB，tags `ai/agents/github/opensource`，
-  series 继续用 `AGENTS.md in the wild`）
-- **草稿 id `4692252`**，`published=false`（已读回确认）。**上线由人执行**（本仓库规矩）：
-  `.venv/bin/python work/share-paste/publish_devto.py --file work/share-paste/devto-article-03.md --live`
-- 主题＝本轮**分母研究**（不是旧数据重发）：活跃仓 6.2% / 存量 1.0%、`CLAUDE.md` 5.4% 基本并驾齐驱、
-  93% 的存量仓近 90 天没 push、8.3% 空仓；并**主动交代**趋势测不出来（世代 vs 年龄混淆）、
-  两个框不一致（6.2% vs 1.8% ⇒ 区间 2–6%）、以及 `403` 三义那个 API 坑。
-- ⚠️ 第 2 篇文章里"Not on PyPI — the install is a clone"已过期（现在 PyPI 有 `0.4.1`），
-  第 3 篇已改用 `pip install agent-charters`；第 2 篇要不要改口径，待人定。
+- 文件 `work/share-paste/devto-article-03.md`，tags `ai/agents/github/opensource`，
+  series `AGENTS.md in the wild`（已在页面上确认）
+- **线上 id `4692300`**：`https://dev.to/janzong/how-common-is-agentsmd-really-i-sampled-github-62-of-active-repos-10-of-all-repos-1175`
+  发布 2026-09-19T08:30:25Z（公开 `GET /api/articles/4692300` 返回 200，页面含 series 名）
+- 主题＝分母研究：活跃仓 6.2% / 存量 1.0%、`CLAUDE.md` 5.4% 基本并驾齐驱、93% 存量仓近 90 天没 push、
+  8.3% 空仓；主动交代趋势测不出来（世代 vs 年龄混淆）、两个框不一致（6.2% vs 1.8 ⇒ 区间 2–6%）、
+  以及 `403` 三义那个 API 坑。
+- ⚠️ **同时留下一个重复草稿 `4692252`**，已改名为 `[副本·已发布，勿发] …` 并在正文首行写了线上 URL。
+  **API 删不掉**（`DELETE /api/articles/{id}` 是 404，和评论路由一样没有）；要清掉只能在 dev.to 后台手动删。
+
+#### ⚠️ 踩到的命令陷阱（已加防呆）
+
+`publish_devto.py --live` **不带 `--update` 会新建一篇**，而不是把已有草稿转正。
+本次就是这么撞上的（草稿 4692252 留着、线上多出一篇 4692300）。正确写法：
+
+```bash
+# 把已有草稿转正（正确）
+.venv/bin/python work/share-paste/publish_devto.py --file <稿> --update <草稿id> --live
+# 全新文章（会新建）
+.venv/bin/python work/share-paste/publish_devto.py --file <稿> --live
+```
+
+脚本现在会在"`--live` 且无 `--update`"时打印警告。
 
 ### 评论盯梢（2026-09-14 装机，**只在有新评论时出声**）
 

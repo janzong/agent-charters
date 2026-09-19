@@ -142,6 +142,9 @@ def main() -> int:
     elif args.update:
         payload["published"] = current_published(args.update, key)
 
+    if args.live and not args.update:
+        print("⚠️  没有 --update：这会**新建**一篇，而不是把已有草稿转正。\n"
+              "    要把草稿转正请用：--update <草稿id> --live", file=sys.stderr)
     url = f"{API}/{args.update}" if args.update else API
     method = "PUT" if args.update else "POST"
     try:
