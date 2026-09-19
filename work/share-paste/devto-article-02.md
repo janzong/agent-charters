@@ -90,16 +90,17 @@ No tool needed. Ask these five questions about your own file:
 ## If you want the baseline instead of the feeling
 
 ```bash
-git clone https://github.com/janzong/agent-charters   # CN mirror: gitee.com/janzong/agent-charters
-cd agent-charters
-python -m venv .venv && .venv/bin/pip install .
-.venv/bin/agent-charters compare path/to/AGENTS.md   # coverage vs the 558-file baseline, plus gaps
-.venv/bin/agent-charters brief                       # the checklist + a paste-ready prompt
-.venv/bin/agent-charters refs path/to/AGENTS.md      # external pointers and dangling references
+pip install agent-charters                 # 0.4.1, on PyPI — no runtime deps, ~110 KB wheel
+agent-charters compare path/to/AGENTS.md   # coverage vs the 558-file baseline, plus gaps
+agent-charters brief                       # the checklist + a paste-ready prompt
+agent-charters refs path/to/AGENTS.md      # external pointers and dangling references
 ```
 
-(Not on PyPI — the install is a clone. I verified the sequence above in a clean virtualenv on a
-machine that had never seen the repo.)
+*(Updated 2026-09-19 — when this was first posted the only way in was a clone, and this block said so.
+It is on PyPI now: verified in a clean virtualenv on a default index, install takes a couple of
+seconds, because the corpus ships as gzipped JSONL and `pandas` / `pyarrow` are optional extras.
+Source, if you would rather read or pin it: github.com/janzong/agent-charters — CN mirror
+gitee.com/janzong/agent-charters.)*
 
 `compare` is the one that answers question 4 in aggregate. It also does something I did not expect:
 when I used `brief`'s prompt to write a charter for a real project, `compare` flagged coverage I had
