@@ -1,4 +1,4 @@
-# dev.to 回复 · mthburnsbarberweb（2026-09-20 拟，**待贴**；贴后把本行改成「已由人贴出」+ API 复核时间）
+# dev.to 回复 · mthburnsbarberweb（2026-09-20 **已由人贴出 09:39 CST**；API 复核 09:41 CST，上线评论 id `3fa0j`）
 
 **贴在哪**：第 3 篇（id `4692300`）
 → `mthburnsbarberweb` 的评论（2026-09-19 19:35:48Z，556 字符，id `3f9j4`）右下角 **Reply** → 粘贴 `---` 之后的内容。

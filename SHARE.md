@@ -852,14 +852,16 @@ state 保持原样 ✓
   `--changed-only` 单用只检查、**绝不推进 state**，并输出一行提示（实测 state mtime 不变）。
 - **补发**：修复后已手动把两条评论补送 Hermes 固定收件箱（msg 263）。
 
-### 第 3 篇的两条外部评论：frankchu / mthburnsbarberweb（2026-09-19，**回复待贴**）
+### 第 3 篇的两条外部评论：frankchu / mthburnsbarberweb（2026-09-19，**回复已贴出 09:38/09:39 CST**）
 
 两条都指向「活仓库里的死 AGENTS.md」：`frankchu`（id `3f9ff`，773 字符）自查了自己那份
 （16,230 字符 / 4 个带日期标题，只因"只增不删"），并问有没有**外部信号**区分活文件与死内容；
 `mthburnsbarberweb`（id `3f9j4`，556 字符）判断 active-but-stale 比 tombstone
 更危险、量级可能更大。**实测答案**（`work/active_stale_check.py`）：523 个 active 仓库里
 52 个（9.9%）AGENTS.md >180 天未动、113 个（21.6%）>90 天未动，而 >90 天未推的仓库只有 33 个
-—— 两个阈值下"活仓库死内容"桶都更大；带日期标题无区分力（0.7% vs 1.9%）。
+—— 两个阈值下“活仓库死内容”桶都更大；带日期标题无区分力（0.7% vs 1.9%）。
+**两条回复已由人贴出并经 API 复核**：`frankchu` 下 `3fa0i`（01:38:44Z），
+`mthburnsbarberweb` 下 `3fa0j`（01:39:40Z）。
 回复文案：`work/share-paste/devto-reply-08.md`（frankchu）、`devto-reply-09.md`（mthburnsbarberweb）。
 
 ### 第 2 篇的两条外部评论（2026-09-14，**回复已贴出 14:19Z**）
