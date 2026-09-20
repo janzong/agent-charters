@@ -852,6 +852,18 @@ state 保持原样 ✓
   `--changed-only` 单用只检查、**绝不推进 state**，并输出一行提示（实测 state mtime 不变）。
 - **补发**：修复后已手动把两条评论补送 Hermes 固定收件箱（msg 263）。
 
+### 第 3 篇第三条外部评论：salparvez（2026-09-20，**回复待贴**）
+
+`salparvez`（id `3fak0`，822 字符，15:27:09Z）：他们的文件属于那 6.2%，但自认"几乎没有禁令"——
+写的是**怎么读这个仓库**（证据档位跟主张走、仓库推导物先算最低档、推荐前先说明对面是谁），
+并**明示请求跑分类器**（`MLSystemsRI/ml-systems-public`）。**本轮实跑**（远端 4,761 B，
+与本机副本 sha256 一致）：`compare` 判 **3/9**（`overview`×1 / `boundaries`×3 / `agent_meta`×1），
+7 节里 5 节有标签，无标签的两节 1,517 B（**全文 31.9%**）；`content_mode=rule`（关键词密度代理，
+`do not`×4 + `never`×2）；`refs` 识别 9 个指针、**8 个在仓库 HEAD 存在**（`robots.txt` 是正文提及，
+已知假阳性）。**定性**：不是召回漏判，是**作用域边界**——九类量"agent 在仓库里该做什么"，
+该文件写"主张该怎么被读"（证据档位/来源身份），故记为 `LIMITATIONS.md` §28，按 D42 不新开维度。
+回复文案：`work/share-paste/devto-reply-10.md`。
+
 ### 第 3 篇的两条外部评论：frankchu / mthburnsbarberweb（2026-09-19，**回复已贴出 09:38/09:39 CST**）
 
 两条都指向「活仓库里的死 AGENTS.md」：`frankchu`（id `3f9ff`，773 字符）自查了自己那份
