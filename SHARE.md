@@ -852,6 +852,16 @@ state 保持原样 ✓
   `--changed-only` 单用只检查、**绝不推进 state**，并输出一行提示（实测 state mtime 不变）。
 - **补发**：修复后已手动把两条评论补送 Hermes 固定收件箱（msg 263）。
 
+### 第 3 篇第四条外部评论：florian131313（2026-09-20，**回复待贴**）
+
+`florian131313`（id `3faof`，293 字符，17:37:13Z）：认为存量 1.0% 是"墓碑在说话"，工具默认应看
+active rate；并指出 `CLAUDE.md` 5.4% 与 `AGENTS.md` 6.2% 相邻，建议双读两个文件名、其余视为本地家规。
+**只读复算**（`work/prevalence.py report`）：`CLAUDE.md` 确为 **44/817 = 5.4% [4.0, 7.2]**，
+与 `AGENTS.md` 51/817 = 6.2% [4.8, 8.1] 区间重叠；交叉 18 双有、26 只 `CLAUDE`，双读并集
+**77/817 = 9.4% [7.6, 11.6]**。**工具现状**：CLI/Action 已支持多路径（Action `path: AGENTS.md CLAUDE.md`），
+指针已跟随；但默认仍是 `AGENTS.md`，是否把 `CLAUDE.md` 纳入正式数据集按 D40 属版本化决策，不擅自承诺。
+回复文案：`work/share-paste/devto-reply-11.md`。
+
 ### 第 3 篇第三条外部评论：salparvez（2026-09-20，**回复待贴**）
 
 `salparvez`（id `3fak0`，822 字符，15:27:09Z）：他们的文件属于那 6.2%，但自认"几乎没有禁令"——
