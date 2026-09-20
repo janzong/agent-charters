@@ -838,6 +838,30 @@ state 保持原样 ✓
 顺带确认了 420 秒超时是对的：实测一次 `notify-hermes.sh` 花了 **~3.5 分钟**（旧的 180 秒
 必然把它掐死——正是上面那个静默失败事故的成因）。
 
+### ⚠️ 2026-09-20 第三次盯梢事故：闸门误报 + 人工探测吞 state（均已修）
+
+- **现象**：`frankchu`/`mthburnsbarberweb` 两条评论（9-19 17:29Z / 19:35Z）从 01:59 CST 起
+  每 30 分钟通知失败一次（共 15 次），state 不推进，**用户 8 小时没收到任何提醒**。
+- **根因 1（闸门误报）**：`notify-hermes.sh` 的敏感信息闸门用**裸词** `token` 匹配，
+  把公开评论里的 "3,281 tokens" 当成令牌拦下。已改成「赋值形状 + 常见凭据前缀」
+  （`sk-`/`ghp_`/`github_pat_`/`gitee_`/PEM/Bearer 长值/JWT/`口令|密码`+赋值），
+  源文件 `~/plugins/fleet-ops/scripts/notify-hermes.sh`，插件缓存重装到
+  `0.1.0+codex.20260920012308`；9 条用例实测（3 条误报放行、6 条真凭据仍拦）。
+- **根因 2（人工探测吞 state）**：手工跑 `--changed-only`（不带 `--notify-hermes`）
+  会推进 state，随后 timer 认为"无新评论"而静默。已在 `watch_devto.py` 加防呆：
+  `--changed-only` 单用只检查、**绝不推进 state**，并输出一行提示（实测 state mtime 不变）。
+- **补发**：修复后已手动把两条评论补送 Hermes 固定收件箱（msg 263）。
+
+### 第 3 篇的两条外部评论：frankchu / mthburnsbarberweb（2026-09-19，**回复待贴**）
+
+两条都指向「活仓库里的死 AGENTS.md」：`frankchu`（id `3f9ff`，773 字符）自查了自己那份
+（16,230 字符 / 4 个带日期标题，只因"只增不删"），并问有没有**外部信号**区分活文件与死内容；
+`mthburnsbarberweb`（id `3f9j4`，556 字符）判断 active-but-stale 比 tombstone
+更危险、量级可能更大。**实测答案**（`work/active_stale_check.py`）：523 个 active 仓库里
+52 个（9.9%）AGENTS.md >180 天未动、113 个（21.6%）>90 天未动，而 >90 天未推的仓库只有 33 个
+—— 两个阈值下"活仓库死内容"桶都更大；带日期标题无区分力（0.7% vs 1.9%）。
+回复文案：`work/share-paste/devto-reply-08.md`（frankchu）、`devto-reply-09.md`（mthburnsbarberweb）。
+
 ### 第 2 篇的两条外部评论（2026-09-14，**回复已贴出 14:19Z**）
 
 1. **`alexshev` @ 13:35:35Z（309 字符）**：给出比我们更干净的判据 ——
