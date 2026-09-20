@@ -203,11 +203,16 @@ def main() -> int:
             print("   （state 未推进，下一轮会重试；评论正文已落日志）", file=sys.stderr)
             notify_ok = False
 
-    # ③ 只有通知成功（或本来就不通知）才推进 state —— 否则下一轮重来
-    if not args.no_state and notify_ok:
+    # ③ 只有通知成功（或本来就不通知）才推进 state —— 否则下一轮重来。
+    # `--changed-only` 单用只是人工检查：不带 `--notify-hermes` 时绝不推进 state，
+    # 否则一次手工探测就会把待通知评论吞掉（2026-09-20 踩过：探测后 timer 静默）。
+    probe_only = args.changed_only and not args.notify_hermes
+    if not args.no_state and not probe_only and notify_ok:
         save_state(state)
     elif not notify_ok:
         print("（本轮不算处理完成：state 保持原样，30 分钟后重试）", file=sys.stderr)
+    elif probe_only:
+        print("（--changed-only 未带 --notify-hermes：只检查，不推进 state）", file=sys.stderr)
 
     if args.json:
         print(json.dumps({"articles": state["articles"], "new_comments": new_comments},
