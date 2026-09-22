@@ -905,6 +905,19 @@ state 保持原样 ✓
   `--changed-only` 单用只检查、**绝不推进 state**，并输出一行提示（实测 state mtime 不变）。
 - **补发**：修复后已手动把两条评论补送 Hermes 固定收件箱（msg 263）。
 
+### 第 3 篇 anp2network 四轮（2026-09-19 → 09-22，**全部回复已贴出**）
+
+线程链路：`3f932`（truncated 提醒）→ `3f948`（我方 5/1,742 实测）→ `3f9ck`（anp2network：假阳性是类别、需逐命中准入规则）
+→ `3fb9g`（我方：65 paths / 65 distinct SHA、vendored 上游核对）→ `3fbc9`（anp2network：dedup 只到比较集、要 per-path disposition）
+→ `3fbdd`（我方 reply-12：逐路径 disposition 与 content/posts 假阳性）→ `3fdf6`（anp2network：六列里五列来自 tree、Label 不是谓词）
+→ `3fdfd`（我方 reply-16：实测 **64/65** 可由路径谓词判定、1 条需内容谓词）。
+
+reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径谓词覆盖 root 46 + first-party nested 17 + vendored 1；
+唯一需要内容门的是 `coderanger/coderanger.net` 的 `content/posts/agents.md`（blob `8aa4b8c0…`，11,786 B）。
+把范围从 active 扩到**全缓存框**：1,742 棵可用 tree、75 个 AGENTS 路径、61 仓、74 distinct SHA，content-like 路径仍是 **1**。
+建议 ledger 字段：`path_class` / `rule_id` / `content_predicate` / `counted`；vendored 可用“解析模块路径 + 上游 blob SHA 比对”机械化。
+文案：`work/share-paste/devto-reply-07.md`、`devto-reply-12.md`、`devto-reply-16.md`。
+
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
 两轮评论均从 **adoption vs effectiveness** 切入。第一轮 `3fc13`（09:40:02Z）提出更有价值的下一步是
