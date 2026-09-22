@@ -99,6 +99,19 @@
 
 ⇒ HN 访客路径成立：公开仓库 → 一条安装 → 一条 `compare` 命令。唯一缺的是账号与人工发帖。
 
+### 2026-09-22 注册卡点：HN 关闭了大陆出口的账号创建
+
+两处独立网络实测都收到同一句拒绝：
+
+| 来源 | 结果 |
+|---|---|
+| 251 直连 `POST /login`（`creating=t`） | `HTTP 200`，正文 `Sorry, account creation disabled.` |
+| 云电脑（`-p 2222`，独立出口）`curl.exe POST /login` | 同样 `HTTP 200` / `account creation disabled` |
+
+两处 `GET /login` 仍显示 create account 表单，`GET /submit` 也仍是 `200`；**只有创建账号被拒**。
+⇒ 这不是 251 单机问题，也不是 TLS/墙：HN 对当前可达网络禁用新号注册。**HN 这一步只能改用已有账号**（登录不受影响），
+或等 HN 重新开放注册；不要再换本机/云电脑重复试注册。
+
 操作顺序：
 
 1. 打开 <https://news.ycombinator.com/login>，用页面底部的 **create account**
