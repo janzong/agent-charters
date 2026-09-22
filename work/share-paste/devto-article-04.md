@@ -76,9 +76,11 @@ Group aggregates:
 
 ## Reproduce it
 
-The method package is now public: **https://github.com/janzong/agent-lab-method** (MIT,
-commit `6cc70156facb37baf23fe5fe57dad93d43502b91`). It contains the schema, the synthetic
-GenMentor adapter, synthetic fixtures, and tests; the full protocol and the archived runs stay
-private. The result is intentionally boring: a negative result with caps, hashes, and every failed
-run preserved. If you have a task where you believe more agents should win, that is the experiment
-I want to run next.
+Two pieces are now public:
+
+- **Method package:** https://github.com/janzong/agent-lab-method (MIT, commit `6cc70156facb37baf23fe5fe57dad93d43502b91`) — schema, synthetic GenMentor adapter, fixtures, tests;
+- **Trust layer:** https://github.com/janzong/agent-lab-trust (MIT, release `v0.1.0-rc2`) — local-first run validation, hashed reports, and a synthetic deletion proof.
+
+The full protocol and the archived runs stay private. The result is intentionally boring: a negative result with caps, hashes, and every failed run preserved.
+
+I am also looking for **three independent reproductions by non-authors**. The trust layer guide expects `13 passed` under both `TZ=UTC` and `TZ=Asia/Shanghai`, `report_hash` `a841b192981fd7e7`, and deletion `audit_hash` `4f0193abbd49a0f9`. If you run it and any hash differs, that is the most useful reply I can get. If you have a task where you believe more agents should win, that is the experiment I want to run next.
