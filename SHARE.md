@@ -79,6 +79,30 @@
 
 ## 1. Show HN（英文）
 
+### 2026-09-22 现场复测与操作顺序（发布仍由人执行）
+
+| 项 | 实测 |
+|---|---|
+| `news.ycombinator.com` / `/submit` / `/login` | 均 `HTTP 200`；无需 pin IP |
+| HN 账号 `janzong` | 公共 API 返回 `null` ⇒ **该账号尚不存在** |
+| 本仓库 URL 的历史提交 | Algolia 检索 `nbHits=0` ⇒ **尚未提交过** |
+| 提交用链接 | 必须用 GitHub 仓库，**不要用 dev.to 链接**（HN 默认把 dev.to 提交标 dead） |
+
+操作顺序：
+
+1. 打开 <https://news.ycombinator.com/login>，用页面底部的 **create account**
+   表单建号（只需用户名 + 密码，无邮箱步骤），用户名建议与 Gitee/GitHub 一致。
+2. 登录后打开 <https://news.ycombinator.com/submit>：
+   - `title` 用本节下面那行 `Show HN: …`；
+   - `url` 填 <https://github.com/janzong/agent-charters>；
+   - `text` 留空（链接帖不能同时带正文）。
+3. 提交后立刻在**自己的帖子里**发一条评论交代背景、能试什么、哪里最需要反馈。
+   ⚠️ HN 版规明写 **不得发布 AI 生成或 AI 编辑的文本**（`newsguidelines.html`：
+   "Don't post generated text or AI-edited text"）⇒ 本节下方的正文只是事实要点，
+   **不要整段粘贴**，要由本人用自己话重写。
+4. 不要请人点赞/评论；Show HN 只发一次，不提"请 upvote"。
+5. 建议时间：北京时间 20:00–23:00（美东上午）。发布后 1 小时内盯 `/newest` 与评论。
+
 **标题**
 
 ```
