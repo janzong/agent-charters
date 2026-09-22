@@ -76,7 +76,9 @@ Group aggregates:
 
 ## Reproduce it
 
-The method package candidate, the frozen protocol, and the archived runs are private for now, but the
-protocol is written down and the result is intentionally boring: a negative result with caps, hashes,
-and every failed run preserved. If you have a task where you believe more agents should win, that is
-the experiment I want to run next.
+The method package is now public: **https://github.com/janzong/agent-lab-method** (MIT,
+commit `6cc70156facb37baf23fe5fe57dad93d43502b91`). It contains the schema, the synthetic
+GenMentor adapter, synthetic fixtures, and tests; the full protocol and the archived runs stay
+private. The result is intentionally boring: a negative result with caps, hashes, and every failed
+run preserved. If you have a task where you believe more agents should win, that is the experiment
+I want to run next.
