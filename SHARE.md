@@ -88,6 +88,17 @@
 | 本仓库 URL 的历史提交 | Algolia 检索 `nbHits=0` ⇒ **尚未提交过** |
 | 提交用链接 | 必须用 GitHub 仓库，**不要用 dev.to 链接**（HN 默认把 dev.to 提交标 dead） |
 
+**上线前可试用性复核（2026-09-22，只读）**：
+
+| 项 | 实测 |
+|---|---|
+| GitHub 仓库 | `PUBLIC`，最新 Release `v0.5`（2026-09-12），资产 `parquet 56,907 B` / `jsonl 553,371 B` / `SHA256SUMS` |
+| PyPI | 最新 `0.4.1`，`requires-python >=3.10`，零运行时依赖；README 首推 `pipx install agent-charters` |
+| 仓库首页 | `https://github.com/janzong/agent-charters` 返回 `200`（7.9s） |
+| CLI 快速命令 | 本机实测 `agent-charters 0.4.1 ｜ dataset v0.5`，对本仓库 `AGENTS.md` 输出 `9/9 categories` |
+
+⇒ HN 访客路径成立：公开仓库 → 一条安装 → 一条 `compare` 命令。唯一缺的是账号与人工发帖。
+
 操作顺序：
 
 1. 打开 <https://news.ycombinator.com/login>，用页面底部的 **create account**
