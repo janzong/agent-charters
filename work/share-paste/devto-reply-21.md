@@ -1,4 +1,4 @@
-# dev.to 回复 · mihai_leanzero（2026-09-23 拟，**pinning 已实现，待人粘贴**）
+# dev.to 回复 · mihai_leanzero（2026-09-23 拟，**已由人贴出**，API 复核 id `3ffmc`，2026-09-23T14:20:30Z，parent `3ff4f`）
 
 **贴在哪**：治理审计文章（id `4720590`）
 → `mihai_leanzero` 的评论（2026-09-23T06:36:52Z，519 字符，id `3ff4f`，顶层评论）右下角 **Reply** → 粘贴 `---` 之后的内容。
