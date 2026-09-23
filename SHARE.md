@@ -1095,6 +1095,17 @@ participant coverage 六个 run 全 1.0（每个 agent 都行动并返回整数 
 代码评审类比没有实测数据，未外推；互斥边界是新协议，本轮不回答。
 回复文案：`work/share-paste/devto-reply-19.md`（**已由人贴出**，API 复核 id `3fel5`，2026-09-23T00:43:04Z，parent `3feji`）。
 
+### 第 5 篇（治理审计文章，2026-09-23 **已上线**）
+
+- dev.to id `4720590`，<https://dev.to/janzong/your-agent-run-passed-can-you-prove-it-was-allowed-3d5i>，
+  published `2026-09-23T03:03:42Z`，tags `ai, agents, governance, opensource`；
+- 主题：policy-as-code 审计；`max_cost_usd` / `max_calls`、`required_artifacts` +
+  `required_artifacts_mode`、`forbidden_markers`，输出 canonical `audit_hash`；
+- 实测：13 个 GenMentor run —— 默认 structured 合同 **0/13**（`missing_artifact` ×13、
+  `cost_exceeded` ×1，`replay-8of8-20260920-a` cost `3.9529266` > `0.60`）；声明 GenMentor
+  合同 **13/13**；audit_hash `2c122c4f…` / `368b75a0…`；
+- 文章草稿：`work/share-paste/devto-article-05.md`；`series` 字段经 API 未挂上（返回 `null`），不影响正文。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破
