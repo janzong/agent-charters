@@ -1069,6 +1069,18 @@ public board"上的观察一致；*"The gotchas are the file"*；称赞 rule-bas
 `report-only` 走文档承诺的默认形态（绿）、`enforce` 故意要类别（红 + exit 1）。
 **它跑起来不算判据 6**。再要复验 tag：`gh workflow run charter.yml --repo janzong/agent-charters-action-test`。
 
+### 第 4 篇 hannune：zero-contributor 身份（2026-09-23，**回复已贴出**）
+
+`hannune (Tae Kim)`（评论 id `3felf`，2026-09-23T01:07:49Z，255 字符，顶层评论，文章 id `4719293`）：
+他跑过 3-agent 协调任务，多出的 agent 基本只是复述前两者的结论；问 zero-contributor 是同一批 agent
+一贯缺席，还是跨 run 轮换。
+
+**实测口径**（同 6 个 run 归档，逐 agent）：2-agent Alice `[0,1,0]`（2/3 为 0）、Bob `[2,2,0]`（1/3）；
+4-agent Alice `[0,1,2]`（1/3）、Bob `[1,1,1]`（0/3）、Carmen `[0,0,1]`（2/3）、Dan `[2,0,1]`（1/3）。
+结论：缺席者跨 run 轮换，不是固定同一人；最接近“一贯”的是 Alice（2-agent）与 Carmen（4-agent）各 2/3；
+n=3、persona 目标不同，无法区分 persona 效应与采样噪声；无 3-agent 条件，无法验证 echo。
+回复文案：`work/share-paste/devto-reply-20.md`（**已由人贴出**，API 复核 id `3femg`，2026-09-23T02:18:56Z，parent `3felf`）。
+
 ### 第 4 篇（负结果文章，id `4719293`）：reidmarlow 责任扩散（2026-09-22，**回复已贴出**）
 
 `reidmarlow`（评论 id `3feji`，2026-09-22T23:06:33Z，616 字符，顶层评论，文章 id `4719293`）：
