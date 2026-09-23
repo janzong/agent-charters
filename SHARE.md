@@ -1069,6 +1069,20 @@ public board"上的观察一致；*"The gotchas are the file"*；称赞 rule-bas
 `report-only` 走文档承诺的默认形态（绿）、`enforce` 故意要类别（红 + exit 1）。
 **它跑起来不算判据 6**。再要复验 tag：`gh workflow run charter.yml --repo janzong/agent-charters-action-test`。
 
+### 第 4 篇（负结果文章，id `4719293`）：reidmarlow 责任扩散（2026-09-22，**回复已贴出**）
+
+`reidmarlow`（评论 id `3feji`，2026-09-22T23:06:33Z，616 字符，顶层评论，文章 id `4719293`）：
+认为 zero-contributor 从 1.0→1.33 是表格里信息量最大的行；对称多 agent 循环会出现“责任扩散”
+（每个 agent 读部分状态、假设别人会补缺口、返回 trivial action）；同一失败模式见于代码评审
+（无互斥文件边界的四人评审 = 四份浅层 nitpick、零深度 bug 捕获、双倍 token）；建议互斥文件边界/分区任务。
+
+**实测口径**（`runs/concordia/protocol-v15-{2,4}agent-r{1,2,3}`）：zero-contributor 2-agent `[1,0,2]`、
+4-agent `[2,2,0]`，均值 **1.000 vs 1.333**；两组各 1/3 complete success；**平均贡献/agent 都是 0.833**
+（5/(3×2) 与 10/(3×4)）；每人达标需要 **1.5 vs 1.25**；mean cost USD 0.028798 vs 0.060906，成本比 **2.115×**；
+participant coverage 六个 run 全 1.0（每个 agent 都行动并返回整数 choice，zero 是“行动后选 0”而不是“没行动”）。
+代码评审类比没有实测数据，未外推；互斥边界是新协议，本轮不回答。
+回复文案：`work/share-paste/devto-reply-19.md`（**已由人贴出**，API 复核 id `3fel5`，2026-09-23T00:43:04Z，parent `3feji`）。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破
