@@ -1106,6 +1106,18 @@ participant coverage 六个 run 全 1.0（每个 agent 都行动并返回整数 
   合同 **13/13**；audit_hash `2c122c4f…` / `368b75a0…`；
 - 文章草稿：`work/share-paste/devto-article-05.md`；`series` 字段经 API 未挂上（返回 `null`），不影响正文。
 
+### 第 5 篇 mihai_leanzero policy pinning（2026-09-23，**回复已贴出**）
+
+`mihai_leanzero`（评论 id `3ff4f`，2026-09-23T06:36:52Z，519 字符，顶层评论，文章 `4720590`）：
+认可 policy-vs-data 框架；问 `audit_hash` 是否覆盖 policy.json 内容；若只覆盖 findings，失败后改 policy
+重跑可得到干净 hash、契约变更无痕迹；建议把 policy 钉在 run artifacts 旁。
+
+**改动前后实测**：改动前 payload 仅含 `policy_keys`（键名）+ artifacts 契约值，max_cost 0.60 vs 100.0
+同 hash `d39ac5fe…`；改动后 `audit_root` 把完整 canonical `policy` + `policy_sha256` 纳入结果，
+两者变为 `79b25b9a…` vs `385f8ed6…`；fixture audit_hash `b304f294…`、policy_sha256 `cda4f1bb…`；
+`audit --output` 写出 9 键 pinned JSON；13-run 结果不变（默认 0/13、GenMentor 13/13）。
+回复文案：`work/share-paste/devto-reply-21.md`（**已由人贴出**，API 复核 id `3ffmc`，2026-09-23T14:20:30Z，parent `3ff4f`）。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破
