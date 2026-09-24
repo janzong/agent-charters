@@ -1118,6 +1118,18 @@ participant coverage 六个 run 全 1.0（每个 agent 都行动并返回整数 
 `audit --output` 写出 9 键 pinned JSON；13-run 结果不变（默认 0/13、GenMentor 13/13）。
 回复文案：`work/share-paste/devto-reply-21.md`（**已由人贴出**，API 复核 id `3ffmc`，2026-09-23T14:20:30Z，parent `3ff4f`）。
 
+### 2026-09-24 三条回复已贴出（reply-22/23/24）
+
+| 回复 | 对象 | 文章 | API 复核 | 时间 | parent |
+|---|---|---|---|---|---|
+| reply-22 | axiru | `4720590` | `3ffpd` | 2026-09-23T15:14:27Z | `3ffnf` |
+| reply-23 | nomad-link-id | `4719293` | `3fgje` | 2026-09-24T00:50:20Z | `3ffpf` |
+| reply-24 | aifrontierpost | `4719293` | `3fgj9` | 2026-09-24T00:45:41Z | `3fg6k` |
+
+reply-22：policy hash 已钉进同一 receipt（9 键含 `policy` + `policy_sha256`），pre-call allow/hold/deny 是另一层、未实装。
+reply-23：cost per complete success 2-agent `0.0863948`、4-agent `0.1827186`、≈2.115×；scorer/gold 冻结。
+reply-24：strict-JSON/no-reasoning 隔离结构 vs 能力；reasoning arm 未跑，只谈设计与边界。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破

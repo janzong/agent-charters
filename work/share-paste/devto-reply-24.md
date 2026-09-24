@@ -1,4 +1,4 @@
-# dev.to 回复 · aifrontierpost（2026-09-24 拟，待人粘贴）
+# dev.to 回复 · aifrontierpost（2026-09-24 拟，**已由人贴出**，API 复核 id `3fgj9`，2026-09-24T00:45:41Z，parent `3fg6k`）
 
 **贴在哪**：负结果文章（id `4719293`）
 → `aifrontierpost` 的评论（2026-09-23T18:03:47Z，496 字符，id `3fg6k`，顶层评论）右下角 **Reply** → 粘贴 `---` 之后的内容。
