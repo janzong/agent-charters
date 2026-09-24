@@ -1130,6 +1130,12 @@ reply-22：policy hash 已钉进同一 receipt（9 键含 `policy` + `policy_sha
 reply-23：cost per complete success 2-agent `0.0863948`、4-agent `0.1827186`、≈2.115×；scorer/gold 冻结。
 reply-24：strict-JSON/no-reasoning 隔离结构 vs 能力；reasoning arm 未跑，只谈设计与边界。
 
+### 2026-09-24 负结果文章更新：cost per complete success
+
+- 采纳 nomad-link-id 建议，live 文章 `4719293` 已加一行：`cost per complete success USD` 2-agent `0.0863948`、4-agent `0.1827186`、比值 `2.115`；
+- 公共 API 复核 `edited_at` `2026-09-24T00:59:13Z`，正文含该行；
+- 文案：`work/share-paste/devto-article-04.md`。
+
 ## 6. 发完之后
 
 - **别刷数据**：star 少不要紧，有一个人用上了就是判据 6 的突破

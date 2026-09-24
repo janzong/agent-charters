@@ -56,6 +56,7 @@ Group aggregates:
 | mean calls | 17.00 | 33.00 | 1.941 |
 | mean total tokens | 10,461.67 | 21,877.00 | 2.091 |
 | mean cost USD | 0.028798 | 0.060906 | 2.115 |
+| cost per complete success USD | 0.0863948 | 0.1827186 | 2.115 |
 | mean zero contributors | 1.000 | 1.333 | 1.333 |
 
 ## What I take from it
