@@ -949,7 +949,7 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 
 文案：`work/share-paste/devto-reply-25.md`（**已由人贴出**，API 复核 id `3fjic`，2026-09-25T12:24:29Z，parent `3fjco`）。
 
-### 第 3 篇 nomad-link-id：presence ≠ effect / 三臂检查（2026-09-22 拟，**reply-17 待贴**）
+### 第 3 篇 nomad-link-id：presence ≠ effect / 三臂检查（2026-09-22 拟，**reply-17 已贴出** `3fjjc`）
 
 评论 `3fe82`（2026-09-22T15:11:15Z，399 字符，顶层）要点：presence 不等于 decision impact；6% 只说明实践存在；
 应先做三臂检查（charter / nothing / equal-length placebo）；active repo 里的 stale file 是最危险的中间态。
@@ -959,7 +959,7 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 - 仪表轨重算：330 任务 / 99 带章程 / 320 适用规则 / 3 违规 = 99.1% / 2 任务违规 / 平均返工 0.224；
 - stale 中间态：523 active 仓中 52（9.9%）>180 天未动、113（21.6%）>90 天未动；>90 天未推的仓 33。
 
-文案：`work/share-paste/devto-reply-17.md`（**待人贴到 `3fe82` 下**）。
+文案：`work/share-paste/devto-reply-17.md`（**已由人贴出**，API 复核 id `3fjjc`，2026-09-25T12:41:14Z，parent `3fe82`）。
 
 同文另有 spam 评论 `3f989`（2026-09-19，“Sex Toys buy online…”），不回复，建议在 dev.to 举报为 spam。
 
