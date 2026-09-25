@@ -1,4 +1,4 @@
-# dev.to 回复 · quietlabops（2026-09-25 拟，**待贴**）
+# dev.to 回复 · quietlabops（2026-09-25 拟，**无法贴出：该评论在公开页不可见**；API 仍返回 `3fk0j`，但文章 HTML 无 `3fk0j` / “seat file” / “Quiet Lab Ops”，dev.to 疑似隐藏了这条含外链的评论 ⇒ 暂挂 unreachable，若日后重新可见再贴）
 
 **贴在哪**：第 3 篇（id `4692300`）
 → `quietlabops` 的评论（2026-09-25T15:07:32Z，227 字符，id `3fk0j`，当前最新）右下角 **Reply** → 粘贴 `---` 之后的内容。

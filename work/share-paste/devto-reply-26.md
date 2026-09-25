@@ -1,4 +1,4 @@
-# dev.to 回复 · mnemehq（Theo Valmis）（2026-09-25 拟，**待贴**）
+# dev.to 回复 · mnemehq（Theo Valmis）（**已由人贴出**；API 复核 id `3fkak`，2026-09-25T19:15:51Z，parent `3fjoa`，1,606 字符）
 
 **贴在哪**：第 3 篇（id `4692300`）
 → `mnemehq` 的评论（2026-09-25T14:23:52Z，278 字符，id `3fjoa`）右下角 **Reply** → 粘贴 `---` 之后的内容。
