@@ -1003,6 +1003,19 @@ build-only 2.7%（14/516），其中仅 **1/14** 含 stop 语句。
 
 文案：`work/share-paste/devto-reply-27.md`（**作废留档**：`https://dev.to/quietlabops/comment/3fk0j` → 404，评论已被删除/移除；无需再贴）。
 
+### 第 3 篇 mnemehq（Theo Valmis）第二轮：禁令可检查性（2026-09-25 评论，**reply-28 待贴**）
+
+评论 `3fkbp`（2026-09-25T19:50:20Z，385 字符，parent 我方 reply-26 `3fkak`）要点：认可 build-only 2.7–9.7% 与 hard 14.9%；
+问：禁令里多少指向可检查对象（路径/import）vs 泛泛陈述。
+
+2026-09-26 实测（`work/boundary_checkability_scan.py`，v0.5，516 实质非 pointer，**1,689 边界句 / 390 文件**）：
+窄口径可检查（file/import/command/threshold）**21.4%**（362）、宽口径（含 path）**33.0%**（558）、泛泛陈述 **67.0%**（1,131）；
+分桶 path 11.6%、file 8.4%、command 7.3%、import 5.6%、threshold 0.1%、role 2.5%；
+文件级：≥1 窄 36.6%（189/516）、≥1 宽 44.6%（230/516）、只有泛泛 29.1%（150/516）。
+口径：行级正则、名词式禁令会漏；"可检查"≠有工具能查；path 桶最松（曾误收 markdown `*word*` 与 `tasks/PRs`，已收紧）。
+
+文案：`work/share-paste/devto-reply-28.md`（**待人贴到 `3fkbp` 下**）。
+
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
 两轮评论均从 **adoption vs effectiveness** 切入。第一轮 `3fc13`（09:40:02Z）提出更有价值的下一步是
