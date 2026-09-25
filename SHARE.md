@@ -12,12 +12,12 @@
 |---|---:|---:|---|
 | `4649807`（558 分类） | 6 | 3 | `3f0dk`（spam：Drive 清理广告） |
 | `4650835`（5 分钟检查） | 4 | 2 | — |
-| `4692300`（普及率） | 36 | 17 | `3f989`（spam）、`3fjoa`（**reply-26 已贴** `3fkak`）、`3fk0j`（**已隐藏，无法回**） |
+| `4692300`（普及率） | 36 | 17 | `3f989`（spam）、`3fjoa`（**reply-26 已贴** `3fkak`）、`3fk0j`（**永久链接 404=评论已删，reply-27 作废**） |
 | `4719293`（2 vs 4 agents） | 11 | 4 | — |
 | `4720590`（policy pinning） | 6 | 2 | — |
 
 **除 2 条 spam 与 2 条已起草待贴外，全站真评论均已回复。**
-reply-26 已由人贴出（API 复核 `3fkak`）；reply-27 目标评论 `3fk0j` 在公开页不可见（dev.to 疑似隐藏），暂挂 unreachable。
+reply-26 已由人贴出（API 复核 `3fkak`）；reply-27 目标 `3fk0j` 的永久链接返回 **404**（评论已被删除/移除），草稿作废留档。**教训**：dev.to 的 `comments?a_id=` 会短暂返回已删评论，写回复前先查 `dev.to/<user>/comment/<id>` 的状态码。
 
 ## 数字口径（当前，2026-09-13）
 
@@ -991,7 +991,7 @@ build-only 9.7%（宽规则口径 2.7%）；rules-only 12.6%；both 73.1%；neit
 
 文案：`work/share-paste/devto-reply-26.md`（**已由人贴出**，API 复核 id `3fkak`，2026-09-25T19:15:51Z，parent `3fjoa`）。
 
-### 第 3 篇 quietlabops：seat file / named job / deliverable / STOP（2026-09-25 拟，**不可贴：评论被隐藏**）
+### 第 3 篇 quietlabops：seat file / named job / deliverable / STOP（2026-09-25 拟，**reply-27 作废：评论已删**）
 
 评论 `3fk0j`（2026-09-25T15:07:32Z，227 字符，顶层，当前最新）要点：只列工具的 AGENTS.md 依然会变成 chat pile；
 他们的做法是把文件当 "seat file"——named job + one reversible deliverable + explicit STOP；附外链 `grokbotplaybook.grok.me/`。
@@ -1001,7 +1001,7 @@ stop/审批语句 33.7%；命名职责 15.9%；可逆交付物线索 15.1%；bui
 build-only 2.7%（14/516），其中仅 **1/14** 含 stop 语句。
 口径：关键词级非语义；语料 search-selected；外链未访问、不背书。
 
-文案：`work/share-paste/devto-reply-27.md`（**暂挂**：`3fk0j` 在公开页 HTML 里不存在——`grep -c` 结果 0；API 仍返回该评论。dev.to 疑似隐藏了这条含外链的自推广评论；等它重新可见再贴）。
+文案：`work/share-paste/devto-reply-27.md`（**作废留档**：`https://dev.to/quietlabops/comment/3fk0j` → 404，评论已被删除/移除；无需再贴）。
 
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 

@@ -1,4 +1,4 @@
-# dev.to 回复 · quietlabops（2026-09-25 拟，**无法贴出：该评论在公开页不可见**；API 仍返回 `3fk0j`，但文章 HTML 无 `3fk0j` / “seat file” / “Quiet Lab Ops”，dev.to 疑似隐藏了这条含外链的评论 ⇒ 暂挂 unreachable，若日后重新可见再贴）
+# dev.to 回复 · quietlabops（**已作废：目标评论 `3fk0j` 的永久链接返回 404**）
 
 **贴在哪**：第 3 篇（id `4692300`）
 → `quietlabops` 的评论（2026-09-25T15:07:32Z，227 字符，id `3fk0j`，当前最新）右下角 **Reply** → 粘贴 `---` 之后的内容。
@@ -31,3 +31,7 @@ Agreed on the premise: a tool list is not a charter, and the corpus is consisten
 The tool-only slice is the one that speaks to your point: 14/516 files have a build/test section and no boundary, style, workflow, or agent-role section — and exactly one of those 14 carries an explicit stop or approval phrase (1/14). So "only lists tools" is rare in this corpus, but when it happens the seat-file ingredients are almost entirely absent. That is a selection caveat, not a causal claim: this is a search-selected corpus of files that exist, not a sample of repos that attempted a charter.
 
 On the seat-file framing itself: I read it as three separate checks, and the data says they are not automatically correlated. A file can be full of prohibitions (85.7% have a boundaries section) and still never say what the agent's job is or when to stop — the role and stop signals are present in only 15.9% and 33.7% respectively. I have not tested the checklist at grokbotplaybook.grok.me and won't vouch for it; the three things it names are the right three to test, and the numbers above are the baseline I would want it to beat.
+
+> 核查（2026-09-26）：`https://dev.to/quietlabops/comment/3fk0j` → **HTTP 404**，即该评论已被删除/移除；
+> 文章页 HTML 也不渲染它（`grep -c 3fk0j` = 0，`comments_sort=latest/top` 均同）。API `comments?a_id=` 仍短暂返回，
+> **不能作为"评论还在"的依据**——写回复前先查评论永久链接的状态码。
