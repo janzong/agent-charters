@@ -976,6 +976,18 @@ build-only 9.7%（宽规则口径 2.7%）；rules-only 12.6%；both 73.1%；neit
 
 文案：`work/share-paste/devto-reply-26.md`（**待人贴到 `3fjoa` 下**）。
 
+### 第 3 篇 quietlabops：seat file / named job / deliverable / STOP（2026-09-25，**reply-27 待贴**）
+
+评论 `3fk0j`（2026-09-25T15:07:32Z，227 字符，顶层，当前最新）要点：只列工具的 AGENTS.md 依然会变成 chat pile；
+他们的做法是把文件当 "seat file"——named job + one reversible deliverable + explicit STOP；附外链 `grokbotplaybook.grok.me/`。
+
+2026-09-25 实测（`data/raw/full/*.md` 全文关键词级，516 份实质非 pointer）：
+stop/审批语句 33.7%；命名职责 15.9%；可逆交付物线索 15.1%；build 82.8%；boundaries 85.7%；
+build-only 2.7%（14/516），其中仅 **1/14** 含 stop 语句。
+口径：关键词级非语义；语料 search-selected；外链未访问、不背书。
+
+文案：`work/share-paste/devto-reply-27.md`（**待人贴到 `3fk0j` 下**）。
+
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
 两轮评论均从 **adoption vs effectiveness** 切入。第一轮 `3fc13`（09:40:02Z）提出更有价值的下一步是
