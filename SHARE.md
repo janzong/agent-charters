@@ -935,6 +935,20 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 建议 ledger 字段：`path_class` / `rule_id` / `content_predicate` / `counted`；vendored 可用“解析模块路径 + 上游 blob SHA 比对”机械化。
 文案：`work/share-paste/devto-reply-07.md`、`devto-reply-12.md`、`devto-reply-16.md`。
 
+### 第 3 篇 anp2network 第五轮：schema / pinning / entry-predicate（2026-09-25，**reply-25 待贴**）
+
+评论 `3fjco`（2026-09-25T09:56:36Z，2,488 字符，parent `3fdfd`，深嵌套）要点：
+①`content_predicate` 的 null 混用“不适用/没跑过” → 建议 distinct 值 `not_applicable`/`not_run`；cheap audit 应数 distinct 而非 null；
+②75 paths vs 74 distinct blobs，唯一碰撞值得单独一行；③唯一需 fetch 的行被 SHA+11,786 B 钉得最狠；多数 re-derivation 声明只 pin 标识符不记 size → 静默失败；vendored row `91c04f1f` 同性质；④entry predicate=basename `AGENTS.md`，content/ 下带 front matter 的其它名文件永不进 frame；⑤建议测 1,742 cached trees 中 content|blog|posts 下、带 front matter、basename≠AGENTS.md 的路径数。
+
+本轮实测（只读遍历 1,830 文件 / 1,742 可用树）：
+- 75 AGENTS.md paths / 61 仓 / 74 distinct SHA；唯一碰撞 `8bd0e390…`（2 条、均 327 B：`pdee2131/efieonline-web`、`richardsantoza-tech/seo-dashboard`）；
+- 内容行仍是 `coderanger/coderanger.net` `content/posts/agents.md`（`8aa4b8c0…`，11,786 B）；vendored `openshift/must-gather` → `91c04f1f…`（1,656 B）；
+- path-level 上限：宽 24,695 / 21 仓；非 vendored 24,294 / 19 仓；顶层 1,643 / 10 仓；
+- **边界**：tree 响应无文件内容 ⇒ front matter 需每条候选一次 fetch，不能从同一缓存判定。
+
+文案：`work/share-paste/devto-reply-25.md`（**待人贴到 `3fjco` 下**）。
+
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
 两轮评论均从 **adoption vs effectiveness** 切入。第一轮 `3fc13`（09:40:02Z）提出更有价值的下一步是
