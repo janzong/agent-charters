@@ -963,6 +963,19 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 
 同文另有 spam 评论 `3f989`（2026-09-19，“Sex Toys buy online…”），不回复，建议在 dev.to 举报为 spam。
 
+### 第 3 篇 mnemehq（Theo Valmis）：rules vs build commands（2026-09-25，**reply-26 待贴**）
+
+评论 `3fjoa`（2026-09-25T14:23:52Z，278 字符，顶层，当前最新）要点：6.2% 很低，多数 agent 没有 repo 级指令；
+问这些文件里多少含"规则"、多少只是"构建命令"——只有规则类才真正约束行为。
+
+2026-09-25 实测（`data/processed/agent_charters_v0.5.jsonl`，516 份实质非 pointer，ruleset v0.1.8）：
+build/test 章节 82.8%；boundaries 章节 85.7%；句子级 imperative 48.6%；hard 禁令 14.9%；
+build-only 9.7%（宽规则口径 2.7%）；rules-only 12.6%；both 73.1%；neither 4.7%；
+文件级 mode：rule 72.5% / mixed 13.2% / knowledge 14.3%。
+口径：`categories` 为标题通道；README 记 stricter"专门禁令章节"45.2%，本轮 `imperative ∧ boundaries` 43.4%。
+
+文案：`work/share-paste/devto-reply-26.md`（**待人贴到 `3fjoa` 下**）。
+
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
 两轮评论均从 **adoption vs effectiveness** 切入。第一轮 `3fc13`（09:40:02Z）提出更有价值的下一步是
