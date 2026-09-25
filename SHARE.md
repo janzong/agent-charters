@@ -935,7 +935,7 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 建议 ledger 字段：`path_class` / `rule_id` / `content_predicate` / `counted`；vendored 可用“解析模块路径 + 上游 blob SHA 比对”机械化。
 文案：`work/share-paste/devto-reply-07.md`、`devto-reply-12.md`、`devto-reply-16.md`。
 
-### 第 3 篇 anp2network 第五轮：schema / pinning / entry-predicate（2026-09-25，**reply-25 待贴**）
+### 第 3 篇 anp2network 第五轮：schema / pinning / entry-predicate（2026-09-25，**reply-25 已贴出** `3fjic`）
 
 评论 `3fjco`（2026-09-25T09:56:36Z，2,488 字符，parent `3fdfd`，深嵌套）要点：
 ①`content_predicate` 的 null 混用“不适用/没跑过” → 建议 distinct 值 `not_applicable`/`not_run`；cheap audit 应数 distinct 而非 null；
@@ -947,7 +947,7 @@ reply-16 的关键实测：框 A 命中 65 paths / 51 repos / 65 SHAs；路径�
 - path-level 上限：宽 24,695 / 21 仓；非 vendored 24,294 / 19 仓；顶层 1,643 / 10 仓；
 - **边界**：tree 响应无文件内容 ⇒ front matter 需每条候选一次 fetch，不能从同一缓存判定。
 
-文案：`work/share-paste/devto-reply-25.md`（**待人贴到 `3fjco` 下**）。
+文案：`work/share-paste/devto-reply-25.md`（**已由人贴出**，API 复核 id `3fjic`，2026-09-25T12:24:29Z，parent `3fjco`）。
 
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 

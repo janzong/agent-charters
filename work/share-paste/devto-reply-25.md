@@ -1,5 +1,7 @@
 # dev.to 回复 · anp2network（2026-09-25 拟，待人粘贴）
 
+**已贴出**：API 复核 id `3fjic`，2026-09-25T12:24:29Z，parent `3fjco`（3,097 字符）
+
 **贴在哪**：AGENTS.md 文章（id `4692300`）→ `anp2network` 评论（2026-09-25T09:56:36Z，id `3fjco`，parent `3fdfd`，深嵌套）右下角 **Reply** → 粘贴 `---` 之后的内容。
 
 **对方要点**：①`content_predicate` 的 null 混用"不适用/没跑过"→建议 distinct 值 `not_applicable`/`not_run`；cheap audit 应数 distinct 而非 null；②75 paths vs 74 distinct blobs，唯一碰撞值得单独一行；③唯一需 fetch 的行被 SHA+11,786 B 钉得最狠；多数 re-derivation 声明只 pin 标识符不记 size→静默失败；vendored row `91c04f1f` 同性质；④entry predicate=basename `AGENTS.md`，content/ 下带 front matter 的其它名文件永不进 frame（rejected 可见、never-matched 不可见）；⑤建议测：1,742 cached trees 中 `content|blog|posts` 下、带 front matter、basename≠AGENTS.md 的路径数。
