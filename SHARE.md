@@ -1003,7 +1003,7 @@ build-only 2.7%（14/516），其中仅 **1/14** 含 stop 语句。
 
 文案：`work/share-paste/devto-reply-27.md`（**作废留档**：`https://dev.to/quietlabops/comment/3fk0j` → 404，评论已被删除/移除；无需再贴）。
 
-### 第 3 篇 mnemehq（Theo Valmis）第二轮：禁令可检查性（2026-09-25 评论，**reply-28 待贴**）
+### 第 3 篇 mnemehq（Theo Valmis）第二轮：禁令可检查性（2026-09-25 评论，**reply-28 已贴出** `3fknd`）
 
 评论 `3fkbp`（2026-09-25T19:50:20Z，385 字符，parent 我方 reply-26 `3fkak`）要点：认可 build-only 2.7–9.7% 与 hard 14.9%；
 问：禁令里多少指向可检查对象（路径/import）vs 泛泛陈述。
@@ -1014,7 +1014,7 @@ build-only 2.7%（14/516），其中仅 **1/14** 含 stop 语句。
 文件级：≥1 窄 36.6%（189/516）、≥1 宽 44.6%（230/516）、只有泛泛 29.1%（150/516）。
 口径：行级正则、名词式禁令会漏；"可检查"≠有工具能查；path 桶最松（曾误收 markdown `*word*` 与 `tasks/PRs`，已收紧）。
 
-文案：`work/share-paste/devto-reply-28.md`（**待人贴到 `3fkbp` 下**）。
+文案：`work/share-paste/devto-reply-28.md`（**已由人贴出**，API 复核 id `3fknd`，2026-09-26T05:54:37Z，1,503 字符）。⚠️ 线程位置：挂在 `3fkak` 之下、与 `3fkbp` 同级而非其子节点——同线程可见，但严格「回复对方」需删后重挂。
 
 ### 第 3 篇第五/六条外部评论：glenallen 两轮（2026-09-21，**两轮回复已贴出**）
 
