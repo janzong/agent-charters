@@ -1,9 +1,8 @@
-# dev.to 回复 · mnemehq（Theo Valmis）第二轮（**已由人贴出**；API 复核 id `3fknd`，2026-09-26T05:54:37Z，1,503 字符）
+# dev.to 回复 · mnemehq（Theo Valmis）第二轮（**已修正线程并贴出**；API 复核 id `3flae`，2026-09-26T12:37:21Z，parent `3fkbp`）
 
-> ⚠️ **线程位置**：实际挂在 `3fkak`（我方 reply-26）之下、与 `3fkbp`（对方的追问）**同级**，不是 `3fkbp` 的直接子节点。内容在同一线程内可见，但若要严格「回复对方」，需删掉 `3fknd` 后在 `3fkbp` 上重新 Reply。
+> **线程修正已完成**：原错层评论 `3fknd` 已删除；重贴后的 `3flae` 是 `3fkbp` 的直接子节点，会按 dev.to 规则通知被回复作者。
 
-**贴在哪**：第 3 篇（id `4692300`）
-→ `mnemehq` 的跟进评论（2026-09-25T19:50:20Z，385 字符，id `3fkbp`，parent 是我方 reply-26 `3fkak`）右下角 **Reply** → 粘贴 `---` 之后的内容。
+**最终位置**：第 3 篇（id `4692300`）→ `mnemehq` 的跟进评论 `3fkbp` 之下 → 我方回复 `3flae`。
 
 **对方要点**：认可 build-only 2.7–9.7% 与 hard-prohibition 14.9%；观察"多数文件有 boundary 段，但少有工具真正可检查的内容"；问：**禁令里多少指向可检查对象（路径/import 等）vs 泛泛陈述**。
 
