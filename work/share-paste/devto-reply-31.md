@@ -1,4 +1,6 @@
-# dev.to 回复 · mihai_leanzero（**待人工粘贴**）
+# dev.to 回复 · mihai_leanzero（**已发布，HTML 复核通过**）
+
+> 我方回复 id `3i053`（2026-10-15T15:28:43Z），正文逐字出现在文章页，与 `3hon4` 同线程展示；dev.to comments API 对 parent 字段常返回 null，线程关系以页面展示为准。
 
 **位置**：第 5 篇（id `4720590`）→ mihai_leanzero 新评论 `3hon4`（2026-10-15T05:54:10Z）之下。
 
