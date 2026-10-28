@@ -170,3 +170,22 @@ T1
 - 长期存活原因。
 
 这些判断需等 T2/T3/T4 序列。
+
+## 8. 采集前校准（2026-10-28，不采数据）
+
+- timer 的标称时间为 03:30，但配置了 `RandomizedDelaySec=600`；实际启动窗口是
+  03:30–03:40，不应把 03:30 精确到秒误作失败。
+- T0/T0.5 的 TSV 均为 558 行、6 列：
+
+```text
+repo_full_name
+file_path
+file_sha
+bytes
+doc_language
+retrieved_at
+```
+
+- `fetch_status` 位于 sidecar `panel-YYYY-MM-DD.json → repos[...].status`，不是
+  TSV 第七列。T1 必须沿用同一结构，不新增列。
+- 采集前必须创建 `data/raw/full_manifest.pre-T1.jsonl`。

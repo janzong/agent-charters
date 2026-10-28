@@ -33,6 +33,9 @@ sidecar_sha256:
 
 ## 3. Row and fetch status
 
+`fetch_status` counts come from the sidecar `repos[...].status` field. The TSV
+remains six-column to preserve the T0 schema.
+
 ```text
 expected_repositories: 558
 rows_written:
